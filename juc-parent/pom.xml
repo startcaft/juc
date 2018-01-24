@@ -8,6 +8,10 @@
 
   <packaging>pom</packaging>
 
+  <modules>
+    <module>../juc-framework-branchs</module>
+  </modules>
+
   <name>juc-parent</name>
   <url>http://maven.apache.org</url>
 
