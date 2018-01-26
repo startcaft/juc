@@ -10,6 +10,7 @@
 
   <modules>
     <module>../juc-lock</module>
+    <module>../juc-synchro-lock</module>
   </modules>
 
   <name>juc-parent</name>
