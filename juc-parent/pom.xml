@@ -7,6 +7,7 @@
   <version>1.0-SNAPSHOT</version>
   <modules>
     <module>juc-share-data</module>
+      <module>juc-thread-join-work</module>
   </modules>
 
   <packaging>pom</packaging>
