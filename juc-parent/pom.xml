@@ -8,6 +8,7 @@
   <modules>
     <module>juc-share-data</module>
       <module>juc-thread-join-work</module>
+      <module>springboot-shiro-jwt</module>
   </modules>
 
   <packaging>pom</packaging>
@@ -18,6 +19,19 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
+
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>1.5.10.RELEASE</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
 
 
 </project>
