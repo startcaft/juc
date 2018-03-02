@@ -8,6 +8,7 @@
   <modules>
     <module>core-service-module</module>
     <module>data-entity</module>
+      <module>core-we-bview</module>
   </modules>
   <packaging>pom</packaging>
 

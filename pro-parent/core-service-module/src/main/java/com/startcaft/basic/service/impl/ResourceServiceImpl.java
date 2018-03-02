@@ -5,7 +5,7 @@ import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.exceptions.FieldNullException;
 import com.startcaft.basic.core.vo.ResourceVo;
-import com.startcaft.basic.dao.master.ResourceDao;
+import com.startcaft.basic.dao.master.IResourceDao;
 import com.startcaft.basic.service.IResourceService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ import java.util.stream.Stream;
 public class ResourceServiceImpl implements IResourceService {
 
     @Autowired
-    private ResourceDao resourceDao;
+    private IResourceDao resourceDao;
 
     @Transactional(value="masterTransactionManager",readOnly = true,rollbackFor = Exception.class)
     @Override
