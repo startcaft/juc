@@ -1,7 +1,7 @@
 package com.startcaft.basic.core.exceptions;
 
 /**
- *
+ * 字段(参数)缺少异常
  * @author startcaft
  * @date 2018/3/1
  */

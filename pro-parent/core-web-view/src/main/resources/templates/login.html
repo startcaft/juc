@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta charset="utf-8" />
@@ -107,24 +106,77 @@
             </div>
         </div>
 
-        <!-- basic scripts -->
-        <!--&lt;!&ndash;[if !IE]> &ndash;&gt;-->
-        <!--<script type="text/javascript">-->
-            <!--window.jQuery || document.write("<script th:src='@{/static/ace-1.3.3/assets/js/jquery.js}'>"+"<"+"/script>");-->
-        <!--</script>-->
-        <!--&lt;!&ndash; <![endif]&ndash;&gt;-->
+        <!-- basic scripts，不同版本浏览器加载不同版本的 jquery 库，以及移动web端加载的 jquery.mobile 库，注意先后顺序-->
+        <!--[if !IE]> -->
+        <script type="text/javascript">
+            if(window.jQuery){
+                var new_script = document.createElement("script");
+                new_script.src = "/ace-1.3.3/assets/js/jquery.js";
+                document.getElementsByTagName("HEAD")[0].appendChild(new_script);
+                new_script = null;
+            }
+        </script>
+        <!-- <![endif]-->
 
-        <!--&lt;!&ndash;[if IE]>-->
-        <!--<script type="text/javascript">-->
-            <!--window.jQuery || document.write("<script th:src='@{/static/ace-1.3.3/assets/js/jquery1x.js}'>"+"<"+"/script>");-->
-        <!--</script>-->
-        <!--<![endif]&ndash;&gt;-->
+        <!--[if IE] -->
+        <script type="text/javascript">
+            if(window.jQuery){
+                var new_script = document.createElement("script");
+                new_script.src = "/ace-1.3.3/assets/js/jquery1x.js";
+                document.getElementsByTagName("HEAD")[0].appendChild(new_script);
+                new_script = null;
+            }
+        </script>
+        <!-- <![endif]-->
 
-        <!--<script type="text/javascript">-->
-            <!--if('ontouchstart' in document.documentElement){-->
-                <!--document.write("<script th:src='@{/ace-1.3.3/assets/js/jquery.mobile.custom.js}'>"+"<"+"/script>");-->
-            <!--}-->
-        <!--</script>-->
+        <!-- 动态加载 jquery.mobile 库 -->
+        <script type="text/javascript">
+            if('ontouchstart' in document.documentElement){
+                var new_script = document.createElement("script");
+                new_script.src = "/ace-1.3.3/assets/js/jquery.mobile.custom.js";
+                document.getElementsByTagName("HEAD")[0].appendChild(new_script);
+                new_script = null;
+            }
+        </script>
+
+        <script type="text/javascript">
+            jQuery(function($) {
+                $('#login-btn').click(function(event) {
+                    event.stopPropagation();
+                    var $btn = $(this);
+                    if ($btn.hasClass("disabled")) {
+                        return false;
+                    }
+                    var $loginname = $('#username');
+                    var $password = $('#password');
+                    if (!$loginname.val()) {
+                        alert('请输入用户名！');
+                        $loginname.focus();
+                        return false;
+                    }
+                    if (!$password.val()) {
+                        alert('请输入密码！');
+                        $password.focus();
+                        return false;
+                    }
+                    var submitData = {
+                        username : $loginname.val(),
+                        password : $password.val(),
+                        url:"${url}"
+                    };
+                    $btn.addClass("disabled");
+                    $.post("${#ctx}/login", submitData, function(data) {
+                        $btn.removeClass("disabled");
+                        if (data.code == 0) {
+                            window.top.location.href = "http://www.baidu.com";
+                        } else {
+                            alert(data.msg);
+                        }
+                    }, "json");
+                    return false;
+                });
+            });
+        </script>
 
     </body>
 

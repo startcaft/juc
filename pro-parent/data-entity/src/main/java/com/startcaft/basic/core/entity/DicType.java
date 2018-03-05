@@ -1,7 +1,7 @@
 package com.startcaft.basic.core.entity;
 
 /**
- * 字典类型---树状结构
+ * 字典类型实体类
  * @author startcaft
  * @date 2018/3/2
  */

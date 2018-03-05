@@ -49,4 +49,7 @@ public class ResponseBean<T> {
         this.msg = msg;
         this.data = data;
     }
+
+    public ResponseBean() {
+    }
 }

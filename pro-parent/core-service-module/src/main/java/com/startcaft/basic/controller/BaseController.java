@@ -8,4 +8,6 @@ package com.startcaft.basic.controller;
 public abstract class BaseController {
 
     protected static final String SUCCESS_MSG = "request success";
+
+    protected static final String ERROR_MSG = "bad_request";
 }

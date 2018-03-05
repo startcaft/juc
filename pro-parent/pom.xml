@@ -8,7 +8,7 @@
   <modules>
     <module>core-service-module</module>
     <module>data-entity</module>
-      <module>core-we-bview</module>
+      <module>core-web-view</module>
   </modules>
   <packaging>pom</packaging>
 
@@ -47,6 +47,24 @@
         <artifactId>druid</artifactId>
         <version>${druid.version}</version>
       </dependency>
+      <!-- Shiro spring支持和核心依赖 -->
+      <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-spring</artifactId>
+        <version>${shiro.version}</version>
+      </dependency>
+      <!-- Spring Boot Mybatis 依赖 -->
+      <dependency>
+        <groupId>org.mybatis.spring.boot</groupId>
+        <artifactId>mybatis-spring-boot-starter</artifactId>
+        <version>${mybatis-spring-boot}</version>
+      </dependency>
+      <!-- Shiro ehcache支持-->
+      <dependency>
+        <groupId>org.apache.shiro</groupId>
+        <artifactId>shiro-ehcache</artifactId>
+        <version>${shiro.version}</version>
+      </dependency>
       <!-- CGLIB -->
       <dependency>
         <groupId>cglib</groupId>
@@ -63,6 +81,12 @@
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger-ui</artifactId>
         <version>${swagger2.version}</version>
+      </dependency>
+      <!--JWT实现-->
+      <dependency>
+        <groupId>com.auth0</groupId>
+        <artifactId>java-jwt</artifactId>
+        <version>3.2.0</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

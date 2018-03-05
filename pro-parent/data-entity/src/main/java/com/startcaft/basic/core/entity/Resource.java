@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 
 /**
+ * 系统资源实体类
  * @author startcaft
  * Created by startcaft on 2018/3/1.
  */

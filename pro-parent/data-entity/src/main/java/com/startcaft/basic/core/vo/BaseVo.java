@@ -1,5 +1,7 @@
 package com.startcaft.basic.core.vo;
 
+import com.startcaft.basic.core.entity.BaseEntity;
+
 /**
  * @author startcaft
  * 数据Vo类，直接响应至客户端，是可以被序列化的
@@ -16,4 +18,5 @@ public abstract class BaseVo implements java.io.Serializable {
     public void setId(Long id) {
         this.id = id;
     }
+
 }
