@@ -39,17 +39,25 @@ public class UserServiceImpl implements IUserService {
             throw new FieldNullException("password is null");
         }
 
-        User user = userDao.selectByNameAndPwd(loginName,new Md5Hash(password).toString());
+        // 用户不存在
+        User user = userDao.selectByLoginName(loginName);
         if (user == null){
-            throw new LoginException("loginname or password  is wrong");
+            throw new LoginException("user is not exists");
         }
+
+        // 密码错误
+        String md5Pwd = new Md5Hash(password,loginName).toString();
+        if (!user.getPassword().equalsIgnoreCase(md5Pwd)){
+            throw new LoginException("password is wrong");
+        }
+
+        // 账号锁定
         if (user.getStates() == States.LOCKED){
             throw new LoginException("user is locked");
         }
 
         UserVo vo = new UserVo();
         BeanUtils.copyProperties(user,vo);
-        vo.setPassword("");
 
         return vo;
     }

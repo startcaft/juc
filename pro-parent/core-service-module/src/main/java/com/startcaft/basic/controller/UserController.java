@@ -8,12 +8,10 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 系统用户相关服务
@@ -36,7 +34,14 @@ public class UserController extends BaseController {
     public ResponseBean<String> userLogin(@RequestBody UserVo userVo){
         {
             UserVo vo = userService.userLogin(userVo.getLoginName(),userVo.getPassword());
-            return new ResponseBean<>(true,SUCCESS_MSG, JwtUtil.sign(vo.getLoginName(),vo.getPassword()));
+            return new ResponseBean(true,SUCCESS_MSG + "，the data is access token", JwtUtil.sign(vo.getLoginName(),vo.getPassword()));
         }
+    }
+
+    @ApiOperation(value="/测试jwt token认证",notes = "请求必须在header中添加Authorization字段，例如Authorization: token，token为密钥")
+    @GetMapping(value="/require_auth")
+    @RequiresAuthentication
+    public ResponseBean requireAuth() {
+        return new ResponseBean(true,SUCCESS_MSG,null);
     }
 }

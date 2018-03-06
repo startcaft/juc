@@ -34,15 +34,6 @@
         </collection>
     </resultMap>
 
-    <!--登录-->
-    <select id="selectByNameAndPwd" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_user u
-        where
-        u.login_name = #{loginName} and u.password = #{loginPwd}
-    </select>
-
     <!--根据用户名查询-->
     <select id="selectByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String">
         SELECT

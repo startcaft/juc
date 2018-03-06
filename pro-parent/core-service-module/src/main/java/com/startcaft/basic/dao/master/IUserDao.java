@@ -35,15 +35,6 @@ public interface IUserDao {
     User selectByPrimaryKey(Long id);
 
     /**
-     * 根据登录名和密码查询
-     * @param loginName 登录名具有唯一性
-     * @param loginPwd 登录密码
-     * @return
-     */
-    User selectByNameAndPwd(@Param("loginName") String loginName, @Param("loginPwd") String loginPwd);
-
-
-    /**
      * 根据登录名查询唯一用户
      * @param loginName 唯一用户名
      * @return

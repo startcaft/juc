@@ -40,7 +40,7 @@ public class JwtRealm extends AuthorizingRealm  {
             UserVo vo = user.orElseThrow(DisabledAccountException::new);
 
             if (!JwtUtil.verify(jwtToken,vo.getLoginName(),vo.getPassword())){
-                throw new AuthenticationException("Username or password error!");
+                throw new AuthenticationException("password error!");
             }
 
             return new SimpleAuthenticationInfo(jwtToken,jwtToken,this.getName());
