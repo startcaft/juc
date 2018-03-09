@@ -1,11 +1,11 @@
-package com.startcaft.basic.core.entity;
+package com.startcaft.basic.core.vo;
 
 /**
- * 字典类型实体类
+ *
  * @author startcaft
  * @date 2018/3/2
  */
-public class DicType extends BaseEntity {
+public class DicItemVo extends BaseVo {
 
     private String code;
     private String name;
@@ -14,9 +14,9 @@ public class DicType extends BaseEntity {
     private Long pid;
 
     /**
-     * 父节点
+     * 父节点名称
      */
-    private DicType parentType;
+    private String pname;
 
     public String getCode() {
         return code;
@@ -58,30 +58,11 @@ public class DicType extends BaseEntity {
         this.pid = pid;
     }
 
-    public DicType getParentType() {
-        return parentType;
+    public String getPname() {
+        return pname;
     }
 
-    public void setParentType(DicType parentType) {
-        this.parentType = parentType;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-
-        DicType dicType = (DicType) o;
-
-        return id.equals(dicType.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return pid.hashCode();
+    public void setPname(String pname) {
+        this.pname = pname;
     }
 }

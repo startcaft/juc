@@ -108,26 +108,11 @@
 
         <!-- basic scripts，不同版本浏览器加载不同版本的 jquery 库，以及移动web端加载的 jquery.mobile 库，注意先后顺序-->
         <!--[if !IE]> -->
-        <script type="text/javascript">
-            if(window.jQuery){
-                var new_script = document.createElement("script");
-                new_script.src = "/ace-1.3.3/assets/js/jquery.js";
-                document.getElementsByTagName("HEAD")[0].appendChild(new_script);
-                new_script = null;
-            }
-        </script>
+        <script th:src="@{/ace-1.3.3/assets/js/jquery.js}"></script>
         <!-- <![endif]-->
-
-        <!--[if IE] -->
-        <script type="text/javascript">
-            if(window.jQuery){
-                var new_script = document.createElement("script");
-                new_script.src = "/ace-1.3.3/assets/js/jquery1x.js";
-                document.getElementsByTagName("HEAD")[0].appendChild(new_script);
-                new_script = null;
-            }
-        </script>
-        <!-- <![endif]-->
+        <!--[if IE]>
+        <script th:src="@{/ace-1.3.3/assets/js/jquery1x.js}"></script>
+        <![endif]-->
 
         <!-- 动态加载 jquery.mobile 库 -->
         <script type="text/javascript">
@@ -160,19 +145,31 @@
                         return false;
                     }
                     var submitData = {
-                        username : $loginname.val(),
-                        password : $password.val(),
-                        url:"${url}"
+                        loginName : $loginname.val(),
+                        password : $password.val()
                     };
                     $btn.addClass("disabled");
-                    $.post("${#ctx}/login", submitData, function(data) {
+                    var promise = $.ajax({
+                        url:'http://localhost:8080/users/login',
+                        data:JSON.stringify(submitData),
+                        dataType:'json',
+                        type:'post',
+                        contentType:'application/json;;charset=UTF-8'
+                    });
+                    promise.done(function (data) {
+                        localStorage.setItem("name",submitData.loginName);
+                        localStorage.setItem("token",data.data);
                         $btn.removeClass("disabled");
-                        if (data.code == 0) {
-                            window.top.location.href = "http://www.baidu.com";
-                        } else {
+                        if(data.reqSuccess){
+                            window.top.location.href = "/index";
+                        }
+                        else{
                             alert(data.msg);
                         }
-                    }, "json");
+                    }).fail(function (error) {
+                        console.log(error);
+                        $btn.removeClass("disabled");
+                    })
                     return false;
                 });
             });

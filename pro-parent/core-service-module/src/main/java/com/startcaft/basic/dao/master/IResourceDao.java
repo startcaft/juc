@@ -3,7 +3,6 @@ package com.startcaft.basic.dao.master;
 import com.startcaft.basic.core.entity.Resource;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,16 +33,22 @@ public interface IResourceDao {
     Set<Resource> selectByLoginName(String loginName);
 
     /**
-     * 查询所有顶层节点
+     * 返回唯一的顶层节点，pid=0
      * @return
      */
-    Set<Resource> selectRoots();
+    Set<Resource> selectRoot();
 
     /**
-     * 查询指定顶层节点，指定用户被授权的二级菜单
-     * @param rootId 顶层节点
+     * 根据pid查询下一级菜单
+     * @return
+     */
+    Set<Resource> selectByPid(Long pid);
+
+    /**
+     * 查询指定节点，指定用户被授权的二级菜单
+     * @param parentId 指定节点id，一般认为是一个父节点id
      * @param loginName 登录用户名
      * @return
      */
-    Set<Resource> selectSecondLevelMenus(@Param("pid") Long rootId, @Param("loginName") String loginName);
+    Set<Resource> selectSecondLevelMenus(@Param("pid") Long parentId, @Param("loginName") String loginName);
 }

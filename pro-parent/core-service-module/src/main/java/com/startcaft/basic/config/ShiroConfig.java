@@ -2,6 +2,7 @@ package com.startcaft.basic.config;
 
 import com.startcaft.basic.shiro.JwtFilter;
 import com.startcaft.basic.shiro.JwtRealm;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.spring.LifecycleBeanPostProcessor;
@@ -65,6 +66,10 @@ public class ShiroConfig {
     @Bean
     public JwtRealm jwtRealm(){
         JwtRealm realm = new JwtRealm();
+        // 开启 授权/认证 信息的认证，并执行 ehcache.xml 配置文件中的 cache 名称
+        realm.setCachingEnabled(true);
+        realm.setAuthorizationCachingEnabled(true);
+        realm.setAuthorizationCacheName("shiroCache");
         return realm;
     }
 
@@ -72,10 +77,13 @@ public class ShiroConfig {
      * 配置 JwtRealm 的bean
      */
     @Bean
-    public DefaultWebSecurityManager getManager(@Autowired JwtRealm jwtRealm) {
+    public DefaultWebSecurityManager getManager(@Autowired JwtRealm jwtRealm,
+                                                @Autowired EhCacheManager cacheManager) {
         DefaultWebSecurityManager manager = new DefaultWebSecurityManager();
         // 注入自定义的 JwtRealm
         manager.setRealm(jwtRealm);
+        // 注入缓存管理器
+        manager.setCacheManager(cacheManager);
 
         /*
          * 关闭shiro自带的session，详情见文档

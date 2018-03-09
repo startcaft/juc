@@ -8,11 +8,10 @@ import java.util.Set;
  */
 public class UserVo extends BaseVo {
 
-    private Integer age;
     private String password;
     private Date createDatetime;
     private String loginName;
-    private String name;
+    private String realName;
     private Integer gender;
     private String genderDesc;
     private Integer statesCode;
@@ -32,14 +31,6 @@ public class UserVo extends BaseVo {
      */
     private Set<String> roleNames;
 
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
-
     public Date getCreateDatetime() {
         return createDatetime;
     }
@@ -56,12 +47,12 @@ public class UserVo extends BaseVo {
         this.loginName = loginName;
     }
 
-    public String getName() {
-        return name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public Integer getGender() {

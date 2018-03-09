@@ -25,14 +25,20 @@ public interface IResourceService {
      * @return
      * @throws BasicProException
      */
-    Set<ResourceVo> getRootLevelMenus() throws BasicProException;
+    Set<ResourceVo> getFirstLevelMenus() throws BasicProException;
 
     /**
-     * 获取指定顶层节点和指定用户被授权的二级菜单
-     * @param rootId 顶层节点id
+     * 获取唯一的顶层节点，规定顶层节点的pid为0，否则视为异常
+     * @return
+     */
+    public ResourceVo getTopParent() throws BasicProException;
+
+    /**
+     * 获取指定节点和指定用户被授权的二级菜单
+     * @param parentId 指定节点id。一般认为是一个父节点id
      * @param loginName 登录用户名
      * @return
      * @throws BasicProException
      */
-    Set<ResourceVo> getSecondLevelMenusByRoot(Long rootId,String loginName) throws BasicProException;
+    Set<ResourceVo> getSecondLevelMenusByRoot(Long parentId,String loginName) throws BasicProException;
 }

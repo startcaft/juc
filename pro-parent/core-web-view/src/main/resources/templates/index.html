@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="/common/common_head_css::commonHeader">
+        <meta charset="UTF-8"/>
+        <title>首页</title>
+        <meta name="description" content="overview &amp; stats" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <link rel="stylesheet" href="@{/css/conTabs.css?v=1.11}" />
+    </head>
+    <body class="no-skin full-height-layout" style="overflow:hidden">
+        <div id="wrapper">
+            <!--顶部导航-->
+            <div id="navbar" class="navbar navbar-default navbar-fixed-top">
+                <script type="text/javascript">
+                    try{ace.settings.check('navbar' , 'fixed')}catch(e){}
+                </script>
+                <div class="navbar-container" id="navbar-container">
+                    <button type="button" class="navbar-toggle menu-toggler pull-left" id="menu-toggler" data-target="#sidebar">
+                        <span class="sr-only">Toggle sidebar</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <div th:replace="/common/common_top :: top(张三)"></div>
+                </div>
+            </div>
+            <!--main container-->
+            <div class="main-container" id="main-container">
+                <script type="text/javascript">
+                    try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+                </script>
+                <!--左边导航-->
+                <div id="sidebar" class="sidebar sidebar-fixed responsive">
+                    <script type="text/javascript">
+                        try{ace.settings.check('sidebar' , 'fixed')}catch(e){}
+                    </script>
+                    <div class="sidebar-shortcuts" id="sidebar-shortcuts">
+                        <div class="sidebar-shortcuts-large" id="sidebar-shortcuts-large">
+                            <button class="btn btn-success">
+                                <i class="ace-icon fa fa-signal"></i>
+                            </button>
+                            <button class="btn btn-info">
+                                <i class="ace-icon fa fa-pencil"></i>
+                            </button>
+                            <button class="btn btn-warning">
+                                <i class="ace-icon fa fa-users"></i>
+                            </button>
+                            <button class="btn btn-danger">
+                                <i class="ace-icon fa fa-cogs"></i>
+                            </button>
+                        </div>
+                        <div class="sidebar-shortcuts-mini" id="sidebar-shortcuts-mini">
+                            <span class="btn btn-success"></span>
+                            <span class="btn btn-info"></span>
+                            <span class="btn btn-warning"></span>
+                            <span class="btn btn-danger"></span>
+                        </div>
+                    </div>
+                    <!-- 菜单，动态生成，顶层节点 -> 一级菜单导航 -> 二级菜单链接 -->
+                    <ul class="nav nav-list" id="navSider">
+                        <!--顶层节点-->
+                        <!--<li class="">-->
+                            <!--<a href="#" class="dropdown-toggle">-->
+                                <!--<i class="menu-icon fa fa-android"></i>-->
+                                <!--<span class="menu-text">用户管理</span>-->
+                                <!--<b class="arrow fa fa-angle-down"></b>-->
+                            <!--</a>-->
+                            <!--<b class="arrow"></b>-->
+                            <!--<ul class="submenu">-->
+                                <!--<li class="">-->
+                                    <!--<a href="javascript:;" data-url="" data-id="">-->
+                                        <!--<i class="menu-icon fa fa-caret-right"></i>-->
+                                        <!--用户信息-->
+                                    <!--</a>-->
+                                    <!--<b class="arrow"></b>-->
+                                <!--</li>-->
+                            <!--</ul>-->
+                        <!--</li>-->
+                    </ul>
+
+                    <div class="sidebar-toggle sidebar-collapse" id="sidebar-collapse">
+                        <i class="ace-icon fa fa-angle-double-left" data-icon1="ace-icon fa fa-angle-double-left" data-icon2="ace-icon fa fa-angle-double-right"></i>
+                    </div>
+
+                    <script type="text/javascript">
+                        try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
+                    </script>
+                </div>
+            </div>
+        </div>
+
+        <!--导入通用js-->
+        <div th:include="/common/common_head_js::onLoadJS">
+            <!--<script th:inline="javascript">-->
+                <!--/*<![CDATA[*/-->
+                    <!--/*&lt;!&ndash;要做的是：1，获取顶层节点；2，获取1级菜单；3，根据一级菜单获取当前登陆用户被授权的二级菜单；前提是获取本地存户的 user 对象&ndash;&gt;*/-->
+                    <!--$(function(){-->
+                        <!--var currentuser = localStorage.getItem("user");-->
+                        <!--console.log(currentuser);-->
+                        <!--if (currentuser === null || currentuser === undefined){-->
+                            <!--window.location.href = "/login";-->
+                        <!--}-->
+                    <!--});-->
+                <!--/*]]>*/-->
+            <!--</script>-->
+        </div>
+        <script type="text/javascript">
+            $(function(){
+                // 获取用户
+                if(localStorage.getItem("name") === null || localStorage.getItem("name") === ''){
+                    window.location.href = "/";
+                }
+
+                // 获取顶层节点
+                var promise = $.ajax({
+                    url:'http://localhost:8080/resources/root',
+                    dataType:'json',
+                    type:'get'
+                    // headers:{"Authorization":currentuser.token,"Content-Type":"application/json;;charset=UTF-8"}
+                });
+                promise.done(function(result){
+                    var html = '<li class="active">' +
+                                    '<a data-id="'+result.data.id+'">' +
+                                        '<i class="menu-icon fa fa-desktop"></i>' +
+                                        '<span class="menu-text">'+result.data.name+'</span>' +
+                                    '</a>' +
+                                    '<b class="arrow"></b>' +
+                                '</li>';
+                    $('#navSider').prepend(html);
+                }).fail(
+                    function(error){
+                        console.log(error);
+                    }
+                );
+
+                // 获取一级菜单，然后根据一级菜单获取二级菜单链接
+                promise = $.ajax({
+                    url:'http://localhost:8080/resources/firstLevels',
+                    dataType:'json',
+                    type:'get'
+                    // headers:{"Authorization":currentuser.token,"Content-Type":"application/json;;charset=UTF-8"}
+                });
+                promise.done(function(result){
+                    var firstResources = result.data;
+                    jQuery.each(firstResources,function(index,obj){
+                        var html = '<li class="">' +
+                            '<a href="#" class="dropdown-toggle">' +
+                            '<i class="menu-icon fa fa-android"></i>' +
+                            '<span class="menu-text">'+obj.name+'</span>' +
+                            '<b class="arrow fa fa-angle-down"></b>' +
+                            '</a>' +
+                            '<b class="arrow"></b>' +
+                            '</li>'
+                        $('#navSider').append(html);
+
+                        $.ajax({
+                            url:'http://localhost:8080/resources/secondLevels/' + localStorage.getItem("name") + '/' + obj.id,
+                            dataType:'json',
+                            type:'get',
+                            headers:{"Authorization":localStorage.getItem("token"),"Content-Type":"application/json;;charset=UTF-8"}
+                        }).done(function (result) {
+                            console.log(result);
+                        }).fail(function(error){
+                            console.log(error);
+                        })
+                    });
+                }).fail(
+                    function(error){
+                        console.log(error);
+                    }
+                );
+
+            });
+        </script>
+    </body>
+</html>

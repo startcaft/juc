@@ -53,7 +53,8 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         HttpServletRequest httpServletRequest = (HttpServletRequest) request;
-        System.out.println(httpServletRequest.getRequestURL());
+
+        LOGGER.info("request url: " + httpServletRequest.getRequestURL());
         if (isLoginAttempt(request,response)){
             try {
                 executeLogin(request,response);
@@ -65,8 +66,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     }
 
     /**
-     * 判断用户是否想要登入。
-     * 检测header里面是否包含Authorization字段即可
+     * 判断用户的请求是否符合要求，请求头中必须含有 Authorization 参数
      */
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
@@ -76,7 +76,7 @@ public class JwtFilter extends BasicHttpAuthenticationFilter {
     }
 
     /**
-     * 执行 登入
+     * 执行 资源的正式请求，需要交给 Shiro 来进行认证
      */
     @Override
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {

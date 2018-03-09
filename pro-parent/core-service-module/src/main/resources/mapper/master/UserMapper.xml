@@ -4,16 +4,15 @@
 <mapper namespace="com.startcaft.basic.dao.master.IUserDao">
 
     <sql id="Base_Column_List">
-        id, age, create_datetime, login_name, name, password, gender, states, organization_id
+        id, create_datetime, login_name, real_name, password, gender, states, organization_id
     </sql>
 
     <!--基本映射-->
     <resultMap id="BaseResultMap" type="com.startcaft.basic.core.entity.User">
         <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="age" property="age" jdbcType="INTEGER"/>
         <result column="create_datetime" property="createDatetime" jdbcType="TIMESTAMP"/>
         <result column="login_name" property="loginName" jdbcType="VARCHAR"/>
-        <result column="name" property="name" jdbcType="VARCHAR"/>
+        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
         <result column="password" property="password" jdbcType="VARCHAR"/>
         <result column="gender" property="gender" jdbcType="INTEGER"/>
         <result column="states" property="states" jdbcType="INTEGER"/>
@@ -55,8 +54,8 @@
         JOIN sys_organization AS o
         ON o.id = a.organization_id
         <where>
-            <if test="name != null and name != ''">
-                and a.name like "%"#{name}"%"
+            <if test="realName != null and realName != ''">
+                and a.real_name like "%"#{realName}"%"
             </if>
             <if test="orgId != null">
                 and a.organization_id = #{orgId}
@@ -75,28 +74,25 @@
 
     <!-- 注意，这里返回了主键ID到User的id属性 -->
     <insert id="insert" parameterType="com.startcaft.basic.core.entity.User" useGeneratedKeys="true" keyProperty="id">
-        insert into sys_user (age, create_datetime,
-        login_name, name, password,
+        insert into sys_user (create_datetime,
+        login_name, real_name, password,
         gender, states,organization_id)
-        values (#{age,jdbcType=INTEGER}, #{createDatetime,jdbcType=TIMESTAMP},
-        #{loginName,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        values (#{createDatetime,jdbcType=TIMESTAMP},
+        #{loginName,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{gender,jdbcType=INTEGER}, #{states,jdbcType=INTEGER}, #{organizationId,jdbcType=BIGINT})
     </insert>
 
     <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.User">
         update sys_user
         <set>
-            <if test="age != null">
-                age = #{age,jdbcType=INTEGER},
-            </if>
             <if test="createDatetime != null">
                 create_datetime = #{createDatetime,jdbcType=TIMESTAMP},
             </if>
             <if test="loginName != null">
                 login_name = #{loginName,jdbcType=VARCHAR},
             </if>
-            <if test="name != null">
-                name = #{name,jdbcType=VARCHAR},
+            <if test="realName != null">
+                name = #{real_name,jdbcType=VARCHAR},
             </if>
             <if test="password != null">
                 password = #{password,jdbcType=VARCHAR},

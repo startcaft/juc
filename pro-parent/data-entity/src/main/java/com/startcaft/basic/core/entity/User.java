@@ -13,10 +13,9 @@ import java.util.Set;
  */
 public class User extends BaseEntity {
 
-    private Integer age;
     private Date createDatetime;
     private String loginName;
-    private String name;
+    private String realName;
     private String password;
     private Gender gender;
     private States states;
@@ -30,14 +29,6 @@ public class User extends BaseEntity {
      * 包含的所有权限
      */
     private Set<Role> roles = new HashSet<Role>();
-
-    public Integer getAge() {
-        return age;
-    }
-
-    public void setAge(Integer age) {
-        this.age = age;
-    }
 
     public Date getCreateDatetime() {
         return createDatetime;
@@ -55,12 +46,12 @@ public class User extends BaseEntity {
         this.loginName = loginName == null ? null : loginName.trim();
     }
 
-    public String getName() {
-        return name;
+    public String getRealName() {
+        return realName;
     }
 
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+    public void setRealName(String realName) {
+        this.realName = realName;
     }
 
     public String getPassword() {

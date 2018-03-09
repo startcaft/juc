@@ -1,7 +1,7 @@
 package com.startcaft.basic.dao.master;
 
-import com.startcaft.basic.core.entity.DicType;
-import java.util.Map;
+import com.startcaft.basic.core.entity.DicItem;
+
 import java.util.Set;
 
 /**
@@ -16,21 +16,21 @@ public interface IDicTypeDao {
      * @param record  DicType对象
      * @return
      */
-    int insert(DicType record);
+    int insert(DicItem record);
 
     /**
      * 查询一个字典类别详细，包含父节点
      * @param id
      * @return
      */
-    DicType selectByPrimaryKey(Long id);
+    DicItem selectByPrimaryKey(Long id);
 
     /**
      * 更新一个字典类别数据
      * @param record DicType对象
      * @return
      */
-    int updateByPrimaryKeySelective(DicType record);
+    int updateByPrimaryKeySelective(DicItem record);
 
     /**
      * 获取指定 pid 下的所有子节点，pid不能为空
@@ -38,5 +38,5 @@ public interface IDicTypeDao {
      * @return
      * @throws Exception
      */
-    Set<DicType> selectRecursive(Long pid) throws Exception;
+    Set<DicItem> selectRecursive(Long pid) throws Exception;
 }

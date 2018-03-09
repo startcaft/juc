@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.startcaft.basic.dao.master.IDicTypeDao">
 
-    <resultMap id="BaseResultMap" type="com.startcaft.basic.core.entity.DicType">
+    <resultMap id="BaseResultMap" type="com.startcaft.basic.core.entity.DicItem">
         <id column="id" property="id" jdbcType="BIGINT" />
         <result column="code" property="code" jdbcType="VARCHAR" />
         <result column="description" property="description" jdbcType="VARCHAR" />
@@ -11,7 +11,7 @@
         <result column="pid" property="pid" jdbcType="BIGINT" />
     </resultMap>
 
-    <resultMap type="com.startcaft.basic.core.entity.DicType"
+    <resultMap type="com.startcaft.basic.core.entity.DicItem"
                id="ParentResultMap" extends="BaseResultMap">
         <result column="pid" property="parentType.id" jdbcType="BIGINT" />
         <result column="pname" property="parentType.name" jdbcType="VARCHAR" />
@@ -24,7 +24,7 @@
     <select id="selectByPrimaryKey" resultMap="ParentResultMap"
             parameterType="java.lang.Long">
         SELECT r1.*,r2.name AS pname
-        FROM sys_dictionarytype r1
+        FROM sys_dic_item r1
         LEFT OUTER  JOIN sys_resource r2
         ON r1.pid = r2.id
         WHERE r1.id = #{id,jdbcType=BIGINT}
@@ -32,25 +32,25 @@
 
     <select id="selectRecursive" resultMap="BaseResultMap">
         <!-- 自定义函数 getChildDicType(typeId INT)，顶层pid必须为0 -->
-        SELECT * FROM sys_dictionarytype
-            WHERE FIND_IN_SET(id,getChildDicType(1))
+        SELECT * FROM sys_dic_item
+          WHERE FIND_IN_SET(id,getChildDics(1))
     </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
-        delete from sys_dictionarytype
+        delete from sys_dic_item
         where id = #{id,jdbcType=BIGINT}
     </delete>
 
-    <insert id="insert" parameterType="com.startcaft.basic.core.entity.DicType">
-        insert into sys_dictionarytype (code, description,
+    <insert id="insert" parameterType="com.startcaft.basic.core.entity.DicItem">
+        insert into sys_dic_item (code, description,
         name, seq, pid)
         values (#{code,jdbcType=VARCHAR},
         #{description,jdbcType=VARCHAR},
         #{name,jdbcType=VARCHAR}, #{seq,jdbcType=INTEGER}, #{pid,jdbcType=BIGINT})
     </insert>
 
-    <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.DicType">
-        update sys_dictionarytype
+    <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.DicItem">
+        update sys_dic_item
         <set>
             <if test="code != null">
                 code = #{code,jdbcType=VARCHAR},
