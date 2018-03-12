@@ -106,6 +106,7 @@
             <!--</script>-->
         </div>
         <script type="text/javascript">
+
             $(function(){
 
                 var currentUser = JSON.parse( myStorage.getItem('currentUser'));
@@ -113,64 +114,66 @@
                     window.location.href = "/";
                 }
 
-                // 获取顶层节点
-                var promise = $.ajax({
+                /**
+                 * 按照顺序获取菜单，顶层节点 -> 一级菜单 -> 二级链接
+                 */
+                var whenResult = $.when($.ajax({
                     url:'http://localhost:8080/resources/root',
                     dataType:'json',
                     type:'get'
-                    // headers:{"Authorization":currentuser.token,"Content-Type":"application/json;;charset=UTF-8"}
-                });
-                promise.done(function(result){
+                }),$.ajax({
+                    url:'http://localhost:8080/resources/firstLevels',
+                    dataType:'json',
+                    type:'get'
+                }));
+                whenResult.done(function (rootObj,firstLevelObjs) {
+                    var root = rootObj[0].data;
                     var html = '<li class="active">' +
-                                    '<a data-id="'+result.data.id+'">' +
+                                    '<a data-id="'+root.id+'">' +
                                         '<i class="menu-icon fa fa-desktop"></i>' +
-                                        '<span class="menu-text">'+result.data.name+'</span>' +
+                                        '<span class="menu-text">'+root.name+'</span>' +
                                     '</a>' +
                                     '<b class="arrow"></b>' +
                                 '</li>';
                     $('#navSider').prepend(html);
-                }).fail(
-                    function(error){
-                        console.log(error);
-                    }
-                );
 
-                // 获取一级菜单，然后根据一级菜单获取二级菜单链接
-                promise = $.ajax({
-                    url:'http://localhost:8080/resources/firstLevels',
-                    dataType:'json',
-                    type:'get'
-                });
-                promise.done(function(result){
-                    var firstResources = result.data;
-                    jQuery.each(firstResources,function(index,obj){
-                        var html = '<li class="">' +
-                            '<a href="#" class="dropdown-toggle">' +
-                            '<i class="menu-icon fa fa-android"></i>' +
-                            '<span class="menu-text">'+obj.name+'</span>' +
-                            '<b class="arrow fa fa-angle-down"></b>' +
-                            '</a>' +
-                            '<b class="arrow"></b>' +
-                            '</li>'
-                        $('#navSider').append(html);
-
+                    var firstResources = firstLevelObjs[0].data;
+                    jQuery.each(firstResources,function(index,obj) {
                         $.ajax({
                             url:'http://localhost:8080/resources/secondLevels/' + currentUser.name + '/' + obj.id,
                             dataType:'json',
                             type:'get',
                             headers:{"Authorization":currentUser.token,"Content-Type":"application/json;;charset=UTF-8"}
                         }).done(function (result) {
-                            console.log(result);
-                        }).fail(function(error){
-                            console.log(error);
-                        })
+                            //console.log(result);
+                            var nodesHtml = '<li class="">' +
+                                                '<a href="#" class="dropdown-toggle">' +
+                                                    '<i class="menu-icon fa fa-android"></i>' +
+                                                    '<span class="menu-text">' + obj.name + '</span>' +
+                                                    '<b class="arrow fa fa-angle-down"></b>' +
+                                                '</a>' +
+                                                '<b class="arrow"></b>';
+                            var urls = result.data;
+                            if (urls !== null || urls.length > 0){
+                                nodesHtml += '<ul class="submenu">';
+                                jQuery.each(urls,function(index,resource){
+                                    nodesHtml += '<li class="">' +
+                                                    '<a href="javascript:;" data-url="'+resource.url+'" data-id="'+resource.id+'">' +
+                                                        '<i class="menu-icon fa fa-caret-right"></i>' +
+                                                        resource.name
+                                                    '</a>' +
+                                                    '<b class="arrow"></b>'
+                                                '</li>'
+                                });
+                            }
+                            nodesHtml += '</ul></li>';
+                            $('#navSider').append(nodesHtml);
+                        });
                     });
-                }).fail(
-                    function(error){
-                        console.log(error);
-                    }
-                );
-
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                /**/
             });
         </script>
     </body>
