@@ -91,6 +91,9 @@
 
             <script th:src="@{/ace-1.3.3/assets/js/jquery.validate.js}"></script>
             <script th:src="@{/js/layer/layer.js}"></script>
+            <!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+            <script th:src="@{/script/cookieStorage.js}"></script>
+            <script th:src="@{/script/myStorage.js}"></script>
             <!--<script th:src="@{/js/jquery.mytime.js}"></script>-->
             <script type="text/javascript">
                 String.prototype.trim = function() {

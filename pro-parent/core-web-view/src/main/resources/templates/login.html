@@ -124,6 +124,10 @@
             }
         </script>
 
+        <!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+        <script th:src="@{/script/cookieStorage.js}"></script>
+        <script th:src="@{/script/myStorage.js}"></script>
+
         <script type="text/javascript">
             jQuery(function($) {
                 $('#login-btn').click(function(event) {
@@ -157,8 +161,10 @@
                         contentType:'application/json;;charset=UTF-8'
                     });
                     promise.done(function (data) {
-                        localStorage.setItem("name",submitData.loginName);
-                        localStorage.setItem("token",data.data);
+
+                        var currentUser = {"name":submitData.loginName,"token":data.data};
+                        console.log(JSON.stringify(currentUser));
+                        myStorage.setItem("currentUser",JSON.stringify(currentUser));
                         $btn.removeClass("disabled");
                         if(data.reqSuccess){
                             window.top.location.href = "/index";

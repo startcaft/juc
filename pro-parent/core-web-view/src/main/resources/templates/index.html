@@ -107,8 +107,9 @@
         </div>
         <script type="text/javascript">
             $(function(){
-                // 获取用户
-                if(localStorage.getItem("name") === null || localStorage.getItem("name") === ''){
+
+                var currentUser = JSON.parse( myStorage.getItem('currentUser'));
+                if(currentUser === null || currentUser === undefined){
                     window.location.href = "/";
                 }
 
@@ -139,7 +140,6 @@
                     url:'http://localhost:8080/resources/firstLevels',
                     dataType:'json',
                     type:'get'
-                    // headers:{"Authorization":currentuser.token,"Content-Type":"application/json;;charset=UTF-8"}
                 });
                 promise.done(function(result){
                     var firstResources = result.data;
@@ -155,10 +155,10 @@
                         $('#navSider').append(html);
 
                         $.ajax({
-                            url:'http://localhost:8080/resources/secondLevels/' + localStorage.getItem("name") + '/' + obj.id,
+                            url:'http://localhost:8080/resources/secondLevels/' + currentUser.name + '/' + obj.id,
                             dataType:'json',
                             type:'get',
-                            headers:{"Authorization":localStorage.getItem("token"),"Content-Type":"application/json;;charset=UTF-8"}
+                            headers:{"Authorization":currentUser.token,"Content-Type":"application/json;;charset=UTF-8"}
                         }).done(function (result) {
                             console.log(result);
                         }).fail(function(error){
