@@ -6,7 +6,6 @@
         <meta name="description" content="overview &amp; stats" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
-        <link rel="stylesheet" href="@{/css/conTabs.css?v=1.11}" />
     </head>
     <body class="no-skin full-height-layout" style="overflow:hidden">
         <div id="wrapper">
@@ -22,9 +21,11 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </button>
-                    <div th:replace="/common/common_top :: top(张三)"></div>
+                    <div th:replace="/common/common_top :: top"></div>
                 </div>
             </div>
+            <!--顶部导航-->
+
             <!--main container-->
             <div class="main-container" id="main-container">
                 <script type="text/javascript">
@@ -87,32 +88,46 @@
                         try{ace.settings.check('sidebar' , 'collapsed')}catch(e){}
                     </script>
                 </div>
+
+                <!--中间正文-->
+                <div class="main-content" id="page-wrapper">
+                    <div class="breadcrumbs breadcrumbs-fixed" id="breadcrumbs">
+                        <script type="text/javascript">
+                            try{ace.settings.check('breadcrumbs' , 'fixed')}catch(e){}
+                        </script>
+
+                        <div class="row content-tabs">
+                            <button class="roll-nav roll-left J_tabLeft"><i class="fa fa-backward"></i></button>
+                            <nav class="page-tabs J_menuTabs">
+                                <div class="page-tabs-content" style="margin-left: 0px;">
+                                    <a href="javascript:;" class="J_menuTab active" data-flag="/control">控制台</a>
+                                </div>
+                            </nav>
+                            <button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i></button>
+                        </div>
+                    </div>
+                    <!--展示页面的 iframe-->
+                    <div class="page-content" id="page-content">
+                        <div class="row J_mainContent" id="content-main">
+                            <iframe class="J_iframe" name="iframe0" width="100%" height="100%" th:src="@{/control}" frameborder="0" data-flag="/control" seamless="seamless"></iframe>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
+        <!--main container-->
 
         <!--导入通用js-->
-        <div th:include="/common/common_head_js::onLoadJS">
-            <!--<script th:inline="javascript">-->
-                <!--/*<![CDATA[*/-->
-                    <!--/*&lt;!&ndash;要做的是：1，获取顶层节点；2，获取1级菜单；3，根据一级菜单获取当前登陆用户被授权的二级菜单；前提是获取本地存户的 user 对象&ndash;&gt;*/-->
-                    <!--$(function(){-->
-                        <!--var currentuser = localStorage.getItem("user");-->
-                        <!--console.log(currentuser);-->
-                        <!--if (currentuser === null || currentuser === undefined){-->
-                            <!--window.location.href = "/login";-->
-                        <!--}-->
-                    <!--});-->
-                <!--/*]]>*/-->
-            <!--</script>-->
-        </div>
+        <div th:include="/common/common_head_js::onLoadJS"></div>
+        <!--自定义脚本-->
         <script type="text/javascript">
-
+            var currentIframe;
+            var currentUser;
             $(function(){
 
-                var currentUser = JSON.parse( myStorage.getItem('currentUser'));
-                if(currentUser === null || currentUser === undefined){
-                    window.location.href = "/";
-                }
+                setAndCheckCurrentUser();
+                menuEventInit();
+                initPwdSettingEvent();
 
                 /**
                  * 按照顺序获取菜单，顶层节点 -> 一级菜单 -> 二级链接
@@ -175,6 +190,89 @@
                 });
                 /**/
             });
+
+
+            /**函数定义**/
+
+            // 左侧菜单链接的点击事件
+            function menuEventInit(){
+                $('.nav-list').delegate('a','click',function (e) {
+                    e.preventDefault();
+                    var url = $(this).data('url');
+                    if(url){
+                        $("iframe").css("display","none");
+                        window.location.hash = url;
+                        var iframe = $("#content-main").find("[data-flag='"+url+"']");
+                        $(".nav-list li").removeClass("active");
+                        $(this).parent("li").addClass("active");
+                        if(iframe.length>0){
+                            iframe.css("display","inline");
+                            currentIframe=iframe[0];
+                        }
+                        else {
+                            var resId = $(this).data('id');
+                            var ihtml = '<iframe class="J_iframe" name="iframe'+resId+'" width="100%" height="100%" th:src="@{/#url}" frameborder="0" data-flag="'+url+'" seamless="seamless"></iframe>';
+                            $("#content-main").append(ihtml);
+                            currentIframe=$("#content-main").find("[data-flag='"+url+"']")[0];
+                        }
+
+                        var tab=$(".page-tabs-content").find("[data-flag='"+url+"']");
+                        $(".page-tabs-content a").removeClass("active");
+                        if(tab.length > 0){
+                            tab.addClass("active");
+                        }else{
+                            $(".page-tabs-content").append('<a href="javascript:;" class="J_menuTab active" data-flag="'+url+'">'+$(this).text()+'<i class="fa fa-times-circle"></i></a>');
+                            tabsEventClear();
+                            tabsEventInit();
+                        }
+                    }
+                });
+            }
+
+            // tab 页卡点击事件绑定/解除绑定
+            function tabsEventClear(){
+                $(".page-tabs-content a").unbind("click");
+                $(".page-tabs-content .fa-times-circle").unbind("click");
+            }
+            function tabsEventInit(){
+
+            }
+
+            // 密码修改
+            function initPwdSettingEvent(){
+                $("#pwd-update").click(function(){//添加页面
+                    layer.open({
+                        title:'修改密码',
+                        type: 2,
+                        area: ['770px', '500px'],
+                        fix: false, //不固定
+                        maxmin: true,
+                        content: '/pwd'
+                    });
+                });
+            }
+
+            // 设置用户
+            // 一个小时检查一个用户的token是否失效
+            function setAndCheckCurrentUser(){
+
+                // 获取用户
+                var userObj = JSON.parse( myStorage.getItem('currentUser'));
+                if(userObj === null || userObj === undefined){
+                    window.location.href = "/";
+                    return;
+                }
+
+                // 设置 currentUser
+                $('#topUserInfo').text('欢迎，' + userObj.name);
+                currentUser = userObj;
+
+
+                // 每隔一个小时轮训检查本地存储的用户，如果不存在，则弹出登陆框，这么做是为了子页面的操作流程，不需要去检查用户是否登陆。
+                var intervalId = window.setInterval(function () {
+                    console.log(JSON.parse( myStorage.getItem('currentUser')));
+                },1000 * 60 * 60 * 60);
+            }
         </script>
     </body>
 </html>

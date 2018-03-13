@@ -2,10 +2,8 @@ package com.startcaft.basic.service;
 
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.UserVo;
-import org.apache.shiro.authc.AuthenticationException;
 
 import java.util.Optional;
-import java.util.Set;
 
 /**
  *
@@ -52,8 +50,14 @@ public interface IUserService {
 //    /**根据用户id获取对应的所有资源列表**/
 //    Set<String> resourceList(Long id) throws Exception;
 
-//    /**更新用户密码**/
-//    void editUserPwd(Long id, String oldPwd, String pwd) throws Exception;
+    /**
+     * 修改用户密码
+     * @param loginName 登录名
+     * @param oldPwd    旧密码
+     * @param pwd       新密码
+     * @throws BasicProException
+     */
+    void editUserPwd(String loginName, String oldPwd, String pwd) throws BasicProException;
 
 
 }

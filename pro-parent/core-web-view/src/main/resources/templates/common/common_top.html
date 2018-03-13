@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <body>
-<div th:fragment="top(name)">
+<div th:fragment="top">
     <div class="navbar-header pull-left">
         <a href="javascript:;" class="navbar-brand">
             <small>
@@ -14,9 +14,9 @@
         <ul class="nav ace-nav">
             <li class="light-blue">
                 <a data-toggle="dropdown" href="#" class="dropdown-toggle">
-                    <!--  img class="nav-user-photo" src="${res_url}ace-1.3.3/assets/avatars/user.jpg" alt="Jason's Photo" /-->
+                    <img class="nav-user-photo" th:src="@{/ace-1.3.3/assets/avatars/user.jpg}" alt="Jason's Photo" />
                     <span class="user-info">
-                        <small th:text="${name}">Welcome,test</small>
+                        <small id="topUserInfo">欢迎,guest</small>
                     </span>
                     <i class="ace-icon fa fa-caret-down"></i>
                 </a>

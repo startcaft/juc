@@ -2,9 +2,7 @@ package com.startcaft.basic.service.impl;
 
 import com.startcaft.basic.core.entity.User;
 import com.startcaft.basic.core.enums.States;
-import com.startcaft.basic.core.exceptions.BasicProException;
-import com.startcaft.basic.core.exceptions.FieldNullException;
-import com.startcaft.basic.core.exceptions.LoginException;
+import com.startcaft.basic.core.exceptions.*;
 import com.startcaft.basic.core.vo.UserVo;
 import com.startcaft.basic.dao.master.IUserDao;
 import com.startcaft.basic.service.IUserService;
@@ -72,5 +70,39 @@ public class UserServiceImpl implements IUserService {
         UserVo vo = new UserVo();
         BeanUtils.copyProperties(user,vo);
         return Optional.ofNullable(vo);
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void editUserPwd(String loginName, String oldPwd, String pwd) throws BasicProException {
+        if (StringUtils.isEmpty(loginName)){
+            throw new FieldNullException("loginname is null");
+        }
+        if (StringUtils.isEmpty(oldPwd)){
+            throw new FieldNullException("user oldpwd is null");
+        }
+        if (StringUtils.isEmpty(pwd)){
+            throw new FieldNullException("user newpwd is null");
+        }
+
+        // 查询用户，以及验证用户提供的原始密码是否正确
+        Optional<UserVo> optionalUserVo = this.searchUserByLoginName(loginName);
+        UserVo userVo = optionalUserVo.orElseThrow(UserNotFoundException::new);
+        String md5Pwd = new Md5Hash(oldPwd,loginName).toString();
+        if (!userVo.getPassword().equalsIgnoreCase(md5Pwd)){
+            throw new LoginException("password is wrong");
+        }
+
+        // 执行更新
+        md5Pwd = new Md5Hash(pwd,loginName).toString();
+        User user = new User();
+        user.setId(userVo.getId());
+        user.setLoginName(userVo.getLoginName());
+        user.setPassword(md5Pwd);
+
+        Integer result = userDao.updateByPrimaryKeySelective(user);
+        if (result != 1){
+            throw new SqlExecuteException();
+        }
     }
 }

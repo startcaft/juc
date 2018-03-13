@@ -30,4 +30,14 @@ public class UserController {
     public String Index(){
         return "index";
     }
+
+    @GetMapping("/control")
+    public String Control(){
+        return "control";
+    }
+
+    @GetMapping("/pwd")
+    public String UpdatePwd(){
+        return "pwd";
+    }
 }
