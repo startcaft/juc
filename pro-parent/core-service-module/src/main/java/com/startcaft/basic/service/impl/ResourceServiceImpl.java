@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -74,7 +76,15 @@ public class ResourceServiceImpl implements IResourceService {
         Resource[] resources = new Resource[1];
         Resource root = set.toArray(resources)[0];
 
-        return this.cycleCopyProperties(root);
+        try {
+            return root.copyPropertiesTemplate(new ResourceVo());
+        } catch (IllegalAccessException e) {
+            throw new BasicProException(e);
+        } catch (NoSuchMethodException e) {
+            throw new BasicProException(e);
+        } catch (InvocationTargetException e) {
+            throw new BasicProException(e);
+        }
     }
 
     @Override

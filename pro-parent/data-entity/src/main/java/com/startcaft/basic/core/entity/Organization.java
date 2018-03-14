@@ -1,5 +1,7 @@
 package com.startcaft.basic.core.entity;
 
+import com.startcaft.basic.core.vo.BaseVo;
+
 import java.util.Date;
 
 /**
@@ -86,4 +88,8 @@ public class Organization extends BaseEntity {
         this.organization = organization;
     }
 
+    @Override
+    protected void copyOtherProperties(BaseVo baseVo) {
+
+    }
 }

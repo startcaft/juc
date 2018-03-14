@@ -2,6 +2,8 @@ package com.startcaft.basic.core.entity;
 
 import com.startcaft.basic.core.enums.Gender;
 import com.startcaft.basic.core.enums.States;
+import com.startcaft.basic.core.vo.UserVo;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,7 +13,7 @@ import java.util.Set;
  * @author startcaft
  * @date 2018/3/5
  */
-public class User extends BaseEntity {
+public class User extends BaseEntity<UserVo> {
 
     private Date createDatetime;
     private String loginName;
@@ -100,5 +102,10 @@ public class User extends BaseEntity {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    @Override
+    protected void copyOtherProperties(UserVo userVo) {
+
     }
 }

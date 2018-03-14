@@ -1,11 +1,13 @@
 package com.startcaft.basic.core.entity;
 
+import com.startcaft.basic.core.vo.DicItemVo;
+
 /**
  * 数据字典实体类
  * @author startcaft
  * @date 2018/3/2
  */
-public class DicItem extends BaseEntity {
+public class DicItem extends BaseEntity<DicItemVo > {
 
     private String code;
     private String name;
@@ -83,5 +85,11 @@ public class DicItem extends BaseEntity {
     @Override
     public int hashCode() {
         return pid.hashCode();
+    }
+
+
+    @Override
+    protected void copyOtherProperties(DicItemVo dicItemVo) {
+
     }
 }

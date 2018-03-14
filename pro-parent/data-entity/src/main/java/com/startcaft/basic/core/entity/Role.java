@@ -1,5 +1,7 @@
 package com.startcaft.basic.core.entity;
 
+import com.startcaft.basic.core.vo.BaseVo;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,5 +63,10 @@ public class Role extends BaseEntity {
 
     public void setUsers(Set<User> users) {
         this.users = users;
+    }
+
+    @Override
+    protected void copyOtherProperties(BaseVo baseVo) {
+
     }
 }

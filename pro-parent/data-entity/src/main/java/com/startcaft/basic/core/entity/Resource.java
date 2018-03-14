@@ -2,6 +2,8 @@ package com.startcaft.basic.core.entity;
 
 import com.startcaft.basic.core.enums.ResourceType;
 import com.startcaft.basic.core.enums.States;
+import com.startcaft.basic.core.vo.ResourceVo;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Objects;
@@ -12,7 +14,7 @@ import java.util.Set;
  * @author startcaft
  * Created by startcaft on 2018/3/1.
  */
-public class Resource extends BaseEntity {
+public class Resource extends BaseEntity<ResourceVo> {
 
     private Date createDatetime;
     private String description;
@@ -137,5 +139,24 @@ public class Resource extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+
+    @Override
+    protected void copyOtherProperties(ResourceVo resourceVo) {
+        resourceVo.setResTypeCode(this.getResourceType().getCode());
+        resourceVo.setResTypeMsg(this.getResourceType().getDesc());
+        resourceVo.setStatesCode(this.getStates().getCode());
+        resourceVo.setStatesMsg(this.getStates().getMsg());
+
+        if (this.getResource() != null){
+            resourceVo.setPid(this.getResource().getId());
+            resourceVo.setPname(this.getResource().getName());
+        }
+    }
+
+    @Override
+    protected boolean otherPropertiesHook() {
+        return super.otherPropertiesHook();
     }
 }
