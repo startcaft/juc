@@ -32,6 +32,12 @@ public class ResourceVo extends BaseVo {
      */
     private Set<ResourceVo> childs = new HashSet<>();
 
+
+    // 下面的属性是jqgrid treegrid要用的
+    /**
+     * 父节点
+     */
+    private Long parent;
     /**
      * 层级
      */
@@ -41,6 +47,11 @@ public class ResourceVo extends BaseVo {
      * 是否叶节点，childs 为null即是
      */
     private boolean isLeaf;
+
+    /**
+     * 是否展开
+     */
+    private boolean expanded;
 
     public Date getCreateDatetime() {
         return createDatetime;
@@ -160,5 +171,21 @@ public class ResourceVo extends BaseVo {
 
     public void setLeaf(boolean leaf) {
         isLeaf = leaf;
+    }
+
+    public boolean isExpanded() {
+        return expanded;
+    }
+
+    public void setExpanded(boolean expanded) {
+        this.expanded = expanded;
+    }
+
+    public Long getParent() {
+        return parent;
+    }
+
+    public void setParent(Long parent) {
+        this.parent = parent;
     }
 }

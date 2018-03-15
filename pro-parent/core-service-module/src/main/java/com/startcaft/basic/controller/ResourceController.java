@@ -1,6 +1,5 @@
 package com.startcaft.basic.controller;
 
-import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.service.IResourceService;
@@ -15,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.Set;
 
 /**
@@ -22,7 +22,7 @@ import java.util.Set;
  * @author startcaft
  * @date 2018/3/1
  */
-@Api("系统资源相关服务API")
+@Api(value = "/resources",description = "系统资源相关服务API")
 @RestController
 @RequestMapping("/resources")
 public class ResourceController extends BaseController {
@@ -65,10 +65,11 @@ public class ResourceController extends BaseController {
 
     @ApiOperation(value = "获取资源树",notes = "需要用户登陆")
     @GetMapping(value ="/tree",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public ResponseBean<Resource> tree(){
+    public Set<ResourceVo> tree(){
         {
-            Resource tree = resourceService.getResTree();
-            return new ResponseBean<Resource>(true,SUCCESS_MSG,tree);
+            Set<ResourceVo> tree = resourceService.getResTree();
+
+            return tree;
         }
     }
 }

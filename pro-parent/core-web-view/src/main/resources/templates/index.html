@@ -207,13 +207,13 @@
                         $(this).parent("li").addClass("active");
                         if(iframe.length>0){
                             iframe.css("display","inline");
-                            currentIframe=iframe[0];
+                            currentIframe = iframe[0];
                         }
                         else {
                             var resId = $(this).data('id');
-                            var ihtml = '<iframe class="J_iframe" name="iframe'+resId+'" width="100%" height="100%" th:src="@{/#url}" frameborder="0" data-flag="'+url+'" seamless="seamless"></iframe>';
+                            var ihtml = '<iframe class="J_iframe" name="iframe'+resId+'" width="100%" height="100%" src="'+url+'" frameborder="0" data-flag="'+url+'" seamless="seamless"></iframe>';
                             $("#content-main").append(ihtml);
-                            currentIframe=$("#content-main").find("[data-flag='"+url+"']")[0];
+                            currentIframe = $("#content-main").find("[data-flag='"+url+"']")[0];
                         }
 
                         var tab=$(".page-tabs-content").find("[data-flag='"+url+"']");

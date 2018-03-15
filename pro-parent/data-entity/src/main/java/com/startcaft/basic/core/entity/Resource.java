@@ -35,32 +35,6 @@ public class Resource extends BaseEntity<ResourceVo> {
      */
     private Set<Resource> resources = new HashSet<Resource>();
 
-    /**
-     * 层级
-     */
-    private Integer level;
-
-    /**
-     * 是否叶节点，resources 为null即是
-     */
-    private boolean isLeaf;
-
-    public Integer getLevel() {
-        return level;
-    }
-
-    public void setLevel(Integer level) {
-        this.level = level;
-    }
-
-    public boolean isLeaf() {
-        return isLeaf;
-    }
-
-    public void setLeaf(boolean leaf) {
-        isLeaf = leaf;
-    }
-
     public Date getCreateDatetime() {
         return createDatetime;
     }

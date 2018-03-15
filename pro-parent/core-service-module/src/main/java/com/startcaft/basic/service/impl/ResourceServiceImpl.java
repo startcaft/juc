@@ -5,15 +5,20 @@ import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.exceptions.FieldNullException;
 import com.startcaft.basic.core.exceptions.ParentNodeException;
+import com.startcaft.basic.core.sorts.ResourceVoComparator;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.dao.master.IResourceDao;
 import com.startcaft.basic.service.IResourceService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.stream.Stream;
 
 /**
@@ -22,6 +27,8 @@ import java.util.stream.Stream;
  */
 @Service
 public class ResourceServiceImpl implements IResourceService {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ResourceServiceImpl.class);
 
     @Autowired
     private IResourceDao resourceDao;
@@ -89,7 +96,7 @@ public class ResourceServiceImpl implements IResourceService {
             Set<Resource> set = resourceDao.selectSecondLevelMenus(parentId,loginName);
             Set<ResourceVo> voSet = new HashSet<>(set.size());
             set.forEach((res) -> {
-                res.copyPropertiesTemplate(new ResourceVo());
+                voSet.add(res.copyPropertiesTemplate(new ResourceVo()));
             });
 
             return voSet;
@@ -97,23 +104,35 @@ public class ResourceServiceImpl implements IResourceService {
     }
 
     @Override
-    public Resource getResTree() throws BasicProException {
+    public Set<ResourceVo> getResTree() throws BasicProException {
         {
+            Set<ResourceVo> voSet = new TreeSet<ResourceVo>(new ResourceVoComparator());
             Resource node = resourceDao.getTree();
-            int level = 1;
+            int level = 0;
 
-            node.setLevel(level);
+            ResourceVo vo = new ResourceVo();
+            node.copyPropertiesTemplate(vo);
+            vo.setParent(vo.getPid());
+            vo.setLevel(level);
+
             boolean isLeaf = true;
             if (node.getResources() != null && node.getResources().size() > 0){
                 isLeaf = false;
             }
-            node.setLeaf(isLeaf);
-            System.out.println(node.getId() + "，level:" + level + "," +node.getName());
+            vo.setLeaf(isLeaf);
+
+            boolean expanded = false;
+            if (vo.isLeaf()){
+                expanded = true;
+            }
+            vo.setExpanded(expanded);
+            voSet.add(vo);
+            LOGGER.info(vo.getId() + "，level:" + vo.getLevel() + "," +vo.getName());
 
             // 递归
-            childs(node,level+1);
+            childs(node,level+1,voSet);
 
-            return node;
+            return voSet;
         }
     }
 
@@ -122,13 +141,30 @@ public class ResourceServiceImpl implements IResourceService {
      * @param parent
      * @param level
      */
-    private void childs(Resource parent,int level){
+    private void childs(Resource parent,int level,Set<ResourceVo> voSet){
         if (parent.getResources() != null && parent.getResources().size() > 0){
             parent.getResources().forEach((child) -> {
-                child.setLevel(level);
-                child.setLeaf((child.getResources() != null && child.getResources().size() > 0) ? false : true);
-                System.out.println(child.getId() + "，level:" + level + "," +child.getName());
-                childs(child,level+1);
+                ResourceVo vo = new ResourceVo();
+                child.copyPropertiesTemplate(vo);
+                vo.setParent(vo.getPid());
+                vo.setLevel(level);
+
+                boolean isLeaf = true;
+                if (child.getResources() != null && child.getResources().size() > 0){
+                    isLeaf = false;
+                }
+                vo.setLeaf(isLeaf);
+
+                boolean expanded = false;
+                if (vo.isLeaf()){
+                    expanded = true;
+                }
+                vo.setExpanded(expanded);
+                voSet.add(vo);
+
+                LOGGER.info(vo.getId() + "，level:" + vo.getLevel() + "," +vo.getName());
+
+                childs(child,level+1,voSet);
             });
         }
     }

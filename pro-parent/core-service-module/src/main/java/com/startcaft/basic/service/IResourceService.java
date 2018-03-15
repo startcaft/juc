@@ -1,7 +1,6 @@
 package com.startcaft.basic.service;
 
 
-import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.ResourceVo;
 
@@ -50,5 +49,5 @@ public interface IResourceService {
      * @return
      * @throws BasicProException
      */
-    Resource getResTree() throws BasicProException;
+    Set<ResourceVo> getResTree() throws BasicProException;
 }
