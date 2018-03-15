@@ -1,5 +1,6 @@
 package com.startcaft.basic.core.entity;
 
+import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.BaseVo;
 import org.apache.commons.beanutils.PropertyUtils;
 import java.lang.reflect.InvocationTargetException;
@@ -28,13 +29,21 @@ public abstract class BaseEntity<T extends BaseVo> {
      * @throws NoSuchMethodException
      * @throws InvocationTargetException
      */
-    public final T copyPropertiesTemplate(T t) throws IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+    public final T copyPropertiesTemplate(T t) {
         if (t == null){
             throw new  NullPointerException("target Vo object is null");
         }
 
         // 执行 相同属性的 拷贝
-        PropertyUtils.copyProperties(t,this);
+        try {
+            PropertyUtils.copyProperties(t,this);
+        } catch (IllegalAccessException e) {
+            throw new BasicProException(e);
+        } catch (InvocationTargetException e) {
+            throw new BasicProException(e);
+        } catch (NoSuchMethodException e) {
+            throw new BasicProException(e);
+        }
 
         if (otherPropertiesHook()){
             copyOtherProperties(t);
