@@ -51,4 +51,10 @@ public interface IResourceDao {
      * @return
      */
     Set<Resource> selectSecondLevelMenus(@Param("pid") Long parentId, @Param("loginName") String loginName);
+
+    /**
+     * 获取资源树
+     * @return
+     */
+    Resource getTree();
 }

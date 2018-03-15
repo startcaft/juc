@@ -20,9 +20,26 @@
         <result column="pName" property="resource.name" jdbcType="VARCHAR"/>
     </resultMap>
 
+    <!-- 递归查询时用到的结果集 -->
+    <resultMap id="treeMap" type="com.startcaft.basic.core.entity.Resource" extends="BaseResultMap">
+        <collection property="resources" column="id" ofType="com.startcaft.basic.core.entity.Resource" select="selectByPid" />
+    </resultMap>
+
     <sql id="Base_Column_List">
         id, create_datetime, description, icon, name, resource_type, seq, states, url, pid
     </sql>
+
+    <select id="getTree" resultMap="treeMap">
+        select * from sys_resource where pid = 0
+    </select>
+
+    <select id="selectByPid" resultMap="treeMap" parameterType="java.lang.Long">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from sys_resource
+        WHERE pid = #{_parameter}
+        order by seq desc
+    </select>
 
     <select id="selectByPrimaryKey" resultMap="ParentResultMap" parameterType="java.lang.Long">
         select r1.*,r2.name as pname
@@ -48,14 +65,6 @@
         <include refid="Base_Column_List"/>
         from sys_resource
         WHERE pid = 0
-    </select>
-
-    <select id="selectByPid" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        SELECT
-        <include refid="Base_Column_List"/>
-        from sys_resource
-        WHERE pid = #{_parameter}
-        order by seq desc
     </select>
 
     <select id="selectSecondLevelMenus" resultMap="BaseResultMap">

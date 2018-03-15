@@ -1,6 +1,8 @@
 package com.startcaft.basic.core.vo;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author startcaft
@@ -24,6 +26,21 @@ public class ResourceVo extends BaseVo {
      * 父节点名称
      */
     private String pname;
+
+    /**
+     * 子节点
+     */
+    private Set<ResourceVo> childs = new HashSet<>();
+
+    /**
+     * 层级
+     */
+    private Integer level;
+
+    /**
+     * 是否叶节点，childs 为null即是
+     */
+    private boolean isLeaf;
 
     public Date getCreateDatetime() {
         return createDatetime;
@@ -119,5 +136,29 @@ public class ResourceVo extends BaseVo {
 
     public void setPname(String pname) {
         this.pname = pname;
+    }
+
+    public Set<ResourceVo> getChilds() {
+        return childs;
+    }
+
+    public void setChilds(Set<ResourceVo> childs) {
+        this.childs = childs;
+    }
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public boolean isLeaf() {
+        return isLeaf;
+    }
+
+    public void setLeaf(boolean leaf) {
+        isLeaf = leaf;
     }
 }

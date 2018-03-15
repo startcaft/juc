@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -97,27 +96,40 @@ public class ResourceServiceImpl implements IResourceService {
         }
     }
 
-//    /**
-//     * 从模型对象到vo对象的属性拷贝
-//     * @param entity Resource 模型对象
-//     * @return ResourceVo vo对象
-//     */
-//    private ResourceVo cycleCopyProperties(Resource entity){
-//        {
-//            ResourceVo vo = new ResourceVo();
-//            if (entity != null){
-//                BeanUtils.copyProperties(entity, vo);
-//                vo.setResTypeCode(entity.getResourceType().getCode());
-//                vo.setResTypeMsg(entity.getResourceType().getDesc());
-//                vo.setStatesCode(entity.getStates().getCode());
-//                vo.setStatesMsg(entity.getStates().getMsg());
-//
-//                if (entity.getResource() != null){
-//                    vo.setPid(entity.getResource().getId());
-//                    vo.setPname(entity.getResource().getName());
-//                }
-//            }
-//            return vo;
-//        }
-//    }
+    @Override
+    public Resource getResTree() throws BasicProException {
+        {
+            Resource node = resourceDao.getTree();
+            int level = 1;
+
+            node.setLevel(level);
+            boolean isLeaf = true;
+            if (node.getResources() != null && node.getResources().size() > 0){
+                isLeaf = false;
+            }
+            node.setLeaf(isLeaf);
+            System.out.println(node.getId() + "，level:" + level + "," +node.getName());
+
+            // 递归
+            childs(node,level+1);
+
+            return node;
+        }
+    }
+
+    /**
+     * 递归
+     * @param parent
+     * @param level
+     */
+    private void childs(Resource parent,int level){
+        if (parent.getResources() != null && parent.getResources().size() > 0){
+            parent.getResources().forEach((child) -> {
+                child.setLevel(level);
+                child.setLeaf((child.getResources() != null && child.getResources().size() > 0) ? false : true);
+                System.out.println(child.getId() + "，level:" + level + "," +child.getName());
+                childs(child,level+1);
+            });
+        }
+    }
 }

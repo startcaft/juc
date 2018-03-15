@@ -35,6 +35,32 @@ public class Resource extends BaseEntity<ResourceVo> {
      */
     private Set<Resource> resources = new HashSet<Resource>();
 
+    /**
+     * 层级
+     */
+    private Integer level;
+
+    /**
+     * 是否叶节点，resources 为null即是
+     */
+    private boolean isLeaf;
+
+    public Integer getLevel() {
+        return level;
+    }
+
+    public void setLevel(Integer level) {
+        this.level = level;
+    }
+
+    public boolean isLeaf() {
+        return isLeaf;
+    }
+
+    public void setLeaf(boolean leaf) {
+        isLeaf = leaf;
+    }
+
     public Date getCreateDatetime() {
         return createDatetime;
     }
@@ -48,7 +74,7 @@ public class Resource extends BaseEntity<ResourceVo> {
     }
 
     public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
+        this.description = description;
     }
 
     public String getIcon() {
@@ -56,7 +82,7 @@ public class Resource extends BaseEntity<ResourceVo> {
     }
 
     public void setIcon(String icon) {
-        this.icon = icon == null ? null : icon.trim();
+        this.icon = icon;
     }
 
     public String getName() {
@@ -64,7 +90,7 @@ public class Resource extends BaseEntity<ResourceVo> {
     }
 
     public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+        this.name = name;
     }
 
     public ResourceType getResourceType() {
@@ -96,7 +122,7 @@ public class Resource extends BaseEntity<ResourceVo> {
     }
 
     public void setUrl(String url) {
-        this.url = url == null ? null : url.trim();
+        this.url = url;
     }
 
     public Long getPid() {
@@ -119,7 +145,7 @@ public class Resource extends BaseEntity<ResourceVo> {
         return resources;
     }
 
-    public void setResources(HashSet<Resource> resources) {
+    public void setResources(Set<Resource> resources) {
         this.resources = resources;
     }
 

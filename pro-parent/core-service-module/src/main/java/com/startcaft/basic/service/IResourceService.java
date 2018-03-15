@@ -1,6 +1,7 @@
 package com.startcaft.basic.service;
 
 
+import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.ResourceVo;
 
@@ -30,6 +31,7 @@ public interface IResourceService {
     /**
      * 获取唯一的顶层节点，规定顶层节点的pid为0，否则视为异常
      * @return
+     * @throws BasicProException
      */
     public ResourceVo getTopParent() throws BasicProException;
 
@@ -41,4 +43,12 @@ public interface IResourceService {
      * @throws BasicProException
      */
     Set<ResourceVo> getSecondLevelMenusByRoot(Long parentId,String loginName) throws BasicProException;
+
+
+    /**
+     * 获取所有菜单，树状结构
+     * @return
+     * @throws BasicProException
+     */
+    Resource getResTree() throws BasicProException;
 }

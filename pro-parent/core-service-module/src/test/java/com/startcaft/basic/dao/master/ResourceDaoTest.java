@@ -22,4 +22,10 @@ public class ResourceDaoTest {
         System.out.print(resource);
     }
 
+
+    @Test
+    public void selectAll(){
+        Resource node = resourceDao.getTree();
+        System.out.print(node);
+    }
 }

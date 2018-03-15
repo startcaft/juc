@@ -1,5 +1,6 @@
 package com.startcaft.basic.controller;
 
+import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.service.IResourceService;
@@ -59,6 +60,15 @@ public class ResourceController extends BaseController {
         {
             Set<ResourceVo> set = resourceService.getSecondLevelMenusByRoot(pid,username);
             return new ResponseBean<Set<ResourceVo>>(true,SUCCESS_MSG,set);
+        }
+    }
+
+    @ApiOperation(value = "获取资源树",notes = "需要用户登陆")
+    @GetMapping(value ="/tree",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean<Resource> tree(){
+        {
+            Resource tree = resourceService.getResTree();
+            return new ResponseBean<Resource>(true,SUCCESS_MSG,tree);
         }
     }
 }
