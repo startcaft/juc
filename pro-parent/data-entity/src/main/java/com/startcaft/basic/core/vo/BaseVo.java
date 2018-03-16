@@ -19,4 +19,13 @@ public abstract class BaseVo<T extends BaseEntity> extends AbstractBean<T> imple
     public void setId(Long id) {
         this.id = id;
     }
+
+    /**
+     * 默认实现，如果没有其他属性拷贝，则使用父类的默认事件，如果有则可以自己重写该方法进行实现
+     * @param t 目标对象
+     */
+    @Override
+    protected void copyOtherProperties(T t) {
+
+    }
 }
