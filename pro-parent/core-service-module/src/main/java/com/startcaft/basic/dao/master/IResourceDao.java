@@ -57,4 +57,11 @@ public interface IResourceDao {
      * @return
      */
     Resource getTree();
+
+    /**
+     * 根据 资源名称 过滤
+     * @param resName
+     * @return
+     */
+    Set<Resource> selectByName(String resName);
 }

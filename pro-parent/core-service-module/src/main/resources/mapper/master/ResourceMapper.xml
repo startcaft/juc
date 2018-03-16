@@ -75,6 +75,13 @@
         where u.login_name = #{loginName} and res.resource_type = 1 and res.pid = #{pid}
     </select>
 
+    <select id="selectByName" resultMap="BaseResultMap" parameterType="java.lang.String">
+        SELECT
+        <include refid="Base_Column_List"/>
+        from sys_resource
+        WHERE name = #{_parameter}
+    </select>
+
     <insert id="insert" parameterType="com.startcaft.basic.core.entity.Resource">
         insert into sys_resource (create_datetime, description,
         icon, name, resource_type,

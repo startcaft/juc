@@ -126,4 +126,9 @@ public class UserVo extends BaseVo {
     public void setPassword(String password) {
         this.password = password;
     }
+
+    @Override
+    protected void copyOtherProperties(Object o) {
+
+    }
 }

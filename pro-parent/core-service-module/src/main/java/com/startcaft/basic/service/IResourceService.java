@@ -1,6 +1,7 @@
 package com.startcaft.basic.service;
 
 
+import com.startcaft.basic.core.beans.ResourceBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.ResourceVo;
@@ -46,10 +47,16 @@ public interface IResourceService {
 
 
     /**
-     * 获取所有菜单，树状结构
+     * 获取所有菜单，树状结构，因为Resource只有一个根节点，所以之返回 Resource
      * @return
      * @throws BasicProException
      */
     Resource getResTree() throws BasicProException;
 
+    /**
+     * 添加一个系统资源
+     * @param bean ResourceBean
+     * @throws BasicProException
+     */
+    void AddResource(ResourceBean bean) throws BasicProException;
 }

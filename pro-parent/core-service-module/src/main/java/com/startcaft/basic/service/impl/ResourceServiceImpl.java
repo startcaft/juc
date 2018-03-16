@@ -1,10 +1,12 @@
 package com.startcaft.basic.service.impl;
 
+import com.startcaft.basic.core.beans.ResourceBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.exceptions.FieldNullException;
 import com.startcaft.basic.core.exceptions.ParentNodeException;
+import com.startcaft.basic.core.exceptions.SqlExecuteException;
 import com.startcaft.basic.core.sorts.ResourceVoComparator;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.dao.master.IResourceDao;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -108,6 +111,49 @@ public class ResourceServiceImpl implements IResourceService {
         {
             Resource node = resourceDao.getTree();
             return node;
+        }
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void AddResource(ResourceBean bean) throws BasicProException {
+        {
+            if (bean == null){
+                throw new BasicProException(new NullPointerException("ResourceVo is null"));
+            }
+            // 资源名称不能为空
+            if (StringUtils.isEmpty(bean.getName())){
+                throw new FieldNullException("resource name is null");
+            }
+            // 资源类型不能为空，通过code可以成一个States枚举对象
+            if (StringUtils.isEmpty(bean.getStatesCode())){
+                throw new FieldNullException("resource type is null");
+            }
+            // 无需确保资源状态的正确性，States枚举在转换时，如果没有无法转换，则转换为States.NORMAL
+            // 确保资源名称不重复
+            Set<Resource> resourceSet = resourceDao.selectByName(bean.getName());
+            if (resourceSet != null && resourceSet.size() > 0){
+                throw new BasicProException("资源名[" + bean.getName() + "]已经存在");
+            }
+            // 确保只有一个根节点
+            if (bean.getPid() == 0){
+                throw new BasicProException("系统资源只能有一个pid=0的根节点");
+            }
+
+            Resource resource = new Resource();
+            bean.copyPropertiesTemplate(resource);
+            // 默认的状态和默认的时间
+            if (bean.getCreateDatetime() == null){
+                resource.setCreateDatetime(new Date());
+            }
+            if (bean.getStatesCode() == 0){
+                resource.setStates(States.NORMAL);
+            }
+
+            int result = resourceDao.insert(resource);
+            if (result != 1){
+                throw new SqlExecuteException("execute insert result is error");
+            }
         }
     }
 }

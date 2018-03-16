@@ -188,4 +188,9 @@ public class ResourceVo extends BaseVo {
     public void set_parentId(Long _parentId) {
         this._parentId = _parentId;
     }
+
+    @Override
+    protected void copyOtherProperties(Object o) {
+        // 不执行多余属性的拷贝工作
+    }
 }

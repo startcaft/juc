@@ -1,5 +1,6 @@
 package com.startcaft.basic.controller;
 
+import com.startcaft.basic.core.beans.ResourceBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.core.vo.ResponseBean;
@@ -11,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Comparator;
 import java.util.Set;
@@ -79,6 +77,25 @@ public class ResourceController extends BaseController {
             Resource node = resourceService.getResTree();
             resourceSet.add(node);
             return resourceSet;
+        }
+    }
+
+    @ApiOperation(value = "新增系统资源",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "vo",required = true,dataType = "ResourceVo")
+    })
+    @PostMapping(value = "/save",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
+    public ResponseBean<String> addResource(@RequestBody ResourceBean bean){
+        {
+            ResponseBean<String> result = new ResponseBean<>();
+
+            resourceService.AddResource(bean);
+
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("save resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
+            return result;
         }
     }
 }

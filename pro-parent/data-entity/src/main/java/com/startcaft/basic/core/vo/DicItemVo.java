@@ -65,4 +65,9 @@ public class DicItemVo extends BaseVo {
     public void setPname(String pname) {
         this.pname = pname;
     }
+
+    @Override
+    protected void copyOtherProperties(Object o) {
+
+    }
 }
