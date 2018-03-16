@@ -60,7 +60,7 @@ public class ResourceServiceImpl implements IResourceService {
 
             // 返回查询顶层节点下面的所有的一级菜单，这些菜单不受权限控制
             Set<Resource> resourceSet = resourceDao.selectByPid(rootVo.getId());
-            Set<ResourceVo> voSet = new HashSet<>(resourceSet.size());
+            Set<ResourceVo> voSet = new TreeSet<>(new ResourceVoComparator());
             resourceSet.forEach((entity) -> {
                 voSet.add(entity.copyPropertiesTemplate(new ResourceVo()));
             });
@@ -94,7 +94,7 @@ public class ResourceServiceImpl implements IResourceService {
             }
             // 查询数据库
             Set<Resource> set = resourceDao.selectSecondLevelMenus(parentId,loginName);
-            Set<ResourceVo> voSet = new HashSet<>(set.size());
+            Set<ResourceVo> voSet = new TreeSet<>(new ResourceVoComparator());
             set.forEach((res) -> {
                 voSet.add(res.copyPropertiesTemplate(new ResourceVo()));
             });
@@ -104,68 +104,10 @@ public class ResourceServiceImpl implements IResourceService {
     }
 
     @Override
-    public Set<ResourceVo> getResTree() throws BasicProException {
+    public Resource getResTree() throws BasicProException {
         {
-            Set<ResourceVo> voSet = new TreeSet<ResourceVo>(new ResourceVoComparator());
             Resource node = resourceDao.getTree();
-            int level = 0;
-
-            ResourceVo vo = new ResourceVo();
-            node.copyPropertiesTemplate(vo);
-            vo.setParent(vo.getPid());
-            vo.setLevel(level);
-
-            boolean isLeaf = true;
-            if (node.getResources() != null && node.getResources().size() > 0){
-                isLeaf = false;
-            }
-            vo.setLeaf(isLeaf);
-
-            boolean expanded = false;
-            if (vo.isLeaf()){
-                expanded = true;
-            }
-            vo.setExpanded(expanded);
-            voSet.add(vo);
-            LOGGER.info(vo.getId() + "，level:" + vo.getLevel() + "," +vo.getName());
-
-            // 递归
-            childs(node,level+1,voSet);
-
-            return voSet;
-        }
-    }
-
-    /**
-     * 递归
-     * @param parent
-     * @param level
-     */
-    private void childs(Resource parent,int level,Set<ResourceVo> voSet){
-        if (parent.getResources() != null && parent.getResources().size() > 0){
-            parent.getResources().forEach((child) -> {
-                ResourceVo vo = new ResourceVo();
-                child.copyPropertiesTemplate(vo);
-                vo.setParent(vo.getPid());
-                vo.setLevel(level);
-
-                boolean isLeaf = true;
-                if (child.getResources() != null && child.getResources().size() > 0){
-                    isLeaf = false;
-                }
-                vo.setLeaf(isLeaf);
-
-                boolean expanded = false;
-                if (vo.isLeaf()){
-                    expanded = true;
-                }
-                vo.setExpanded(expanded);
-                voSet.add(vo);
-
-                LOGGER.info(vo.getId() + "，level:" + vo.getLevel() + "," +vo.getName());
-
-                childs(child,level+1,voSet);
-            });
+            return node;
         }
     }
 }

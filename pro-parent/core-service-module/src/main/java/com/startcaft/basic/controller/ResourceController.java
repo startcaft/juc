@@ -1,5 +1,6 @@
 package com.startcaft.basic.controller;
 
+import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.service.IResourceService;
@@ -15,7 +16,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.Set;
+import java.util.TreeSet;
 
 /**
  *
@@ -65,11 +68,17 @@ public class ResourceController extends BaseController {
 
     @ApiOperation(value = "获取资源树",notes = "需要用户登陆")
     @GetMapping(value ="/tree",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public Set<ResourceVo> tree(){
+    public Set<Resource> tree(){
         {
-            Set<ResourceVo> tree = resourceService.getResTree();
-
-            return tree;
+            Set<Resource> resourceSet = new TreeSet<>(new Comparator<Resource>() {
+                @Override
+                public int compare(Resource o1, Resource o2) {
+                    return o1.getId().compareTo(o2.getId());
+                }
+            });
+            Resource node = resourceService.getResTree();
+            resourceSet.add(node);
+            return resourceSet;
         }
     }
 }

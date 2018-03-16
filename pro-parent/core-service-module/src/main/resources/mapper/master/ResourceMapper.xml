@@ -22,7 +22,7 @@
 
     <!-- 递归查询时用到的结果集 -->
     <resultMap id="treeMap" type="com.startcaft.basic.core.entity.Resource" extends="BaseResultMap">
-        <collection property="resources" column="id" ofType="com.startcaft.basic.core.entity.Resource" select="selectByPid" />
+        <collection property="children" column="id" ofType="com.startcaft.basic.core.entity.Resource" select="selectByPid" />
     </resultMap>
 
     <sql id="Base_Column_List">

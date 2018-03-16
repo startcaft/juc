@@ -37,7 +37,7 @@ public class ResourceVo extends BaseVo {
     /**
      * 父节点
      */
-    private Long parent;
+    private Long _parentId;
     /**
      * 层级
      */
@@ -181,11 +181,11 @@ public class ResourceVo extends BaseVo {
         this.expanded = expanded;
     }
 
-    public Long getParent() {
-        return parent;
+    public Long get_parentId() {
+        return _parentId;
     }
 
-    public void setParent(Long parent) {
-        this.parent = parent;
+    public void set_parentId(Long _parentId) {
+        this._parentId = _parentId;
     }
 }

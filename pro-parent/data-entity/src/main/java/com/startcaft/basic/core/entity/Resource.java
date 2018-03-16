@@ -4,10 +4,7 @@ import com.startcaft.basic.core.enums.ResourceType;
 import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.vo.ResourceVo;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 系统资源实体类
@@ -33,7 +30,12 @@ public class Resource extends BaseEntity<ResourceVo> {
     /**
      * 子节点
      */
-    private Set<Resource> resources = new HashSet<Resource>();
+    private Set<Resource> children = new TreeSet<>(new Comparator<Resource>() {
+        @Override
+        public int compare(Resource o1, Resource o2) {
+            return o1.getId().compareTo(o2.getId());
+        }
+    });
 
     public Date getCreateDatetime() {
         return createDatetime;
@@ -115,12 +117,12 @@ public class Resource extends BaseEntity<ResourceVo> {
         this.resource = resource;
     }
 
-    public Set<Resource> getResources() {
-        return resources;
+    public Set<Resource> getChildren() {
+        return children;
     }
 
-    public void setResources(Set<Resource> resources) {
-        this.resources = resources;
+    public void setChildren(Set<Resource> children) {
+        this.children = children;
     }
 
     @Override
