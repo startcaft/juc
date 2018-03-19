@@ -66,6 +66,7 @@ public class ResourceController extends BaseController {
 
     @ApiOperation(value = "获取资源树",notes = "需要用户登陆")
     @GetMapping(value ="/tree",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
     public Set<Resource> tree(){
         {
             Set<Resource> resourceSet = new TreeSet<>(new Comparator<Resource>() {
@@ -77,6 +78,18 @@ public class ResourceController extends BaseController {
             Resource node = resourceService.getResTree();
             resourceSet.add(node);
             return resourceSet;
+        }
+    }
+
+    @ApiOperation(value = "获取用户被授权的所有系统资源，主要是二级菜单链接及其下属的功能按钮",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username",required = true,dataType = "string",paramType = "path"),
+    })
+    @GetMapping(value ="/userRes/{username}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean getUserRoleResources(@PathVariable(value="username",required = true) String loginName){
+        {
+            Set<ResourceVo> resourceSet = resourceService.getUserRoleResrouces(loginName);
+            return new ResponseBean(true,SUCCESS_MSG,resourceSet);
         }
     }
 

@@ -127,6 +127,7 @@
 
                 setAndCheckCurrentUser();
                 menuEventInit();
+                tabsEventInit();
                 initPwdSettingEvent();
 
                 /**
@@ -235,7 +236,43 @@
                 $(".page-tabs-content .fa-times-circle").unbind("click");
             }
             function tabsEventInit(){
-
+                // tab页卡之间切换
+                $(".page-tabs-content a").bind("click",function(){
+                    if($(this).hasClass("active") == false){
+                        $(".page-tabs-content a").removeClass("active");
+                        $(this).addClass("active");
+                        var menu=$('[url="'+($(this).attr("data-flag") === '/control')+'"]');
+                        menu.click();
+                        $(".nav-list li").removeClass("active");
+                        menu.parent("li").addClass("active");
+                        $(".nav-list li").removeClass("open");
+                        menu.parent("li").parents("li").addClass("open");
+                        menu.parent("ul").css("display","block");
+                    }
+                });
+                // 关闭页卡
+                $(".page-tabs-content .fa-times-circle").bind("click",function(){
+                    if($(this).parent("a").hasClass("active")){
+                        var nextnode=$(this).parent("a").next();
+                        $(".page-tabs-content a").removeClass("active");
+                        if(nextnode.length>0){
+                            nextnode.addClass("active");
+                        }else{
+                            nextnode=$(this).parent("a").prev();
+                        }
+                        nextnode.addClass("active");
+                        var menu=$('[url="'+($(this).attr("data-flag") === '/control')+'"]');
+                        menu.click();
+                        $(".nav-list li").removeClass("active");
+                        menu.parent("li").addClass("active");
+                        $(".nav-list li").removeClass("open");
+                        menu.parent("li").parents("li").addClass("open");
+                        menu.parent("ul").css("display","block");
+                    }
+                    var iframe=$("#content-main").find("[data-flag='"+$(this).parent("a").attr("data-flag")+"']");
+                    iframe.remove();
+                    $(this).parent("a").remove();
+                });
             }
 
             // 密码修改

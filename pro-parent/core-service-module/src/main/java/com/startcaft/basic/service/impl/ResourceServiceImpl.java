@@ -36,7 +36,6 @@ public class ResourceServiceImpl implements IResourceService {
     @Autowired
     private IResourceDao resourceDao;
 
-    @Transactional(value="masterTransactionManager",readOnly = true,rollbackFor = Exception.class)
     @Override
     public Set<ResourceVo> getUserRoleResrouces(String loginName) throws BasicProException {
         {
