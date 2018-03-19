@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -87,7 +86,6 @@ public class ResourceController extends BaseController {
             @ApiImplicitParam(name = "username",required = true,dataType = "string",paramType = "path"),
     })
     @GetMapping(value ="/userRes/{username}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    @RequiresPermissions({"/admin/resoruce/add"})
     public ResponseBean getUserRoleResources(@PathVariable(value="username",required = true) String loginName){
         {
             Set<ResourceVo> resourceSet = resourceService.getUserRoleResrouces(loginName);

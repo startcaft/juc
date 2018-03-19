@@ -38,11 +38,6 @@
                             </div>
                             <!-- PAGE CONTENT BEGINS -->
                             <table id="grid-table"></table>
-
-                            <script type="text/javascript">
-                                var $path_base = "..";//in Ace demo this will be used for editurl parameter
-                            </script>
-
                             <!-- PAGE CONTENT ENDS -->
                         </div><!-- /.col -->
                     </div><!-- /.row -->
@@ -57,23 +52,17 @@
         <script th:src="@{/script/cookieStorage.js}"></script>
         <script th:src="@{/script/myStorage.js}"></script>
 
-        <!--自定义脚本-->
         <script type="text/javascript">
-            // easyloader.js 的路径
             easyloader.base = "/easyui/";
             easyloader.locales = 'zh_CN';
             easyloader.theme = 'bootstrap';
             easyloader.load('treegrid',function(){
-
                 $('#grid-table').treegrid({
-                    // url:'http://localhost:8080/resources/tree',
                     idField:'id',
                     treeField:'name',
-                    // method:'get',
                     loadMsg: "加载中......",
                     fit:false,
                     fitColumns:true,
-                    border:true,
                     autoRowHeight:false,
                     animate:true,
                     columns:[[
@@ -88,22 +77,51 @@
                     url:'http://localhost:8080/resources/tree',
                     dataType:'json',
                     type:'get',
-                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;;charset=UTF-8"}
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
                 });
                 promise.done(function (data) {
                     $('#grid-table').treegrid('loadData',data);
                 }).fail(function (error) {
                     console.log(error);
+                });
+
+                // 初始化权限按钮
+                var promise1 = $.ajax({
+                    url:'http://localhost:8080/resources/userRes/' + JSON.parse( myStorage.getItem('currentUser')).name,
+                    dataType:'json',
+                    type:'get',
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                });
+                promise1.done(function (data) {
+                    var res = data.data;
+                    if(isInArray(res,'/admin/resoruce/add')){
+                        $('#permissionBtns').append('<button class="btn btn-primary" onclick="addRes()" id="btn-add">添加</button>');
+                    }
+                }).fail(function (error) {
+                    console.log(error);
                 })
+            });
 
-            })
-            ////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            //获取选中的行
-            function selectRows() {
-                var rData = $('#grid-table').jqGrid('getRowData',selectRowid);
-                return rData;
+            // 添加按钮事件处理函数
+            function addRes(){
+                layer.open({
+                    type: 2,
+                    fix: false,
+                    title: '添加系统资源',
+                    maxmin: true,
+                    content: '/admin/resoruce/add',
+                    area: ['770px', '520px']
+                });
             }
-
+            // 判断 url 是否在指定数组中
+            function isInArray(resArray,val){
+                for (var k=0;k<resArray.length;k++) {
+                    if(val === resArray[k].url){
+                        return true;
+                    }
+                }
+                return false;
+            }
             //格式化状态显示
             function fmatterType(value,row,index){
                 if(value === "MENU"){
@@ -112,7 +130,6 @@
                     return '<span class="label label-sm label-success">功能按钮</span>';
                 }
             }
-
             //格式化状态显示
             function fmatterEnabled(value,row,index){
                 if(value == "NORMAL"){
@@ -122,5 +139,94 @@
                 }
             }
         </script>
+
+        <!--<script type="text/javascript">-->
+            <!--// easyloader.js 的路径-->
+            <!--easyloader.base = "/easyui/";-->
+            <!--easyloader.locales = 'zh_CN';-->
+            <!--easyloader.theme = 'bootstrap';-->
+            <!--easyloader.load('treegrid',function(){-->
+                <!--$('#grid-table').treegrid({-->
+                    <!--// url:'http://localhost:8080/resources/tree',-->
+                    <!--idField:'id',-->
+                    <!--treeField:'name',-->
+                    <!--// method:'get',-->
+                    <!--loadMsg: "加载中......",-->
+                    <!--fit:false,-->
+                    <!--fitColumns:true,-->
+                    <!--border:true,-->
+                    <!--autoRowHeight:false,-->
+                    <!--animate:true,-->
+                    <!--columns:[[-->
+                        <!--{title:'资源名称',field:'name',width:120,align:'center'},-->
+                        <!--{title:'资源地址',field:'url',width:150,align:'center'},-->
+                        <!--{title:'资源类型',field:'resourceType',width:80,align:'center',formatter:fmatterType},-->
+                        <!--{title:'资源状态',field:'states',width:80,align:'center',formatter:fmatterEnabled}-->
+                    <!--]]-->
+                <!--});-->
+                <!--var promise = $.ajax({-->
+                    <!--url:'http://localhost:8080/resources/tree',-->
+                    <!--dataType:'json',-->
+                    <!--type:'get',-->
+                    <!--headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}-->
+                <!--});-->
+                <!--promise.done(function (data) {-->
+                    <!--$('#grid-table').treegrid('loadData',data);-->
+                <!--}).fail(function (error) {-->
+                    <!--console.log(error);-->
+                <!--});-->
+            <!--})-->
+
+            <!--////////////////////////////////////////////////////////////////////////////////////////////////////////////-->
+            <!--// // 初始化权限功能按钮-->
+            <!--// function initPermissionButton(){-->
+            <!--//     var promise = $.ajax({-->
+            <!--//         url:'http://localhost:8080/resources/userRes/' + JSON.parse( myStorage.getItem('currentUser')).name,-->
+            <!--//         dataType:'json',-->
+            <!--//         type:'get',-->
+            <!--//         headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}-->
+            <!--//     });-->
+            <!--//     promise.done(function (data) {-->
+            <!--//         var res = data.data;-->
+            <!--//         // if(isInArray(res,'/admin/resoruce/add')){-->
+            <!--//         //     $('#permissionBtns').append('<button class="btn btn-primary" id="btn-add">添加</button>');-->
+            <!--//         // }-->
+            <!--//     }).fail(function (error) {-->
+            <!--//         console.log(error);-->
+            <!--//     })-->
+            <!--// }-->
+            <!--// 判断 url 是否在 resArray 中-->
+            <!--// function isInArray(resArray,val){-->
+            <!--//     for (var k = 0, length = resArray.length; k < length; k++) {-->
+            <!--//         if(val === resArray[k].url){-->
+            <!--//             return true;-->
+            <!--//         }-->
+            <!--//         return false;-->
+            <!--//     }-->
+            <!--// }-->
+            <!--//获取选中的行-->
+            <!--function selectRows() {-->
+                <!--var rData = $('#grid-table').jqGrid('getRowData',selectRowid);-->
+                <!--return rData;-->
+            <!--}-->
+
+            <!--//格式化状态显示-->
+            <!--function fmatterType(value,row,index){-->
+                <!--if(value === "MENU"){-->
+                    <!--return '<span class="label label-sm label-info">系统菜单</span>';-->
+                <!--}else{-->
+                    <!--return '<span class="label label-sm label-success">功能按钮</span>';-->
+                <!--}-->
+            <!--}-->
+
+            <!--//格式化状态显示-->
+            <!--function fmatterEnabled(value,row,index){-->
+                <!--if(value == "NORMAL"){-->
+                    <!--return '<span class="label label-sm label-success">启用</span>';-->
+                <!--}else{-->
+                    <!--return '<span class="label label-sm label-warning">禁用</span>';-->
+                <!--}-->
+            <!--}-->
+        <!--</script>-->
     </body>
 </html>
