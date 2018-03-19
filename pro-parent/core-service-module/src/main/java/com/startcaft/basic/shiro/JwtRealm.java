@@ -1,14 +1,21 @@
 package com.startcaft.basic.shiro;
 
+import com.startcaft.basic.core.vo.ResourceVo;
+import com.startcaft.basic.core.vo.UserPwdVo;
 import com.startcaft.basic.core.vo.UserVo;
+import com.startcaft.basic.service.IResourceService;
 import com.startcaft.basic.service.IUserService;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  *
@@ -17,8 +24,13 @@ import java.util.Optional;
  */
 public class JwtRealm extends AuthorizingRealm  {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtRealm.class);
+
     @Autowired
     private IUserService userService;
+
+    @Autowired
+    private IResourceService resourceService;
 
     /**
      * 注意：要重写该方法，用于判断 Token 的类型，一定要重写该方法
@@ -53,6 +65,31 @@ public class JwtRealm extends AuthorizingRealm  {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        return null;
+        {
+            LOGGER.info(principals.toString());
+            LOGGER.info(principals.getPrimaryPrincipal().toString());
+
+            String username = JwtUtil.getUsername(principals.getPrimaryPrincipal().toString());
+            SimpleAuthorizationInfo authorizationInfo = new SimpleAuthorizationInfo();
+
+            try {
+                //添加权限，注意这里的权限不能有空值或者null，不然在验证权限的时候会报错
+                Set<ResourceVo> voSet = resourceService.getUserRoleResrouces(username);
+
+                // 把 可用资源的 url 当成权限字符串
+                Set<String> permissions = new HashSet<>();
+                voSet.forEach((r) -> {
+                    permissions.add(r.getUrl());
+                });
+                authorizationInfo.addStringPermissions(permissions);
+
+                //添加角色
+                //authorizationInfo.setRoles(roleService.getResourcesByUser(loginname));
+            } catch (Exception e) {
+                LOGGER.error("用户授权失败",e);
+            }
+
+            return authorizationInfo;
+        }
     }
 }
