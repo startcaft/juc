@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.startcaft.basic.dao.master.IRoleDao">
+
+    <resultMap id="BaseResultMap" type="com.startcaft.basic.core.entity.Role">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="role_name" jdbcType="VARCHAR" property="name"/>
+        <result column="role_desc" jdbcType="VARCHAR" property="desc"/>
+        <result column="role_alias" jdbcType="VARCHAR" property="alias"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        id, role_name, role_desc, role_alias
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_role
+        where id = #{_parameter}
+    </select>
+
+    <select id="selectListDynamic" parameterType="map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_role
+        <where>
+            <if test="name != null and name != ''">
+                <bind name="_roleName" value="'%'+roleName+'%'"/>
+                and name like #{_roleName}
+            </if>
+        </where>
+    </select>
+
+    <insert id="insert" parameterType="com.startcaft.basic.core.entity.Role">
+        insert into sys_role (role_name, role_desc,
+        role_alias)
+        values (#{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR},
+        #{alias,jdbcType=BIGINT})
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.Role" >
+        update sys_role
+        <set >
+            <if test="description != null" >
+                desc = #{desc,jdbcType=VARCHAR},
+            </if>
+            <if test="name != null" >
+                name = #{name,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+    <!--&lt;!&ndash;中间表的操作&ndash;&gt;-->
+    <!--<delete id="deleteRoleRes" parameterType="java.lang.Long" >-->
+        <!--delete from-->
+        <!--sys_role_resource-->
+        <!--where-->
+        <!--role_id = #{id,jdbcType=BIGINT}-->
+    <!--</delete>-->
+
+    <!--<insert id="insertRoleRes">-->
+        <!--insert into sys_role_resource (role_id,resource_id)-->
+        <!--values (#{roleId,jdbcType=BIGINT},#{resId,jdbcType=BIGINT})-->
+    <!--</insert>-->
+
+</mapper>

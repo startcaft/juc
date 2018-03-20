@@ -1,6 +1,6 @@
 package com.startcaft.basic.core.entity;
 
-import com.startcaft.basic.core.vo.BaseVo;
+import com.startcaft.basic.core.vo.RoleVo;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,11 +10,11 @@ import java.util.Set;
  * @author startcaft
  * @date 2018/3/5
  */
-public class Role extends BaseEntity {
+public class Role extends BaseEntity<RoleVo> {
 
-    private String description;
     private String name;
-    private Integer seq;
+    private String desc;
+    private String alias;
 
     /**
      * 所包含的系统资源
@@ -25,28 +25,28 @@ public class Role extends BaseEntity {
      */
     private Set<User> users = new HashSet<>(0);
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description == null ? null : description.trim();
-    }
-
     public String getName() {
         return name;
     }
 
     public void setName(String name) {
-        this.name = name == null ? null : name.trim();
+        this.name = name;
     }
 
-    public Integer getSeq() {
-        return seq;
+    public String getDesc() {
+        return desc;
     }
 
-    public void setSeq(Integer seq) {
-        this.seq = seq;
+    public void setDesc(String desc) {
+        this.desc = desc;
+    }
+
+    public String getAlias() {
+        return alias;
+    }
+
+    public void setAlias(String alias) {
+        this.alias = alias;
     }
 
     public Set<Resource> getResources() {
@@ -63,10 +63,5 @@ public class Role extends BaseEntity {
 
     public void setUsers(Set<User> users) {
         this.users = users;
-    }
-
-    @Override
-    protected void copyOtherProperties(BaseVo baseVo) {
-
     }
 }
