@@ -32,6 +32,18 @@ public class ResourceController extends BaseController {
     @Autowired
     private IResourceService resourceService;
 
+    @ApiOperation(value = "获取一个资源数据详细信息，附带父节点数据",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id",required = true,dataType = "long",paramType = "path")
+    })
+    @RequiresAuthentication
+    @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean<ResourceVo> getSingle(@PathVariable(value = "id",required = true) long id){
+        {
+            return new ResponseBean<>(true,SUCCESS_MSG,resourceService.getSingeWithParent(id));
+        }
+    }
+
     @ApiOperation(value = "获取顶层节点，pid为0，有且只有一个，否则报错",notes = "不受权限控制,作为资源树的定点")
     @GetMapping(value = "/root",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseBean<ResourceVo> getRoot(){
@@ -104,11 +116,22 @@ public class ResourceController extends BaseController {
         {
             ResponseBean<String> result = new ResponseBean<>();
 
-            resourceService.AddResource(bean);
+            if (bean.getId() == null || bean.getId().intValue() == 0){
+                // 新增
+                resourceService.AddResource(bean);
 
-            result.setReqSuccess(true);
-            result.setMsg(SUCCESS_MSG);
-            result.setData("save resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
+                result.setReqSuccess(true);
+                result.setMsg(SUCCESS_MSG);
+                result.setData("save resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
+            }
+            else {
+                // 修改
+                resourceService.modifyResource(bean);
+                result.setReqSuccess(true);
+                result.setMsg(SUCCESS_MSG);
+            }
+
+
             return result;
         }
     }

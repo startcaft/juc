@@ -53,6 +53,7 @@
         <script th:src="@{/script/myStorage.js}"></script>
 
         <script type="text/javascript">
+            var base = 'http://localhost:8080';
             easyloader.base = "/easyui/";
             easyloader.locales = 'zh_CN';
             easyloader.theme = 'bootstrap';
@@ -74,7 +75,7 @@
                 });
 
                 var promise = $.ajax({
-                    url:'http://localhost:8080/resources/tree',
+                    url:base + '/resources/tree',
                     dataType:'json',
                     type:'get',
                     headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
@@ -87,15 +88,18 @@
 
                 // 初始化权限按钮
                 var promise1 = $.ajax({
-                    url:'http://localhost:8080/resources/userRes/' + JSON.parse( myStorage.getItem('currentUser')).name,
+                    url:base + '/resources/userRes/' + JSON.parse( myStorage.getItem('currentUser')).name,
                     dataType:'json',
                     type:'get',
                     headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
                 });
                 promise1.done(function (data) {
                     var res = data.data;
-                    if(isInArray(res,'/admin/resoruce/add')){
+                    if(isInArray(res,'/admin/resource/add')){
                         $('#permissionBtns').append('<button class="btn btn-primary" onclick="addRes()" id="btn-add">添加</button>');
+                    }
+                    if(isInArray(res,'/admin/resource/edit')){
+                        $('#permissionBtns').append('<button class="btn btn-info" onclick="modifyRes()" id="btn-edit">编辑</button>');
                     }
                 }).fail(function (error) {
                     console.log(error);
@@ -109,7 +113,23 @@
                     fix: false,
                     title: '添加系统资源',
                     maxmin: true,
-                    content: '/admin/resoruce/add',
+                    content: '/admin/resource/add',
+                    area: ['770px', '520px']
+                });
+                }
+                // 修改按钮事件处理函数
+                function modifyRes() {
+                    var row = selectRow();
+                    if (row === null) {
+                        layer.msg("请选择要修改的资源数据行");
+                        return;
+                    }
+                    layer.open({
+                        type: 2,
+                        fix: false,
+                        title: '资源修改',
+                        maxmin: true,
+                        content: '/admin/resource/edit/'+row.id,
                     area: ['770px', '520px']
                 });
             }
@@ -141,6 +161,10 @@
             //重新加载表格
             function reloadGrid(){
                 $('#grid-table').treegrid('load');
+            }
+            //选中表格的一行
+            function selectRow(){
+                return $('#grid-table').treegrid('getSelected');
             }
         </script>
     </body>

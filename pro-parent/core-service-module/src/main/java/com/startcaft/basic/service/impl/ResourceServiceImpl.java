@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +34,16 @@ public class ResourceServiceImpl implements IResourceService {
 
     @Autowired
     private IResourceDao resourceDao;
+
+    @Override
+    public ResourceVo getSingeWithParent(long id) throws BasicProException {
+        {
+            Resource resource = resourceDao.selectByPrimaryKey(id);
+            ResourceVo vo = new ResourceVo();
+            resource.copyPropertiesTemplate(vo);
+            return vo;
+        }
+    }
 
     @Override
     public Set<ResourceVo> getUserRoleResrouces(String loginName) throws BasicProException {
@@ -138,6 +147,25 @@ public class ResourceServiceImpl implements IResourceService {
             }
 
             int result = resourceDao.insert(resource);
+            if (result != 1){
+                throw new SqlExecuteException("execute insert result is error");
+            }
+        }
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void modifyResource(ResourceBean bean) throws BasicProException {
+        {
+            // 确保只有一个根节点
+            if (bean.getPid() == 0){
+                throw new BasicProException("系统资源只能有一个pid=0的根节点");
+            }
+
+            Resource resource = new Resource();
+            bean.copyPropertiesTemplate(resource);
+
+            int result = resourceDao.updateByPrimaryKeySelective(resource);
             if (result != 1){
                 throw new SqlExecuteException("execute insert result is error");
             }

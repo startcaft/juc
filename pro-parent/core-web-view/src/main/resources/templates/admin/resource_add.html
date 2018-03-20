@@ -21,7 +21,7 @@
                             <form class="form-horizontal" id="validation-form" method="post">
                                 <div class="form-group">
                                     <!-- 隐藏的 id 和 pid -->
-                                    <input name="id" id="resId" type="hidden" value="" />
+                                    <input name="id" id="resId" th:value="${resId}" type="hidden" value="" />
                                     <input type="hidden" id="pid" name="pid" value="" />
                                     <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="pname">上级资源</label>
                                     <div class="col-xs-12 col-sm-9">
@@ -129,7 +129,7 @@
             });
 
             var promise = $.ajax({
-                url:'http://localhost:8080/resources/tree',
+                url:base + '/resources/tree',
                 dataType:'json',
                 type:'get',
                 headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
@@ -141,8 +141,35 @@
             });
 
             initformSubmitEvent();
-        })
+            databind();
+        });
 
+
+        // 数据绑定，之后在 id 有值的情况才执行
+        function databind(){
+            var id = $('#resId').val();
+            if (id != null && id != ''){
+                // 简单起见，不允许修改资源类别
+                $('#resTypeCode').attr('disabled',true);
+                var promise = $.ajax({
+                    url:base + '/resources/' + id,
+                    dataType:'json',
+                    type:'get',
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                });
+                promise.done(function (result) {
+                    var obj = result.data;
+                    $('#pid').val(obj.pid);
+                    $('#pname').val(obj.pname);
+                    $('#name').val(obj.name);
+                    $('#resTypeCode').val(obj.resTypeCode);
+                    $('#url').val(obj.url);
+                    $('#seq').val(obj.seq);
+                }).fail(function (error) {
+                    console.log(error);
+                });
+            }
+        }
         // 递归过滤标准树形树形，添加一个 text 属性，值就是name属性的值
         function dataLoad(data,parent) {
             data.forEach(function (obj,index) {
@@ -248,8 +275,8 @@
                         resTypeCode:$('#resTypeCode').val(),
                         url:$('#url').val(),
                         seq:$('#seq').val(),
+                        id:$('#resId').val()
                     }
-
 
                     var promise = $.ajax({
                         url: base + '/resources/save',
@@ -272,30 +299,10 @@
                         else {
                             layer.msg(result.msg);
                         }
-                        $btn.removeClass('disabled');
                     }).fail(function (error) {
                         console.log(error);
-                        $btn.removeClass('disabled');
                     })
-
-                    // 提交表单
-                    // $.post("${context}/admin/resources/save" ,postData,function(data){
-                    //     if(data.success){
-                    //         layer.msg('操作成功', {
-                    //             icon: 1,
-                    //             time: 2000 //2秒关闭（如果不配置，默认是3秒）
-                    //         },function(){
-                    //             parent.reloadGrid();
-                    //             var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                    //             parent.layer.close(index); //再执行关闭
-                    //         });
-                    //     }
-                    //     else {
-                    //         layer.msg(data.tipInfo);
-                    //     }
-                    //     $("#submit-btn").removeClass("disabled");
-                    // },"json");
-
+                    $btn.removeClass('disabled');
                     return false;
                 },
                 invalidHandler: function (form) {

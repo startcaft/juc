@@ -121,4 +121,5 @@ public class ResourceVo extends BaseVo {
     public void setPname(String pname) {
         this.pname = pname;
     }
+
 }

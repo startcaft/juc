@@ -19,6 +19,13 @@ public interface IResourceDao {
     Integer insert(Resource record);
 
     /**
+     * 修改系统资源
+     * @param record 新Resource记录
+     * @return
+     */
+    Integer updateByPrimaryKeySelective(Resource record);
+
+    /**
      * 查询系统资源相信信息
      * @param id 资源id
      * @return

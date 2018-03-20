@@ -15,6 +15,14 @@ import java.util.Set;
 public interface IResourceService {
 
     /**
+     * 查询详细信息，并查询父节点
+     * @param id 主键id
+     * @return
+     * @throws BasicProException
+     */
+    ResourceVo getSingeWithParent(long id) throws BasicProException;
+
+    /**
      * 获取登录用户的被授权的所有系统资源
      * @param loginName 用户名
      * @return
@@ -54,9 +62,16 @@ public interface IResourceService {
     Resource getResTree() throws BasicProException;
 
     /**
-     * 添加一个系统资源
+     * 添加一个系统资源数据
      * @param bean ResourceBean
      * @throws BasicProException
      */
     void AddResource(ResourceBean bean) throws BasicProException;
+
+    /**
+     * 修改一给系统资源数据
+     * @param bean ResourceBean
+     * @throws BasicProException
+     */
+    void modifyResource(ResourceBean bean) throws BasicProException;
 }

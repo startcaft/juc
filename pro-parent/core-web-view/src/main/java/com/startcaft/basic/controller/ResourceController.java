@@ -7,7 +7,9 @@
 package com.startcaft.basic.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @since 1.0.0
  */
 @Controller
-@RequestMapping("/admin/resoruce")
+@RequestMapping("/admin/resource")
 public class ResourceController {
 
     @GetMapping("/list")
@@ -29,6 +31,12 @@ public class ResourceController {
 
     @GetMapping("/add")
     public String resoruceAdd(){
+        return "admin/resource_add";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String resourceModify(@PathVariable(value = "id",required = true) Long id, Model model){
+        model.addAttribute("resId",id);
         return "admin/resource_add";
     }
 }

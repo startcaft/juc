@@ -159,6 +159,6 @@ public class Resource extends BaseEntity<ResourceVo> {
 
     @Override
     protected boolean otherPropertiesHook() {
-        return super.otherPropertiesHook();
+        return true;
     }
 }
