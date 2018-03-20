@@ -16,5 +16,5 @@ import com.startcaft.basic.service.IRoleService;
  * @create 2018/3/20
  * @since 1.0.0
  */
-public class RoleService implements IRoleService {
+public class RoleServiceImpl implements IRoleService {
 }
