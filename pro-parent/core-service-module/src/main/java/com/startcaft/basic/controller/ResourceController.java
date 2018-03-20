@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeSet;
@@ -95,11 +96,11 @@ public class ResourceController extends BaseController {
 
     @ApiOperation(value = "新增系统资源",notes = "需要用户登陆")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "vo",required = true,dataType = "ResourceVo")
+            @ApiImplicitParam(name = "bean",required = true,dataType = "ResourceBean",paramType = "body")
     })
     @PostMapping(value = "/save",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
-            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE,MediaType.APPLICATION_FORM_URLENCODED_VALUE})
-    public ResponseBean<String> addResource(@RequestBody ResourceBean bean){
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean<String> addResource(@Valid @RequestBody ResourceBean bean){
         {
             ResponseBean<String> result = new ResponseBean<>();
 

@@ -108,6 +108,7 @@
 
     <script type="text/javascript">
 
+        var base = 'http://localhost:8080';
         easyloader.base = "/easyui/";
         easyloader.locales = 'zh_CN';
         easyloader.theme = 'bootstrap';
@@ -138,6 +139,8 @@
             }).fail(function (error) {
                 console.log(error);
             });
+
+            initformSubmitEvent();
         })
 
         // 递归过滤标准树形树形，添加一个 text 属性，值就是name属性的值
@@ -236,7 +239,44 @@
                     var $btn = $("#submit-btn");
                     if($btn.hasClass("disabled")) return;
                     $btn.addClass("disabled");
-                    var postData=$("#validation-form").serialize();
+
+                    // var postData = $("#validation-form").serialize();
+                    var postData = {
+                        icon:$('#icon').val(),
+                        pid:$('#pid').val(),
+                        name:$('#name').val(),
+                        resTypeCode:$('#resTypeCode').val(),
+                        url:$('#url').val(),
+                        seq:$('#seq').val(),
+                    }
+
+
+                    var promise = $.ajax({
+                        url: base + '/resources/save',
+                        type:'post',
+                        dataType:'json',
+                        data:JSON.stringify(postData),
+                        headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                    });
+                    promise.done(function (result) {
+                        if(result.reqSuccess){
+                            layer.msg('操作成功', {
+                                icon: 1,
+                                time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                            },function(){
+                                parent.reloadGrid();
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭
+                            });
+                        }
+                        else {
+                            layer.msg(result.msg);
+                        }
+                        $btn.removeClass('disabled');
+                    }).fail(function (error) {
+                        console.log(error);
+                        $btn.removeClass('disabled');
+                    })
 
                     // 提交表单
                     // $.post("${context}/admin/resources/save" ,postData,function(data){

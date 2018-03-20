@@ -3,6 +3,8 @@ package com.startcaft.basic.controller;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.ResponseBean;
 import org.apache.shiro.ShiroException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -16,6 +18,8 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestControllerAdvice
 public class ExceptionController extends BaseController {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ExceptionController.class);
 
     // 捕捉shiro的异常
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
@@ -35,6 +39,7 @@ public class ExceptionController extends BaseController {
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseBean globalException(HttpServletRequest request, Throwable ex) {
+        LOGGER.error(ex.getMessage(),ex);
         return new ResponseBean(false, ex.getMessage(), ERROR_MSG + "_" + getStatus(request).value());
     }
 

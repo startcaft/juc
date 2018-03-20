@@ -7,7 +7,10 @@
 package com.startcaft.basic.core.beans;
 
 import com.startcaft.basic.core.entity.Resource;
+import com.startcaft.basic.core.enums.ResourceType;
+import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.vo.BaseVo;
+import org.hibernate.validator.constraints.NotBlank;
 
 import java.util.Date;
 
@@ -27,12 +30,15 @@ public class ResourceBean extends BaseVo<Resource> {
     private Date createDatetime = new Date();
     private String description;
     private String icon;
+
+    @NotBlank(message = "资源名称不能为空")
     private String name;
     private int resTypeCode;
     private int seq;
     private int statesCode;
     private String url;
-    private int pid;
+
+    private long pid;
 
     public Date getCreateDatetime() {
         return createDatetime;
@@ -98,16 +104,26 @@ public class ResourceBean extends BaseVo<Resource> {
         this.url = url;
     }
 
-    public int getPid() {
+    public long getPid() {
         return pid;
     }
 
-    public void setPid(int pid) {
+    public void setPid(long pid) {
         this.pid = pid;
     }
 
+
     @Override
     protected void copyOtherProperties(Resource resource) {
+        ResourceType resourceType = ResourceType.getResourceType(this.resTypeCode);
+        States states = States.getStates(this.statesCode);
 
+        resource.setResourceType(resourceType);
+        resource.setStates(states);
+    }
+
+    @Override
+    protected boolean otherPropertiesHook() {
+        return true;
     }
 }

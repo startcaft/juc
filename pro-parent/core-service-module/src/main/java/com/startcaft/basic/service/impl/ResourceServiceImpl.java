@@ -117,18 +117,6 @@ public class ResourceServiceImpl implements IResourceService {
     @Override
     public void AddResource(ResourceBean bean) throws BasicProException {
         {
-            if (bean == null){
-                throw new BasicProException(new NullPointerException("ResourceVo is null"));
-            }
-            // 资源名称不能为空
-            if (StringUtils.isEmpty(bean.getName())){
-                throw new FieldNullException("resource name is null");
-            }
-            // 资源类型不能为空，通过code可以成一个States枚举对象
-            if (StringUtils.isEmpty(bean.getStatesCode())){
-                throw new FieldNullException("resource type is null");
-            }
-            // 无需确保资源状态的正确性，States枚举在转换时，如果没有无法转换，则转换为States.NORMAL
             // 确保资源名称不重复
             Set<Resource> resourceSet = resourceDao.selectByName(bean.getName());
             if (resourceSet != null && resourceSet.size() > 0){
