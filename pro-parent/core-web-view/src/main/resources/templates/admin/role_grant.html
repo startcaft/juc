@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="/common/common_head_css::commonHeader">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta charset="utf-8" />
+        <title>角色授权</title>
+        <meta name="description" content="overview &amp; stats" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <style type="text/css">
+            body{
+                background-color: #ffffff;
+            }
+            .left{
+                position: absolute;
+                top: 10px;
+                left: 20px;
+                width: 358px;
+                border-right: 1px solid #CCC;
+                overflow-y: auto;
+            }
+            .actions{
+                position: absolute;
+                bottom: 20px;
+                left: 10px;
+                width: 368px;
+                border-right: 1px solid #CCC;
+                height: 60px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="left">
+            <input type="hidden" id="roleId" th:value="${roleId}" value=""/>
+            <ul id="resTree"></ul>
+        </div>
+        <div class="actions" style="margin-left: 300px;margin-top: 30px;">
+            <button class="btn btn-big btn-primar" id="btn_saveOrder">保存</button>
+        </div>
+
+        <!--导入通用js-->
+        <div th:include="/common/common_head_js::onLoadJS"></div>
+        <script th:src="@{/easyui/easyloader.js}"></script>
+        <!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+        <script th:src="@{/script/cookieStorage.js}"></script>
+        <script th:src="@{/script/myStorage.js}"></script>
+
+        <script type="text/javascript">
+            var base = 'http://localhost:8080';
+            easyloader.base = "/easyui/";
+            easyloader.locales = 'zh_CN';
+            easyloader.theme = 'bootstrap';
+            easyloader.load('datagrid',function(){
+                $('#grid-table').datagrid({
+                    idField:'id',
+                    loadMsg: "加载中......",
+                    fit:false,
+                    method:'get',
+                    fitColumns:true,
+                    autoRowHeight:false,
+                    singleSelect:true,
+                    columns:[[
+                        {title:'角色名称',field:'name',width:80,align:'center'},
+                        {title:'角色alias',field:'alias',width:80,align:'center'},
+                        {title:'角色描述',field:'desc',width:300,align:'center'}
+                    ]]
+                });
+
+            });
+        </script>
+    </body>
+</html>

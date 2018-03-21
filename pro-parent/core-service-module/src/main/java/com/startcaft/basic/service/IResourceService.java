@@ -28,7 +28,15 @@ public interface IResourceService {
      * @return
      * @throws BasicProException
      */
-    Set<ResourceVo> getUserRoleResrouces(String loginName) throws BasicProException;
+    Set<ResourceVo> getUserRoleResources(String loginName) throws BasicProException;
+
+    /**
+     * 根据用户角色获取资源数据
+     * @param roleId 角色id
+     * @return
+     * @throws BasicProException
+     */
+    Set<ResourceVo> getResourcesByRole(long roleId) throws BasicProException;
 
     /**
      * 获取第一级的菜单，是不需要被授权的

@@ -1,7 +1,6 @@
 package com.startcaft.basic.shiro;
 
 import com.startcaft.basic.core.vo.ResourceVo;
-import com.startcaft.basic.core.vo.UserPwdVo;
 import com.startcaft.basic.core.vo.UserVo;
 import com.startcaft.basic.service.IResourceService;
 import com.startcaft.basic.service.IUserService;
@@ -74,7 +73,7 @@ public class JwtRealm extends AuthorizingRealm  {
 
             try {
                 //添加权限，注意这里的权限不能有空值或者null，不然在验证权限的时候会报错
-                Set<ResourceVo> voSet = resourceService.getUserRoleResrouces(username);
+                Set<ResourceVo> voSet = resourceService.getUserRoleResources(username);
 
                 // 把 可用资源的 url 当成权限字符串
                 Set<String> permissions = new HashSet<>();

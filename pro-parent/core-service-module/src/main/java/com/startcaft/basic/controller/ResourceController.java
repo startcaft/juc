@@ -99,9 +99,23 @@ public class ResourceController extends BaseController {
             @ApiImplicitParam(name = "username",required = true,dataType = "string",paramType = "path"),
     })
     @GetMapping(value ="/userRes/{username}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
     public ResponseBean getUserRoleResources(@PathVariable(value="username",required = true) String loginName){
         {
-            Set<ResourceVo> resourceSet = resourceService.getUserRoleResrouces(loginName);
+            Set<ResourceVo> resourceSet = resourceService.getUserRoleResources(loginName);
+            return new ResponseBean(true,SUCCESS_MSG,resourceSet);
+        }
+    }
+
+    @ApiOperation(value = "获取角色相关的系统资源",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId",required = true,dataType = "long",paramType = "path"),
+    })
+    @GetMapping(value ="/roleRes/{roleId}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean getResourcesByRole(@PathVariable(value="roleId",required = true) long roleId){
+        {
+            Set<ResourceVo> resourceSet = resourceService.getResourcesByRole(roleId);
             return new ResponseBean(true,SUCCESS_MSG,resourceSet);
         }
     }

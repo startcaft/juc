@@ -40,6 +40,13 @@ public interface IResourceDao {
     Set<Resource> selectByLoginName(String loginName);
 
     /**
+     * 根据角色id获取关联权限下的所有系统资源
+     * @param roleId 角色id
+     * @return
+     */
+    Set<Resource> selectByRoleId(long roleId);
+
+    /**
      * 返回唯一的顶层节点，pid=0
      * @return
      */
@@ -47,6 +54,7 @@ public interface IResourceDao {
 
     /**
      * 根据pid查询下一级菜单
+     * @param pid 父节点id
      * @return
      */
     Set<Resource> selectByPid(Long pid);

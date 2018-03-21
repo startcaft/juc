@@ -7,7 +7,9 @@
 package com.startcaft.basic.controller;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -24,6 +26,12 @@ public class RoleController {
 
     @GetMapping("/list")
     public String list(){
+        return "admin/role_index";
+    }
+
+    @GetMapping("/grant/{roleId}")
+    public String grant(@PathVariable(value = "roleId",required = true) long roleId, Model model){
+        model.addAttribute("roleId",roleId);
         return "admin/role_index";
     }
 }

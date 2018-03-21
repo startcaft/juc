@@ -46,7 +46,7 @@ public class ResourceServiceImpl implements IResourceService {
     }
 
     @Override
-    public Set<ResourceVo> getUserRoleResrouces(String loginName) throws BasicProException {
+    public Set<ResourceVo> getUserRoleResources(String loginName) throws BasicProException {
         {
             Set<Resource> set = resourceDao.selectByLoginName(loginName);
             Set<ResourceVo> voSet = new HashSet<>(set.size());
@@ -55,6 +55,23 @@ public class ResourceServiceImpl implements IResourceService {
             Stream<Resource> resourceStream = set.stream()
                     .filter((r) -> r.getStates() != States.LOCKED)
                     .filter((r) -> !StringUtils.isEmpty(r.getUrl()));
+
+            resourceStream.forEach((r) -> {
+                voSet.add(r.copyPropertiesTemplate(new ResourceVo()));
+            });
+            return voSet;
+        }
+    }
+
+    @Override
+    public Set<ResourceVo> getResourcesByRole(long roleId) throws BasicProException {
+        {
+            Set<Resource> set = resourceDao.selectByRoleId(roleId);
+            Set<ResourceVo> voSet = new HashSet<>(set.size());
+
+            //过滤被停用的系统资源
+            Stream<Resource> resourceStream = set.stream()
+                    .filter((r) -> r.getStates() != States.LOCKED);
 
             resourceStream.forEach((r) -> {
                 voSet.add(r.copyPropertiesTemplate(new ResourceVo()));
