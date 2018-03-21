@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head th:replace="/common/common_head_css::commonHeader">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+        <meta charset="utf-8" />
+        <title>角色信息</title>
+        <meta name="description" content="overview &amp; stats" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    </head>
+    <body class="no-skin">
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+            try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+        </script>
+        <div class="main-content" id="page-wrapper">
+            <div class="page-content" id="page-content">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- PAGE CONTENT BEGINS -->
+                        <div class="widget-box">
+                            <div class="widget-header widget-header-small">
+                                <h5 class="widget-title lighter">筛选</h5>
+                            </div>
+                            <div class="widget-body">
+                                <div class="widget-main">
+                                    <div class="row">
+                                        <div class="col-xs-12 col-sm-8">
+                                            <div class="input-group">
+                                                <span class="input-group-addon">
+                                                    <i class="ace-icon fa fa-check"></i>
+                                                </span>
+                                                <input type="text" id="name" name="name" class="form-control search-query" placeholder="请输入关键字" />
+                                                <span class="input-group-btn">
+                                                    <button type="button" id="btn_search" onclick="filterTable()" class="btn btn-purple btn-sm">
+                                                        <span class="ace-icon fa fa-search icon-on-right bigger-110"></span>
+                                                        搜索
+                                                    </button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="row-fluid" style="margin-bottom: 5px;">
+                            <div class="span12 control-group" id="permissionBtns">
+                            </div>
+                        </div>
+                        <!-- PAGE CONTENT BEGINS -->
+                        <table id="grid-table"></table>
+                        <!-- PAGE CONTENT ENDS -->
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div>
+        </div>
+    </div><!-- /.main-container -->
+
+        <!--导入通用js-->
+        <div th:include="/common/common_head_js::onLoadJS"></div>
+        <script th:src="@{/easyui/easyloader.js}"></script>
+        <!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+        <script th:src="@{/script/cookieStorage.js}"></script>
+        <script th:src="@{/script/myStorage.js}"></script>
+
+        <script type="text/javascript">
+            var base = 'http://localhost:8080';
+            easyloader.base = "/easyui/";
+            easyloader.locales = 'zh_CN';
+            easyloader.theme = 'bootstrap';
+            easyloader.load('datagrid',function(){
+                $('#grid-table').datagrid({
+                    idField:'id',
+                    loadMsg: "加载中......",
+                    fit:false,
+                    method:'get',
+                    fitColumns:true,
+                    autoRowHeight:false,
+                    singleSelect:true,
+                    columns:[[
+                        {title:'角色名称',field:'name',width:80,align:'center'},
+                        {title:'角色alias',field:'alias',width:80,align:'center'},
+                        {title:'角色描述',field:'desc',width:300,align:'center'}
+                    ]]
+                });
+
+                loadData(base + '/roles/list');
+                // var promise = $.ajax({
+                //     url:base + '/roles/list',
+                //     dataType:'json',
+                //     type:'get',
+                //     headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                // });
+                // promise.done(function (data) {
+                //     $('#grid-table').datagrid('loadData',data);
+                // }).fail(function (error) {
+                //     console.log(error);
+                // });
+
+                // 初始化权限按钮
+                var promise1 = $.ajax({
+                    url:base + '/resources/userRes/' + JSON.parse( myStorage.getItem('currentUser')).name,
+                    dataType:'json',
+                    type:'get',
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                });
+                promise1.done(function (data) {
+                    var res = data.data;
+                    if(isInArray(res,'/admin/role/add')){
+                        $('#permissionBtns').append('<button class="btn btn-primary" onclick="addRes()" id="btn-add">添加</button>');
+                    }
+                    if(isInArray(res,'/admin/role/edit')){
+                        $('#permissionBtns').append('<button class="btn btn-info" onclick="modifyRes()" id="btn-edit">编辑</button>');
+                    }
+                    if(isInArray(res,'/admin/role/grant')){
+                        $('#permissionBtns').append('<button class="btn" id="btn-grant">授权</button>');
+                    }
+                }).fail(function (error) {
+                    console.log(error);
+                });
+            });
+
+            // 加载指定 url 的数据
+            function loadData(url){
+                var promise = $.ajax({
+                    url:url,
+                    dataType:'json',
+                    type:'get',
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                });
+                promise.done(function (data) {
+                    $('#grid-table').datagrid('loadData',data);
+                }).fail(function (error) {
+                    console.log(error);
+                });
+            }
+            // 表格过滤
+            function filterTable(e){
+                var name = $("#name").val();
+                if(!name.isEmpty()){
+                    // $('#grid-table').datagrid('options').url = base + '/roles/list?name=' + name;
+                    // $('#grid-table').datagrid('load');
+                    loadData(base + '/roles/list?name=' + name);
+                }
+            }
+            // 添加按钮事件处理函数
+            function addRes(){
+                layer.open({
+                    type: 2,
+                    fix: false,
+                    title: '添加系统资源',
+                    maxmin: true,
+                    content: '/admin/resource/add',
+                    area: ['770px', '520px']
+                });
+            }
+            // 修改按钮事件处理函数
+            function modifyRes() {
+                var row = selectRow();
+                if (row === null) {
+                    layer.msg("请选择要修改的资源数据行");
+                    return;
+                }
+                layer.open({
+                    type: 2,
+                    fix: false,
+                    title: '资源修改',
+                    maxmin: true,
+                    content: '/admin/resource/edit/'+row.id,
+                    area: ['770px', '520px']
+                });
+            }
+            // 判断 url 是否在指定数组中
+            function isInArray(resArray,val){
+                for (var k=0;k<resArray.length;k++) {
+                    if(val === resArray[k].url){
+                        return true;
+                    }
+                }
+                return false;
+            }
+            //重新加载表格
+            function reloadGrid(){
+                $('#grid-table').datagrid('load');
+            }
+            //选中表格的一行
+            function selectRow(){
+                return $('#grid-table').datagrid('getSelected');
+            }
+        </script>
+    </body>
+</html>

@@ -26,8 +26,8 @@
         from sys_role
         <where>
             <if test="name != null and name != ''">
-                <bind name="_roleName" value="'%'+roleName+'%'"/>
-                and name like #{_roleName}
+                <bind name="_roleName" value="'%'+name+'%'"/>
+                and role_name like #{_roleName}
             </if>
         </where>
     </select>

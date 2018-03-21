@@ -25,7 +25,7 @@ public class RoleVo extends BaseVo<Role> {
     /**
      * 所包含的系统资源
      */
-    private String[] resources;
+    private String[] resourceArray;
 
     public String getName() {
         return name;
@@ -51,11 +51,11 @@ public class RoleVo extends BaseVo<Role> {
         this.alias = alias;
     }
 
-    public String[] getResources() {
-        return resources;
+    public String[] getResourceArray() {
+        return resourceArray;
     }
 
-    public void setResources(String[] resources) {
-        this.resources = resources;
+    public void setResourceArray(String[] resourceArray) {
+        this.resourceArray = resourceArray;
     }
 }
