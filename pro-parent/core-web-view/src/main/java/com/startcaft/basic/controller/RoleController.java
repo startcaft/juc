@@ -32,6 +32,6 @@ public class RoleController {
     @GetMapping("/grant/{roleId}")
     public String grant(@PathVariable(value = "roleId",required = true) long roleId, Model model){
         model.addAttribute("roleId",roleId);
-        return "admin/role_index";
+        return "admin/role_grant";
     }
 }

@@ -31,7 +31,7 @@
     <body>
         <div class="left">
             <input type="hidden" id="roleId" th:value="${roleId}" value=""/>
-            <ul id="resTree"></ul>
+            <ul id="resTree" class="easyui-tree"></ul>
         </div>
         <div class="actions" style="margin-left: 300px;margin-top: 30px;">
             <button class="btn btn-big btn-primar" id="btn_saveOrder">保存</button>
@@ -49,23 +49,96 @@
             easyloader.base = "/easyui/";
             easyloader.locales = 'zh_CN';
             easyloader.theme = 'bootstrap';
-            easyloader.load('datagrid',function(){
-                $('#grid-table').datagrid({
-                    idField:'id',
-                    loadMsg: "加载中......",
-                    fit:false,
-                    method:'get',
-                    fitColumns:true,
-                    autoRowHeight:false,
-                    singleSelect:true,
-                    columns:[[
-                        {title:'角色名称',field:'name',width:80,align:'center'},
-                        {title:'角色alias',field:'alias',width:80,align:'center'},
-                        {title:'角色描述',field:'desc',width:300,align:'center'}
-                    ]]
+            easyloader.load('tree',function(){
+                $('#resTree').tree({
+                    lines : true,
+                    checkbox : true,
+                    loadFilter:dataLoad,
+                    onClick : function(node) {
+                    },
+                    onLoadSuccess : function(node, data) {
+                        var roleId = $('#roleId').val();
+                        var ingoreIds = checkNode(data);
+                        $.ajax({
+                            url:base + '/resources/roleRes/' + roleId,
+                            dataType:'json',
+                            type:'get',
+                            headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                        }).done(function (result) {
+                            for ( var i = 0; i < result.data.length; i++) {
+                                if ($('#resTree').tree('find', result.data[i].id)) {
+                                    $('#resTree').tree('check', $('#resTree').tree('find', result.data[i].id).target);
+                                }
+                            }
+                        }).fail(function (error) {
+                            console.log(error);
+                        });
+                        // $.post( '${ctx}/role/get', {
+                        //     id : '${role.id}'
+                        // }, function(result) {
+                        //     var ids;
+                        //     if (result.id != undefined&&result.resourceIds!= undefined) {
+                        //         ids = $.stringToList(result.resourceIds);
+                        //     }
+                        //     if (ids.length > 0) {
+                        //         for ( var i = 0; i < ids.length; i++) {
+                        //             if (resourceTree.tree('find', ids[i])) {
+                        //                 resourceTree.tree('check', resourceTree.tree('find', ids[i]).target);
+                        //             }
+                        //         }
+                        //     }
+                        // }, 'json');
+                    },
+                    cascadeCheck : false
                 });
 
+                var promise = $.ajax({
+                    url:base + '/resources/tree',
+                    dataType:'json',
+                    type:'get',
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                });
+                promise.done(function (data) {
+                    $('#resTree').tree('loadData',data);
+                }).fail(function (error) {
+                    console.log(error);
+                });
             });
+
+            // 勾选顶层节点和一级节点，并返回这些 节点 的 id 数组
+            function checkNode(data){
+                var ids = new Array();
+                var Top = $('#resTree').tree('find', data[0].id);
+                ids.push(top.id);
+                $('#resTree').tree('check', Top.target);
+                for(var i=0;i<data[0].children.length;i++){
+                    var node = $('#resTree').tree('find', data[0].children[i].id);
+                    $('#resTree').tree('check', node.target);
+                    ids.push(node.id);
+                }
+
+                return ids;
+            }
+
+            // 递归过滤标准树形树形，添加一个 text 属性，值就是name属性的值
+            function dataLoad(data,parent) {
+                data.forEach(function (obj,index) {
+                    obj.text = obj.name;
+
+                    childLoad(obj);
+                })
+
+                return data;
+            }
+            function childLoad(obj) {
+                if(obj.children !== null && obj.children.length > 0){
+                    obj.children.forEach(function (obj, index) {
+                        obj.text = obj.name;
+                        childLoad(obj);
+                    })
+                }
+            }
+
         </script>
     </body>
 </html>
