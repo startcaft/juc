@@ -7,12 +7,19 @@
 package com.startcaft.basic.service.impl;
 
 import com.startcaft.basic.core.entity.Role;
+import com.startcaft.basic.core.entity.RoleResource;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.RoleVo;
 import com.startcaft.basic.dao.master.IRoleDao;
+import com.startcaft.basic.dao.master.IRoleResourceDao;
 import com.startcaft.basic.service.IRoleService;
+import org.apache.ibatis.session.SqlSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -30,6 +37,14 @@ public class RoleServiceImpl implements IRoleService {
 
     @Autowired
     private IRoleDao roleDao;
+
+    @Autowired
+    private IRoleResourceDao roleResourceDao;
+
+    @Qualifier("masterBatchSqlSession")
+    private SqlSession batchSqlSession;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RoleServiceImpl.class);
 
     @Override
     public Set<RoleVo> getRoles(String name) throws BasicProException {
@@ -53,6 +68,31 @@ public class RoleServiceImpl implements IRoleService {
             });
 
             return voSet;
+        }
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void grant(long roleId, long[] resIds) throws BasicProException {
+        {
+            long startTime = System.currentTimeMillis();
+
+            // 先进行删除
+            roleResourceDao.deleteByRoleId(roleId);
+
+            // 再进行批量插入
+            for(int i=0; i<resIds.length; i++){
+                try {
+                    batchSqlSession.getMapper(IRoleResourceDao.class).insert(new RoleResource(roleId,resIds[i]));
+                }
+                catch (Exception e){
+                    throw new BasicProException(e);
+                }
+            }
+
+            long endTime = System.currentTimeMillis();
+
+            LOGGER.info("批量授权执行时长:" + (endTime - startTime) + " ms");
         }
     }
 }

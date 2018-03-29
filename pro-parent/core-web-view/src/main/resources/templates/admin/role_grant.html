@@ -73,25 +73,11 @@
                         }).fail(function (error) {
                             console.log(error);
                         });
-                        // $.post( '${ctx}/role/get', {
-                        //     id : '${role.id}'
-                        // }, function(result) {
-                        //     var ids;
-                        //     if (result.id != undefined&&result.resourceIds!= undefined) {
-                        //         ids = $.stringToList(result.resourceIds);
-                        //     }
-                        //     if (ids.length > 0) {
-                        //         for ( var i = 0; i < ids.length; i++) {
-                        //             if (resourceTree.tree('find', ids[i])) {
-                        //                 resourceTree.tree('check', resourceTree.tree('find', ids[i]).target);
-                        //             }
-                        //         }
-                        //     }
-                        // }, 'json');
                     },
                     cascadeCheck : false
                 });
 
+                // 获取资源树的数据
                 var promise = $.ajax({
                     url:base + '/resources/tree',
                     dataType:'json',
@@ -102,6 +88,35 @@
                     $('#resTree').tree('loadData',data);
                 }).fail(function (error) {
                     console.log(error);
+                });
+
+
+                // 授权
+                $("#btn_saveOrder").click(function(){
+                    $("#btn_saveOrder").attr("disabled","disabled");
+                    var nodes = $.fn.zTree.getZTreeObj("resTree").getCheckedNodes(true);
+                    var selectIds="";
+                    for(var index in nodes){
+                        var item=nodes[index];
+                        selectIds+=item.id+",";
+                    }
+                    var submitData={
+                        "resIds":selectIds,
+                        "roleId":"${roleId}",
+                    }
+                    $.post("${context}/admin/roles/grant" , submitData ,
+                        function(data){
+                            if(data.success){
+                                layer.msg("操作成功", {
+                                    icon: 1,
+                                    time: 1000 //1秒关闭（如果不配置，默认是3秒）
+                                });
+                            }
+                            else {
+                                layer.msg(data.tipInfo);
+                            }
+                            $("#btn_saveOrder").removeAttr("disabled");
+                        },"json");
                 });
             });
 

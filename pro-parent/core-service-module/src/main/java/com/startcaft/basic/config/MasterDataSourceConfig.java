@@ -1,8 +1,11 @@
 package com.startcaft.basic.config;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import org.apache.ibatis.session.ExecutorType;
+import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
+import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +43,8 @@ public class MasterDataSourceConfig {
      */
     static final String MYBATIS_CONFIG_FILE = "mybatis_config.xml";
 
-    /*JDBC连接配置*/
+    // JDBC连接配置
+
     @Value("${master.datasource.url}")
     private String url;
     @Value("${master.datasource.username}")
@@ -50,7 +54,8 @@ public class MasterDataSourceConfig {
     @Value("${master.datasource.driverClassName}")
     private String driverClass;
 
-    /*数据源配置*/
+    // 数据源配置
+
     @Value("${master.datasource.initialSize}")
     private Integer initialSize;
     @Value("${master.datasource.minIdle}")
@@ -80,8 +85,10 @@ public class MasterDataSourceConfig {
     @Value("${master.datasource.connectionProperties}")
     private String connectionProperties;
 
-
-    // master数据源
+    /**
+     * master数据源
+     * @return
+     */
     @Bean("masterDataSource")
     @Primary
     public DataSource masterDataSource(){
@@ -114,14 +121,23 @@ public class MasterDataSourceConfig {
         return dataSource;
     }
 
-    // master事务管理器
+    /**
+     * master事务管理器
+     * @param masterDataSource
+     * @return
+     */
     @Bean(name = "masterTransactionManager")
     @Primary
     public DataSourceTransactionManager masterTransactionManager(@Qualifier("masterDataSource") DataSource masterDataSource) {
         return new DataSourceTransactionManager(masterDataSource);
     }
 
-    // masterSqlSessionFactory
+    /**
+     * masterSqlSessionFactory
+     * @param masterDataSource
+     * @return
+     * @throws Exception
+     */
     @Bean(name = "masterSqlSessionFactory")
     @Primary
     public SqlSessionFactory masterSqlSessionFactory(@Qualifier("masterDataSource") DataSource masterDataSource)
@@ -132,5 +148,16 @@ public class MasterDataSourceConfig {
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver()
                 .getResources(MasterDataSourceConfig.MAPPER_LOCATION));
         return sessionFactory.getObject();
+    }
+
+    /**
+     * master用于执行批量操作的sqlSession
+     * @param sqlSessionFactory
+     * @return
+     */
+    @Bean(name = "masterBatchSqlSession")
+    public SqlSession masterBatchSqlSession(@Qualifier("masterSqlSessionFactory") SqlSessionFactory sqlSessionFactory){
+        SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory, ExecutorType.BATCH);
+        return  sqlSessionTemplate;
     }
 }

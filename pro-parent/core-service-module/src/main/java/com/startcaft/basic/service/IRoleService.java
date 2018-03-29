@@ -18,4 +18,12 @@ public interface IRoleService {
      * @throws BasicProException
      */
     Set<RoleVo> getRoles(String name) throws BasicProException;
+
+    /**
+     * 为角色授权
+     * @param roleId 角色id
+     * @param resIds 资源id数组
+     * @throws BasicProException
+     */
+    void grant(long roleId,long[] resIds) throws BasicProException;
 }

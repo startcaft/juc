@@ -15,14 +15,10 @@
 
 
     <dependencies>
+        <!-- 包含了 日志 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
-        <!--日志-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-loggin</artifactId>
         </dependency>
         <!-- Spring Boot Test 依赖 -->
         <dependency>
@@ -93,6 +89,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>1.5.4.RELEASE</version>
             </plugin>
             <!-- mybatis-generator -->
             <plugin>
