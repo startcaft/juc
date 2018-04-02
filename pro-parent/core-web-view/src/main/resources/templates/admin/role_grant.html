@@ -49,6 +49,9 @@
             easyloader.base = "/easyui/";
             easyloader.locales = 'zh_CN';
             easyloader.theme = 'bootstrap';
+
+            var ingoreIds = [];
+
             easyloader.load('tree',function(){
                 $('#resTree').tree({
                     lines : true,
@@ -58,7 +61,7 @@
                     },
                     onLoadSuccess : function(node, data) {
                         var roleId = $('#roleId').val();
-                        var ingoreIds = checkNode(data);
+                        ingoreIds = checkNode(data);
                         $.ajax({
                             url:base + '/resources/roleRes/' + roleId,
                             dataType:'json',
@@ -94,44 +97,56 @@
                 // 授权
                 $("#btn_saveOrder").click(function(){
                     $("#btn_saveOrder").attr("disabled","disabled");
-                    var nodes = $.fn.zTree.getZTreeObj("resTree").getCheckedNodes(true);
-                    var selectIds="";
+                    var nodes = $('#resTree').tree('getChecked');
+                    var selectIds = [];
                     for(var index in nodes){
-                        var item=nodes[index];
-                        selectIds+=item.id+",";
+                        var row = nodes[index];
+                        selectIds[index] = row.id;
                     }
-                    var submitData={
-                        "resIds":selectIds,
-                        "roleId":"${roleId}",
+
+                    // 忽略掉 顶级菜单，一级菜单
+                    for(var i=0;i<selectIds.length;i++){
+                        for(var j=0;j<ingoreIds.length;j++){
+                            if(selectIds[i] === ingoreIds[j]){
+                                selectIds.splice(i,1)
+                            }
+                        }
                     }
-                    $.post("${context}/admin/roles/grant" , submitData ,
-                        function(data){
-                            if(data.success){
-                                layer.msg("操作成功", {
-                                    icon: 1,
-                                    time: 1000 //1秒关闭（如果不配置，默认是3秒）
-                                });
-                            }
-                            else {
-                                layer.msg(data.tipInfo);
-                            }
-                            $("#btn_saveOrder").removeAttr("disabled");
-                        },"json");
+
+                    $.ajax({
+                        url:base + '/roles/grant?roleId=' + $('#roleId').val() + "&resIds[]=" + selectIds.join(","),
+                        dataType:'json',
+                        type:'get',
+                        headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                    }).done(function (data) {
+                        if(data.reqSuccess){
+                            layer.msg("操作成功", {
+                                icon: 1,
+                                time: 3000 //1秒关闭（如果不配置，默认是3秒）
+                            });
+                        }
+                        else {
+                            layer.msg(data.msg);
+                        }
+                        $("#btn_saveOrder").removeAttr("disabled");
+                    }).fail(function (error) {
+                        console.log(error);
+                        $("#btn_saveOrder").removeAttr("disabled");
+                    });
                 });
             });
 
             // 勾选顶层节点和一级节点，并返回这些 节点 的 id 数组
             function checkNode(data){
                 var ids = new Array();
-                var Top = $('#resTree').tree('find', data[0].id);
+                var top = $('#resTree').tree('find', data[0].id);
                 ids.push(top.id);
-                $('#resTree').tree('check', Top.target);
+                $('#resTree').tree('check', top.target);
                 for(var i=0;i<data[0].children.length;i++){
                     var node = $('#resTree').tree('find', data[0].children[i].id);
                     $('#resTree').tree('check', node.target);
                     ids.push(node.id);
                 }
-
                 return ids;
             }
 

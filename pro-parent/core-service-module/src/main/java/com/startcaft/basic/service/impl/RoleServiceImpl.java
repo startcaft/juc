@@ -17,11 +17,11 @@ import org.apache.ibatis.session.SqlSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -41,7 +41,7 @@ public class RoleServiceImpl implements IRoleService {
     @Autowired
     private IRoleResourceDao roleResourceDao;
 
-    @Qualifier("masterBatchSqlSession")
+    @Resource(name="masterBatchSqlSession")
     private SqlSession batchSqlSession;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(RoleServiceImpl.class);
@@ -78,7 +78,8 @@ public class RoleServiceImpl implements IRoleService {
             long startTime = System.currentTimeMillis();
 
             // 先进行删除
-            roleResourceDao.deleteByRoleId(roleId);
+            //roleResourceDao.deleteByRoleId(roleId);
+            batchSqlSession.getMapper(IRoleResourceDao.class).deleteByRoleId(roleId);
 
             // 再进行批量插入
             for(int i=0; i<resIds.length; i++){

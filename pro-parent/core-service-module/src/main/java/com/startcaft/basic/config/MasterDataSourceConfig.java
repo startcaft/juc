@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Description;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+
 import javax.sql.DataSource;
 import java.sql.SQLException;
 
@@ -156,6 +158,7 @@ public class MasterDataSourceConfig {
      * @return
      */
     @Bean(name = "masterBatchSqlSession")
+    @Description("使用 master 数据源，用来执行批量操作的的 SqlSession（Mybatis提供的）")
     public SqlSession masterBatchSqlSession(@Qualifier("masterSqlSessionFactory") SqlSessionFactory sqlSessionFactory){
         SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory, ExecutorType.BATCH);
         return  sqlSessionTemplate;

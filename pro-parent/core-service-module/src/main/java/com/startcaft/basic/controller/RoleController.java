@@ -7,6 +7,7 @@
 package com.startcaft.basic.controller;
 
 import com.startcaft.basic.core.beans.DataGridBean;
+import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.core.vo.RoleVo;
 import com.startcaft.basic.service.IRoleService;
 import io.swagger.annotations.Api;
@@ -16,10 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 
@@ -50,6 +48,23 @@ public class RoleController extends BaseController {
         {
             Set<RoleVo> voSet = roleService.getRoles(name);
             return new DataGridBean<RoleVo>(voSet.size(),voSet);
+        }
+    }
+
+    @ApiOperation(value = "为角色授权",notes = "需要用户登陆")
+    @ApiImplicitParams(
+            {
+                @ApiImplicitParam(name = "roleId",required = true,dataType = "long",paramType = "query"),
+                @ApiImplicitParam(name = "resIds[]",required = true,dataType = "long[]",paramType = "query")
+            }
+    )
+    @GetMapping(value = "/grant",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean grant(@RequestParam(value = "roleId")  long roleId,
+                              @RequestParam(value = "resIds[]")  long[]  resIds) {
+        {
+            roleService.grant(roleId,resIds);
+            return new ResponseBean(true,SUCCESS_MSG,"授权成功");
         }
     }
 }
