@@ -300,7 +300,7 @@
                             layer.msg(result.msg);
                         }
                     }).fail(function (error) {
-                        console.log(error);
+                        layer.msg(error.responseJSON.msg);
                     })
                     $btn.removeClass('disabled');
                     return false;

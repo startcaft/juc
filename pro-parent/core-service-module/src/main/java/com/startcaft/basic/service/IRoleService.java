@@ -1,5 +1,7 @@
 package com.startcaft.basic.service;
 
+import com.startcaft.basic.core.beans.RoleBean;
+import com.startcaft.basic.core.beans.RoleModifyBean;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.RoleVo;
 
@@ -26,4 +28,26 @@ public interface IRoleService {
      * @throws BasicProException
      */
     void grant(long roleId,long[] resIds) throws BasicProException;
+
+    /**
+     * 添加角色，确保角色名唯一，确保角色别名唯一
+     * @param roleBean
+     * @throws BasicProException
+     */
+    void insertRole(RoleBean roleBean) throws BasicProException;
+
+    /**
+     * 修改角色信息，确保角色名唯一，确保角色别名唯一
+     * @param bean
+     * @throws BasicProException
+     */
+    void modifyRole(RoleModifyBean bean) throws BasicProException;
+
+    /**
+     * 获取角色的基本信息
+     * @param roleId
+     * @return
+     * @throws BasicProException
+     */
+    RoleVo getRoleInfo(long roleId) throws BasicProException;
 }

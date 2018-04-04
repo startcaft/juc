@@ -29,6 +29,10 @@
                 <bind name="_roleName" value="'%'+name+'%'"/>
                 and role_name like #{_roleName}
             </if>
+            <if test="alias != null and alias != ''">
+                <bind name="_alias" value="'%'+alias+'%'"/>
+                and role_alias like #{_alias}
+            </if>
         </where>
     </select>
 
@@ -42,27 +46,17 @@
     <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.Role" >
         update sys_role
         <set >
-            <if test="description != null" >
-                desc = #{desc,jdbcType=VARCHAR},
+            <if test="desc != null" >
+                role_desc = #{desc,jdbcType=VARCHAR},
             </if>
             <if test="name != null" >
-                name = #{name,jdbcType=VARCHAR},
+                role_name = #{name,jdbcType=VARCHAR},
+            </if>
+            <if test="alias != null" >
+                role_alias = #{alias,jdbcType=VARCHAR},
             </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
-    <!--&lt;!&ndash;中间表的操作&ndash;&gt;-->
-    <!--<delete id="deleteRoleRes" parameterType="java.lang.Long" >-->
-        <!--delete from-->
-        <!--sys_role_resource-->
-        <!--where-->
-        <!--role_id = #{id,jdbcType=BIGINT}-->
-    <!--</delete>-->
-
-    <!--<insert id="insertRoleRes">-->
-        <!--insert into sys_role_resource (role_id,resource_id)-->
-        <!--values (#{roleId,jdbcType=BIGINT},#{resId,jdbcType=BIGINT})-->
-    <!--</insert>-->
 
 </mapper>

@@ -22,28 +22,28 @@ import java.util.Set;
 public interface IRoleDao {
 
     /**
-     *
+     * 查询详细
      * @param id
      * @return
      */
     Role selectByPrimaryKey(Long id);
 
     /**
-     *
+     * 动态查询
      * @param params
      * @return
      */
     Set<Role> selectListDynamic(Map<String,Object> params);
 
     /**
-     *
+     * 插入
      * @param role
      * @return
      */
     Integer insert(Role role);
 
     /**
-     *
+     * 更新
      * @param role
      * @return
      */

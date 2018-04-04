@@ -97,10 +97,10 @@
                 promise1.done(function (data) {
                     var res = data.data;
                     if(isInArray(res,'/admin/role/add')){
-                        $('#permissionBtns').append('<button class="btn btn-primary" onclick="addRes()" id="btn-add">添加</button>');
+                        $('#permissionBtns').append('<button class="btn btn-primary" onclick="addRole()" id="btn-add">添加</button>');
                     }
                     if(isInArray(res,'/admin/role/edit')){
-                        $('#permissionBtns').append('<button class="btn btn-info" onclick="modifyRes()" id="btn-edit">编辑</button>');
+                        $('#permissionBtns').append('<button class="btn btn-info" onclick="modifyRole()" id="btn-edit">编辑</button>');
                     }
                     if(isInArray(res,'/admin/role/grant')){
                         $('#permissionBtns').append('<button class="btn" onclick="grant()" id="btn-grant">授权</button>');
@@ -148,21 +148,21 @@
                 });
             }
             // 添加按钮事件处理函数
-            function addRes(){
+            function addRole(){
                 layer.open({
                     type: 2,
                     fix: false,
-                    title: '添加系统资源',
+                    title: '添加角色',
                     maxmin: true,
-                    content: '/admin/resource/add',
+                    content: '/admin/role/add',
                     area: ['770px', '520px']
                 });
             }
             // 修改按钮事件处理函数
-            function modifyRes() {
+            function modifyRole() {
                 var row = selectRow();
                 if (row === null) {
-                    layer.msg("请选择要修改的资源数据行");
+                    layer.msg("请选择要修改的角色数据行");
                     return;
                 }
                 layer.open({
@@ -170,7 +170,7 @@
                     fix: false,
                     title: '资源修改',
                     maxmin: true,
-                    content: '/admin/resource/edit/'+row.id,
+                    content: '/admin/role/edit/'+row.id,
                     area: ['770px', '520px']
                 });
             }
@@ -185,7 +185,7 @@
             }
             //重新加载表格
             function reloadGrid(){
-                $('#grid-table').datagrid('load');
+                $('#grid-table').datagrid('reload');
             }
             //选中表格的一行
             function selectRow(){

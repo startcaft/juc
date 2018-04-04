@@ -6,9 +6,13 @@
  */
 package com.startcaft.basic.service.impl;
 
+import com.startcaft.basic.core.beans.RoleBean;
+import com.startcaft.basic.core.beans.RoleModifyBean;
 import com.startcaft.basic.core.entity.Role;
 import com.startcaft.basic.core.entity.RoleResource;
 import com.startcaft.basic.core.exceptions.BasicProException;
+import com.startcaft.basic.core.exceptions.SqlExecuteException;
+import com.startcaft.basic.core.exceptions.UniqueException;
 import com.startcaft.basic.core.vo.RoleVo;
 import com.startcaft.basic.dao.master.IRoleDao;
 import com.startcaft.basic.dao.master.IRoleResourceDao;
@@ -78,7 +82,6 @@ public class RoleServiceImpl implements IRoleService {
             long startTime = System.currentTimeMillis();
 
             // 先进行删除
-            //roleResourceDao.deleteByRoleId(roleId);
             batchSqlSession.getMapper(IRoleResourceDao.class).deleteByRoleId(roleId);
 
             // 再进行批量插入
@@ -94,6 +97,90 @@ public class RoleServiceImpl implements IRoleService {
             long endTime = System.currentTimeMillis();
 
             LOGGER.info("批量授权执行时长:" + (endTime - startTime) + " ms");
+        }
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void insertRole(RoleBean roleBean) throws BasicProException {
+        {
+            Map<String,Object> params = new HashMap<>();
+            Set<Role> roleSet;
+
+            // 先验证角色名是否唯一
+            params.put("name",roleBean.getName());
+            roleSet = roleDao.selectListDynamic(params);
+            if (roleSet != null && roleSet.size() > 0){
+                throw new UniqueException("role_name:[" + roleBean.getName() + "] is exist!");
+            }
+
+            // 再验证角色别名是否唯一
+            params.clear();
+            params.put("alias", roleBean.getAlias());
+            roleSet = roleDao.selectListDynamic(params);
+            if (roleSet != null && roleSet.size() > 0){
+                throw new UniqueException("role_alias:[" + roleBean.getAlias() + "] is exist!");
+            }
+
+            Role role = new Role();
+            roleBean.copyPropertiesTemplate(role);
+
+            int result = roleDao.insert(role);
+            if (result != 1){
+                throw new SqlExecuteException("execute insert result is error");
+            }
+        }
+    }
+
+    @Override
+    public RoleVo getRoleInfo(long roleId) throws BasicProException {
+        {
+            RoleVo vo = new RoleVo();
+            Role role = roleDao.selectByPrimaryKey(roleId);
+
+            Optional<Role> optionalRole = Optional.ofNullable(role);
+            optionalRole.ifPresent((r) -> {
+                r.copyPropertiesTemplate(vo);
+            });
+
+            return vo;
+        }
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void modifyRole(RoleModifyBean bean) throws BasicProException {
+        {
+            Map<String,Object> params = new HashMap<>();
+            Set<Role> roleSet;
+
+            if (bean.isCheckName()){
+                // 先验证角色名是否唯一
+                params.put("name",bean.getName());
+                roleSet = roleDao.selectListDynamic(params);
+                if (roleSet != null && roleSet.size() > 0){
+                    throw new UniqueException("role_name:[" + bean.getName() + "] is exist!");
+                }
+            }
+
+            if (bean.isCheckAlias()){
+                // 再验证角色别名是否唯一
+                params.clear();
+                params.put("alias", bean.getAlias());
+                roleSet = roleDao.selectListDynamic(params);
+                if (roleSet != null && roleSet.size() > 0){
+                    throw new UniqueException("role_alias:[" + bean.getAlias() + "] is exist!");
+                }
+            }
+
+
+            Role role = new Role();
+            bean.copyPropertiesTemplate(role);
+
+            int result = roleDao.updateByPrimaryKeySelective(role);
+            if (result != 1){
+                throw new SqlExecuteException("execute insert result is error");
+            }
         }
     }
 }

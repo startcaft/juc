@@ -34,4 +34,15 @@ public class RoleController {
         model.addAttribute("roleId",roleId);
         return "admin/role_grant";
     }
+
+    @GetMapping("/add")
+    public String add(){
+        return "admin/role_add";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String roleModify(@PathVariable(value = "id",required = true) Long id, Model model){
+        model.addAttribute("roleId",id);
+        return "admin/role_add";
+    }
 }

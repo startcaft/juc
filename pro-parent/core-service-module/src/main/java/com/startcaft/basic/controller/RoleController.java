@@ -7,6 +7,8 @@
 package com.startcaft.basic.controller;
 
 import com.startcaft.basic.core.beans.DataGridBean;
+import com.startcaft.basic.core.beans.RoleBean;
+import com.startcaft.basic.core.beans.RoleModifyBean;
 import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.core.vo.RoleVo;
 import com.startcaft.basic.service.IRoleService;
@@ -19,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.Set;
 
 
@@ -65,6 +68,57 @@ public class RoleController extends BaseController {
         {
             roleService.grant(roleId,resIds);
             return new ResponseBean(true,SUCCESS_MSG,"授权成功");
+        }
+    }
+
+    @ApiOperation(value = "获取角色的基本信息",notes = "需要用户登陆")
+    @ApiImplicitParams(
+                @ApiImplicitParam(name = "roleId",required = true,dataType = "long",paramType = "path")
+    )
+    @GetMapping(value = "/{roleId}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean getRole(@PathVariable(value = "roleId",required = true)long roleId){
+        {
+            RoleVo vo = roleService.getRoleInfo(roleId);
+            return new ResponseBean(true,SUCCESS_MSG,vo);
+        }
+    }
+
+    @ApiOperation(value = "新增角色",notes = "判断条件就是bean中的id是否为空")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "bean",required = true,dataType = "RoleBean",paramType = "body")
+    )
+    @PostMapping(value = "/save",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean save(@Valid @RequestBody RoleBean bean) {
+        {
+            ResponseBean<String> result = new ResponseBean<>();
+            roleService.insertRole(bean);
+
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("save role[" + bean.getName() + "] success");
+
+            return result;
+        }
+    }
+
+    @ApiOperation(value = "修改角色",notes = "判断条件就是bean中的id是否为空")
+    @ApiImplicitParams(
+            @ApiImplicitParam(name = "bean",required = true,dataType = "RoleModifyBean",paramType = "body")
+    )
+    @PostMapping(value = "/modify",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean modify(@Valid @RequestBody RoleModifyBean bean) {
+        {
+            ResponseBean<String> result = new ResponseBean<>();
+            roleService.modifyRole(bean);
+
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("modify role[" + bean.getName() + "] success");
+
+            return result;
         }
     }
 }

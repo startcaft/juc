@@ -120,7 +120,7 @@ public class ResourceController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "新增系统资源",notes = "需要用户登陆")
+    @ApiOperation(value = "新增/修改系统资源",notes = "判断条件就是bean中的id是否为空")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "bean",required = true,dataType = "ResourceBean",paramType = "body")
     })

@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="/common/common_head_css::commonHeader">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <title>添加角色</title>
+    <meta name="description" content="overview &amp; stats" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+</head>
+<body class="no-skin">
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+    </script>
+
+    <div class="main-container-inner">
+        <div class="main-content" style="margin-left: 0px;">
+            <div class="page-content">
+
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- PAGE CONTENT BEGINS -->
+                        <div class="widget-box">
+
+                            <div class="widget-body">
+                                <div class="widget-main">
+                                    <!-- #section:plugins/fuelux.wizard.container -->
+                                    <div class="step-content pos-rel" id="step-container">
+                                        <div class="step-pane active" id="step1">
+                                            <form class="form-horizontal" id="validation-form" method="post">
+                                                <input name="id" id="roleId" th:value="${roleId}" type="hidden" value="" />
+                                                <div class="form-group">
+                                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">角色名称</label>
+                                                    <div class="col-xs-12 col-sm-9">
+                                                        <div class="clearfix">
+                                                            <input type="text" id="name" name="name" value="" class="col-xs-12 col-sm-6">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="desc">角色描述</label>
+                                                    <div class="col-xs-12 col-sm-9">
+                                                        <div class="clearfix">
+                                                            <input type="text" id="desc" name="desc" value="" class="col-xs-12 col-sm-6">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="alias">角色别名</label>
+                                                    <div class="col-xs-12 col-sm-9">
+                                                        <div class="clearfix">
+                                                            <input type="text" id="alias" name="alias" value="" class="col-xs-12 col-sm-6">
+                                                        </div>
+                                                        <span style="color: red">*角色名称英文别名，在授权时需要用到，它应该是唯一的</span>
+                                                    </div>
+                                                </div>
+                                                <div class="clearfix form-actions" align="center">
+                                                    <div class="col-md-offset-3 col-md-9">
+                                                        <button id="submit-btn" class="btn btn-info btn-sm" type="submit" data-last="Finish">
+                                                            <i class="ace-icon fa fa-check bigger-110"></i>
+                                                            提交
+                                                        </button>
+                                                        &nbsp; &nbsp; &nbsp;
+                                                        <button class="btn btn-sm" type="button" onclick="closeView()">
+                                                            取消
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div><!-- /.widget-main -->
+                            </div><!-- /.widget-body -->
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
+            </div><!-- /.page-content -->
+        </div><!-- /.main-content -->
+    </div><!-- /.main-container-inner -->
+</div><!-- /.main-container -->
+
+<!--导入通用js-->
+<div th:include="/common/common_head_js::onLoadJS"></div>
+<script th:src="@{/easyui/easyloader.js}"></script>
+<!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+<script th:src="@{/script/cookieStorage.js}"></script>
+<script th:src="@{/script/myStorage.js}"></script>
+
+<script type="text/javascript">
+    var base = 'http://localhost:8080';
+    // easyloader.base = "/easyui/";
+    // easyloader.locales = 'zh_CN';
+    // easyloader.theme = 'bootstrap';
+    // easyloader.load('treegrid',function(){
+    // });
+
+    $(function () {
+        databind();
+        initformSubmitEvent();
+    })
+
+    var $validation = true;
+    var oldName,oldAlias;
+    function initformSubmitEvent(){
+        $('#validation-form').validate({
+            errorElement: 'div',
+            errorClass: 'help-block',
+            focusInvalid: false,
+            rules: {
+                name:{
+                    required: true
+                },
+                alias:{
+                    required: true
+                }
+            },
+            messages: {
+                name:{
+                    required: "请输入角色名称"
+                },
+                alias:{
+                    required: "请输入角色名称的英文别名"
+                }
+            },
+            highlight: function (e) {
+                $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
+            },
+            success: function (e) {
+                $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
+                $(e).remove();
+            },
+            errorPlacement: function (error, element) {
+                if(element.is(':checkbox') || element.is(':radio')) {
+                    var controls = element.closest('div[class*="col-"]');
+                    if(controls.find(':checkbox,:radio').length > 1) controls.append(error);
+                    else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
+                }
+                else if(element.is('.select2')) {
+                    error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
+                }
+                else if(element.is('.chosen-select')) {
+                    error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
+                }
+                else error.insertAfter(element.parent());
+            },
+            submitHandler: function (form) {
+                var $form = $("#validation-form");
+                var $btn = $("#submit-btn");
+                if($btn.hasClass("disabled")) return;
+                $btn.addClass("disabled");
+
+                // var postData = $("#validation-form").serialize();
+                var id = $('#roleId').val();
+                var postData;
+                var submitUrl;
+                if (id != null && id != ''){
+                     postData = {
+                        name:$('#name').val(),
+                        desc:$('#desc').val(),
+                        alias:$('#alias').val(),
+                        id:$('#roleId').val(),
+                        checkName: ($('#name').val() === oldName) ? false : true,
+                        checkAlias: ($('#alias').val() === oldAlias) ? false : true,
+                    }
+                    submitUrl = base + '/roles/modify';
+                }
+                else {
+                    postData = {
+                        name:$('#name').val(),
+                        desc:$('#desc').val(),
+                        alias:$('#alias').val()
+                    };
+                    submitUrl = base + '/roles/save';
+                }
+
+                var promise = $.ajax({
+                    url: submitUrl,
+                    type:'post',
+                    dataType:'json',
+                    data:JSON.stringify(postData),
+                    headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+                });
+                promise.done(function (result) {
+                    if(result.reqSuccess){
+                        layer.msg('操作成功', {
+                            icon: 1,
+                            time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                        },function(){
+                            parent.reloadGrid();
+                            var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                            parent.layer.close(index); //再执行关闭
+                        });
+                    }
+                    else {
+                        layer.msg(result.msg);
+                    }
+                }).fail(function (error) {
+                    layer.msg(error.responseJSON.msg);
+                })
+                $btn.removeClass('disabled');
+                return false;
+            },
+            invalidHandler: function (form) {
+            }
+        });
+    }
+
+    // 数据绑定，之后在 id 有值的情况才执行
+    function databind(){
+        var id = $('#roleId').val();
+        if (id != null && id != ''){
+            var promise = $.ajax({
+                url:base + '/roles/' + id,
+                dataType:'json',
+                type:'get',
+                headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+            });
+            promise.done(function (result) {
+                var obj = result.data;
+                $('#name').val(obj.name);
+                $('#desc').val(obj.desc);
+                $('#alias').val(obj.alias);
+
+                // 绑定老的数据
+                oldName = obj.name;
+                oldAlias = obj.alias;
+            }).fail(function (error) {
+                layer.msg(error.responseJSON.msg);
+            });
+        }
+    }
+</script>
+</body>
+</html>
