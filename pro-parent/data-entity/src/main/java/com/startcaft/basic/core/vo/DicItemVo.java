@@ -1,11 +1,13 @@
 package com.startcaft.basic.core.vo;
 
+import com.startcaft.basic.core.entity.DicItem;
+
 /**
  *
  * @author startcaft
  * @date 2018/3/2
  */
-public class DicItemVo extends BaseVo {
+public class DicItemVo extends BaseVo<DicItem> {
 
     private String code;
     private String name;
@@ -66,8 +68,4 @@ public class DicItemVo extends BaseVo {
         this.pname = pname;
     }
 
-    @Override
-    protected void copyOtherProperties(Object o) {
-
-    }
 }

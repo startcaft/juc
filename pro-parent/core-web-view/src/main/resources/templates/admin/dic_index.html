@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="/common/common_head_css::commonHeader">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+    <title>数据字典</title>
+    <meta name="description" content="overview &amp; stats" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+</head>
+<body class="no-skin">
+<div class="main-container" id="main-container">
+    <script type="text/javascript">
+        try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+    </script>
+
+</div><!-- /.main-container -->
+
+<!--导入通用js-->
+<div th:include="/common/common_head_js::onLoadJS"></div>
+<script th:src="@{/easyui/easyloader.js}"></script>
+<!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+<script th:src="@{/script/cookieStorage.js}"></script>
+<script th:src="@{/script/myStorage.js}"></script>
+
+<script type="text/javascript">
+    var base = 'http://localhost:8080';
+    easyloader.base = "/easyui/";
+    easyloader.locales = 'zh_CN';
+    easyloader.theme = 'bootstrap';
+    easyloader.load('treegrid',function(){
+    });
+</script>
+</body>
+</html>

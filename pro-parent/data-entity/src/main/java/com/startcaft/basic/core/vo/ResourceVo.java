@@ -1,12 +1,14 @@
 package com.startcaft.basic.core.vo;
 
+import com.startcaft.basic.core.entity.Resource;
+
 import java.util.Date;
 
 /**
  * @author startcaft
  * Created by startcaft on 2018/3/1.
  */
-public class ResourceVo extends BaseVo {
+public class ResourceVo extends BaseVo<Resource> {
 
     private Date createDatetime;
     private String description;

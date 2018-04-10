@@ -1,13 +1,16 @@
 package com.startcaft.basic.core.entity;
 
 import com.startcaft.basic.core.vo.DicItemVo;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * 数据字典实体类
  * @author startcaft
  * @date 2018/3/2
  */
-public class DicItem extends BaseEntity<DicItemVo > {
+public class DicItem extends BaseEntity<DicItemVo> {
 
     private String code;
     private String name;
@@ -19,6 +22,16 @@ public class DicItem extends BaseEntity<DicItemVo > {
      * 父节点
      */
     private DicItem parentType;
+
+    /**
+     * 子节点
+     */
+    private Set<DicItem> children = new TreeSet<>(new Comparator<DicItem>() {
+        @Override
+        public int compare(DicItem o1, DicItem o2) {
+            return o1.getId().compareTo(o2.getId());
+        }
+    });
 
     public String getCode() {
         return code;
@@ -68,6 +81,14 @@ public class DicItem extends BaseEntity<DicItemVo > {
         this.parentType = parentType;
     }
 
+    public Set<DicItem> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<DicItem> children) {
+        this.children = children;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -84,12 +105,6 @@ public class DicItem extends BaseEntity<DicItemVo > {
 
     @Override
     public int hashCode() {
-        return pid.hashCode();
-    }
-
-
-    @Override
-    protected void copyOtherProperties(DicItemVo dicItemVo) {
-
+        return id.hashCode();
     }
 }
