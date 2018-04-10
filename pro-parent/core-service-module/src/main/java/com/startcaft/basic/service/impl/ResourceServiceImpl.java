@@ -1,6 +1,7 @@
 package com.startcaft.basic.service.impl;
 
 import com.startcaft.basic.core.beans.ResourceBean;
+import com.startcaft.basic.core.beans.ResourceModifyBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.exceptions.BasicProException;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -172,11 +174,19 @@ public class ResourceServiceImpl implements IResourceService {
 
     @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
     @Override
-    public void modifyResource(ResourceBean bean) throws BasicProException {
+    public void modifyResource(ResourceModifyBean bean) throws BasicProException {
         {
             // 确保只有一个根节点
             if (bean.getPid() == 0){
                 throw new BasicProException("系统资源只能有一个pid=0的根节点");
+            }
+
+            if (bean.isCheckName()){
+                // 确保资源名称不重复
+                Set<Resource> resourceSet = resourceDao.selectByName(bean.getName());
+                if (resourceSet != null && resourceSet.size() > 0){
+                    throw new BasicProException("资源名[" + bean.getName() + "]已经存在");
+                }
             }
 
             Resource resource = new Resource();
@@ -184,7 +194,7 @@ public class ResourceServiceImpl implements IResourceService {
 
             int result = resourceDao.updateByPrimaryKeySelective(resource);
             if (result != 1){
-                throw new SqlExecuteException("execute insert result is error");
+                throw new SqlExecuteException("数据库语句执行错误，原本修改一条数据，返回的执行结果却不是1");
             }
         }
     }

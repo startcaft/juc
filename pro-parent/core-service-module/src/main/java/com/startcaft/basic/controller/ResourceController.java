@@ -1,6 +1,7 @@
 package com.startcaft.basic.controller;
 
 import com.startcaft.basic.core.beans.ResourceBean;
+import com.startcaft.basic.core.beans.ResourceModifyBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.core.vo.ResponseBean;
@@ -120,7 +121,7 @@ public class ResourceController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "新增/修改系统资源",notes = "判断条件就是bean中的id是否为空")
+    @ApiOperation(value = "新增系统资源",notes = "需要用户登陆")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "bean",required = true,dataType = "ResourceBean",paramType = "body")
     })
@@ -130,21 +131,29 @@ public class ResourceController extends BaseController {
         {
             ResponseBean<String> result = new ResponseBean<>();
 
-            if (bean.getId() == null || bean.getId().intValue() == 0){
-                // 新增
-                resourceService.AddResource(bean);
+            resourceService.AddResource(bean);
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("save resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
 
-                result.setReqSuccess(true);
-                result.setMsg(SUCCESS_MSG);
-                result.setData("save resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
-            }
-            else {
-                // 修改
-                resourceService.modifyResource(bean);
-                result.setReqSuccess(true);
-                result.setMsg(SUCCESS_MSG);
-            }
+            return result;
+        }
+    }
 
+    @ApiOperation(value = "修改系统资源",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bean",required = true,dataType = "ResourceModifyBean",paramType = "body")
+    })
+    @PostMapping(value = "/modify",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean<String> modifyResource(@Valid @RequestBody ResourceModifyBean bean){
+        {
+            ResponseBean<String> result = new ResponseBean<>();
+
+            resourceService.modifyResource(bean);
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("modify resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
 
             return result;
         }

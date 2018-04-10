@@ -2,6 +2,7 @@ package com.startcaft.basic.service;
 
 
 import com.startcaft.basic.core.beans.ResourceBean;
+import com.startcaft.basic.core.beans.ResourceModifyBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.vo.ResourceVo;
@@ -78,8 +79,8 @@ public interface IResourceService {
 
     /**
      * 修改一给系统资源数据
-     * @param bean ResourceBean
+     * @param bean ResourceModifyBean
      * @throws BasicProException
      */
-    void modifyResource(ResourceBean bean) throws BasicProException;
+    void modifyResource(ResourceModifyBean bean) throws BasicProException;
 }

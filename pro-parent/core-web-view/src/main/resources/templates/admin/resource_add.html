@@ -165,8 +165,11 @@
                     $('#resTypeCode').val(obj.resTypeCode);
                     $('#url').val(obj.url);
                     $('#seq').val(obj.seq);
+
+                    // 绑定老的数据
+                    oldName = obj.name;
                 }).fail(function (error) {
-                    console.log(error);
+                    layer.msg(error.responseJSON.msg);
                 });
             }
         }
@@ -211,6 +214,7 @@
         }
 
         var $validation = true;
+        var oldName;
         function initformSubmitEvent(){
             $('#validation-form').validate({
                 errorElement: 'div',
@@ -268,18 +272,37 @@
                     $btn.addClass("disabled");
 
                     // var postData = $("#validation-form").serialize();
-                    var postData = {
-                        icon:$('#icon').val(),
-                        pid:$('#pid').val(),
-                        name:$('#name').val(),
-                        resTypeCode:$('#resTypeCode').val(),
-                        url:$('#url').val(),
-                        seq:$('#seq').val(),
-                        id:$('#resId').val()
+                    var id = $('#resId').val();
+                    var postData;
+                    var submitUrl;
+                    if (id != null && id != ''){
+                        postData = {
+                            icon:$('#icon').val(),
+                            pid:$('#pid').val(),
+                            name:$('#name').val(),
+                            resTypeCode:$('#resTypeCode').val(),
+                            url:$('#url').val(),
+                            seq:$('#seq').val(),
+                            id:$('#resId').val(),
+                            checkName: ($('#name').val() === oldName) ? false : true,
+                        }
+                        submitUrl = base + '/resources/modify';
+                    }
+                    else {
+                        postData = {
+                            icon:$('#icon').val(),
+                            pid:$('#pid').val(),
+                            name:$('#name').val(),
+                            resTypeCode:$('#resTypeCode').val(),
+                            url:$('#url').val(),
+                            seq:$('#seq').val(),
+                            id:$('#resId').val(),
+                        }
+                        submitUrl = base + '/resources/save';
                     }
 
                     var promise = $.ajax({
-                        url: base + '/resources/save',
+                        url: submitUrl,
                         type:'post',
                         dataType:'json',
                         data:JSON.stringify(postData),
