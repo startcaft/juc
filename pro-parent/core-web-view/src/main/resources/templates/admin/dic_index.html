@@ -8,27 +8,120 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 </head>
 <body class="no-skin">
-<div class="main-container" id="main-container">
+    <div class="main-container" id="main-container">
+        <script type="text/javascript">
+            try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+        </script>
+
+        <div id="layout" class="easyui-layout">
+            <div data-options="region:'west'" style="width:200px;">
+                <div id="accordion" class="easyui-accordion">
+                </div>
+            </div>
+            <div data-options="region:'center',title:'数据字典列表'" style="padding:5px">
+                <table id="grid-table"></table>
+            </div>
+        </div>
+
+    </div><!-- /.main-container -->
+
+    <!--导入通用js-->
+    <div th:include="/common/common_head_js::onLoadJS"></div>
+    <script th:src="@{/easyui/easyloader.js}"></script>
+    <!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
+    <script th:src="@{/script/cookieStorage.js}"></script>
+    <script th:src="@{/script/myStorage.js}"></script>
+
     <script type="text/javascript">
-        try{ace.settings.check('main-container' , 'fixed')}catch(e){}
+        var base = 'http://localhost:8080';
+        easyloader.base = "/easyui/";
+        easyloader.locales = 'zh_CN';
+        easyloader.theme = 'bootstrap';
+        easyloader.load(['layout','accordion','treegrid','panel'],function(){
+
+            // 初始化 easyui 组件
+            $('#layout').layout({
+                fit:true
+            });
+
+            $('#accordion').accordion({
+                animate:true,
+                multiple:false,
+                fit:true,
+                selected:-1,
+                border:false,
+                onSelect:onAccordionSelected
+            });
+
+            $('#grid-table').treegrid({
+                idField:'id',
+                treeField:'name',
+                loadMsg: "加载中......",
+                fit:false,
+                fitColumns:true,
+                autoRowHeight:false,
+                animate:true,
+                columns:[[
+                    {title:'字典项目',field:'name',width:120,align:'center'},
+                    {title:'字典编码',field:'code',width:100,align:'center'},
+                ]]
+            });
+
+            // 动态加载 accordion 下面的面板
+            var promise = $.ajax({
+                url:base + '/dics/roots',
+                dataType:'json',
+                type:'get',
+                headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+            });
+            promise.done(function (data) {
+                if(data.reqSuccess){
+                    $.each(data.data,function(index,item){
+                        var desc = item.description || '这里可以添加对数据字典顶层类别的说明';
+                        $('#accordion').accordion('add', {
+                            title: item.name,
+                            content: '<p>' + desc + '</p>',
+                            selected: false,
+                            id: item.id
+                        });
+                    });
+                }
+            }).fail(function (error) {
+                layer.msg(error.responseJSON.msg);
+            });
+        });
+
+        // 大类panel被选择事件
+        function onAccordionSelected(title,index){
+            var panel = $('#accordion').accordion('getPanel',title);
+            var obj = panel.panel('options');
+
+            loadGrid(obj.id);
+        }
+
+        // 加载表格
+        function loadGrid(dicId){
+            var promise1 = $.ajax({
+                url:base + '/dics/tree/' + dicId,
+                dataType:'json',
+                type:'get',
+                headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+            });
+            promise1.done(function (data) {
+                $('#grid-table').treegrid('loadData',data);
+            }).fail(function (error) {
+                layer.msg(error.responseJSON.msg);
+            });
+        }
+
+        //重新加载表格
+        function reloadGrid(){
+            $('#grid-table').treegrid('load');
+        }
+        //选中表格的一行
+        function selectRow(){
+            return $('#grid-table').treegrid('getSelected');
+        }
     </script>
-
-</div><!-- /.main-container -->
-
-<!--导入通用js-->
-<div th:include="/common/common_head_js::onLoadJS"></div>
-<script th:src="@{/easyui/easyloader.js}"></script>
-<!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
-<script th:src="@{/script/cookieStorage.js}"></script>
-<script th:src="@{/script/myStorage.js}"></script>
-
-<script type="text/javascript">
-    var base = 'http://localhost:8080';
-    easyloader.base = "/easyui/";
-    easyloader.locales = 'zh_CN';
-    easyloader.theme = 'bootstrap';
-    easyloader.load('treegrid',function(){
-    });
-</script>
 </body>
 </html>
