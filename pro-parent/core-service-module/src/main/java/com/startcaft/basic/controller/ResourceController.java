@@ -127,6 +127,7 @@ public class ResourceController extends BaseController {
     })
     @PostMapping(value = "/save",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
             consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
     public ResponseBean<String> addResource(@Valid @RequestBody ResourceBean bean){
         {
             ResponseBean<String> result = new ResponseBean<>();
@@ -146,6 +147,7 @@ public class ResourceController extends BaseController {
     })
     @PostMapping(value = "/modify",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
             consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
     public ResponseBean<String> modifyResource(@Valid @RequestBody ResourceModifyBean bean){
         {
             ResponseBean<String> result = new ResponseBean<>();

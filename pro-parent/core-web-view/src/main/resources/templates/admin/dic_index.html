@@ -18,7 +18,19 @@
                 <div id="accordion" class="easyui-accordion">
                 </div>
             </div>
-            <div data-options="region:'center',title:'数据字典列表'" style="padding:5px">
+            <div data-options="region:'center',title:'数据字典列表'" style="overflow:hidden;padding:5px">
+                <div class="row">
+                    <div class="col-xs-12">
+                        <!-- PAGE CONTENT BEGINS -->
+                    </div>
+                    <div class="col-xs-12">
+                        <div class="row-fluid" style="margin-bottom: 5px;">
+                            <div class="span12 control-group" id="permissionBtns">
+                                <!--权限按钮-->
+                            </div>
+                        </div>
+                    </div><!-- /.col -->
+                </div><!-- /.row -->
                 <table id="grid-table"></table>
             </div>
         </div>
@@ -89,31 +101,85 @@
             }).fail(function (error) {
                 layer.msg(error.responseJSON.msg);
             });
+
+            // 初始化权限按钮
+            var promise1 = $.ajax({
+                url:base + '/resources/userRes/' + JSON.parse( myStorage.getItem('currentUser')).name,
+                dataType:'json',
+                type:'get',
+                headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
+            });
+            promise1.done(function (data) {
+                var res = data.data;
+                if(isInArray(res,'/admin/dic/add')){
+                    $('#permissionBtns').append('<button class="btn btn-primary" onclick="addDic()" id="btn-add">添加</button>');
+                }
+                if(isInArray(res,'/admin/dic/edit')){
+                    $('#permissionBtns').append('<button class="btn btn-info" onclick="modifyDic()" id="btn-edit">编辑</button>');
+                }
+            }).fail(function (error) {
+                layer.msg(error.responseJSON.msg);
+            })
         });
 
         // 大类panel被选择事件
         function onAccordionSelected(title,index){
             var panel = $('#accordion').accordion('getPanel',title);
             var obj = panel.panel('options');
-
             loadGrid(obj.id);
         }
 
         // 加载表格
         function loadGrid(dicId){
-            var promise1 = $.ajax({
+            var promise = $.ajax({
                 url:base + '/dics/tree/' + dicId,
                 dataType:'json',
                 type:'get',
                 headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
             });
-            promise1.done(function (data) {
+            promise.done(function (data) {
                 $('#grid-table').treegrid('loadData',data);
             }).fail(function (error) {
                 layer.msg(error.responseJSON.msg);
             });
         }
 
+        function addDic(){
+            layer.open({
+                type: 2,
+                fix: false,
+                title: '添加数据字典',
+                maxmin: true,
+                content: '/admin/dic/add',
+                area: ['770px', '450px']
+            });
+        }
+
+        function modifyDic() {
+            var row = selectRow();
+            if (row === null) {
+                layer.msg("请选择要修改的字典数据行");
+                return;
+            }
+            layer.open({
+                type: 2,
+                fix: false,
+                title: '数据字典修改',
+                maxmin: true,
+                content: '/admin/dic/edit/'+row.id,
+                area: ['770px', '450px']
+            });
+        }
+
+        // 判断 url 是否在指定数组中
+        function isInArray(resArray,val){
+            for (var k=0;k<resArray.length;k++) {
+                if(val === resArray[k].url){
+                    return true;
+                }
+            }
+            return false;
+        }
         //重新加载表格
         function reloadGrid(){
             $('#grid-table').treegrid('load');

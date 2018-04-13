@@ -107,4 +107,16 @@ public class DicItem extends BaseEntity<DicItemVo> {
     public int hashCode() {
         return id.hashCode();
     }
+
+    @Override
+    protected void copyOtherProperties(DicItemVo dicItemVo) {
+        if (this.parentType != null){
+            dicItemVo.setPname(this.parentType.getName());
+        }
+    }
+
+    @Override
+    protected boolean otherPropertiesHook() {
+        return true;
+    }
 }

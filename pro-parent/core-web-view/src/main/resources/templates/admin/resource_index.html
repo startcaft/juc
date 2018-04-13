@@ -116,20 +116,20 @@
                     content: '/admin/resource/add',
                     area: ['770px', '520px']
                 });
+            }
+            // 修改按钮事件处理函数
+            function modifyRes() {
+                var row = selectRow();
+                if (row === null) {
+                    layer.msg("请选择要修改的资源数据行");
+                    return;
                 }
-                // 修改按钮事件处理函数
-                function modifyRes() {
-                    var row = selectRow();
-                    if (row === null) {
-                        layer.msg("请选择要修改的资源数据行");
-                        return;
-                    }
-                    layer.open({
-                        type: 2,
-                        fix: false,
-                        title: '资源修改',
-                        maxmin: true,
-                        content: '/admin/resource/edit/'+row.id,
+                layer.open({
+                    type: 2,
+                    fix: false,
+                    title: '资源修改',
+                    maxmin: true,
+                    content: '/admin/resource/edit/'+row.id,
                     area: ['770px', '520px']
                 });
             }
