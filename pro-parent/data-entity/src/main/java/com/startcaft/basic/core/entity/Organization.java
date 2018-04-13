@@ -1,75 +1,52 @@
 package com.startcaft.basic.core.entity;
 
-import com.startcaft.basic.core.vo.BaseVo;
+import com.startcaft.basic.core.vo.OrganizationVo;
 
-import java.util.Date;
+import java.util.Comparator;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
- * 组织部门实体类
- * @author startcaft
- * @date 2018/3/5
+ * @author Administrator
  */
-public class Organization extends BaseEntity {
+public class Organization extends BaseEntity<OrganizationVo> {
 
-    private String address;
-    private String code;
-    private Date createDatetime;
-    private String icon;
-    private String name;
-    private Integer seq;
+    private String orgName;
+
+    private String orgBak;
+
     private Long pid;
 
     /**
      * 父节点
      */
-    private Organization organization;
+    private Organization parentOrg;
 
-    public String getAddress() {
-        return address;
+    /**
+     * 子节点
+     */
+    private Set<Organization> children = new TreeSet<>(new Comparator<Organization>() {
+        @Override
+        public int compare(Organization o1, Organization o2) {
+            return o1.getId().compareTo(o2.getId());
+        }
+    });
+
+    public String getOrgName() {
+        return orgName;
     }
 
-    public void setAddress(String address) {
-        this.address = address == null ? null : address.trim();
+    public void setOrgName(String orgName) {
+        this.orgName = orgName == null ? null : orgName.trim();
     }
 
-    public String getCode() {
-        return code;
+    public String getOrgBak() {
+        return orgBak;
     }
 
-    public void setCode(String code) {
-        this.code = code == null ? null : code.trim();
-    }
-
-    public Date getCreateDatetime() {
-        return createDatetime;
-    }
-
-    public void setCreateDatetime(Date createDatetime) {
-        this.createDatetime = createDatetime;
-    }
-
-    public String getIcon() {
-        return icon;
-    }
-
-    public void setIcon(String icon) {
-        this.icon = icon == null ? null : icon.trim();
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name == null ? null : name.trim();
-    }
-
-    public Integer getSeq() {
-        return seq;
-    }
-
-    public void setSeq(Integer seq) {
-        this.seq = seq;
+    public void setOrgBak(String orgBak) {
+        this.orgBak = orgBak == null ? null : orgBak.trim();
     }
 
     public Long getPid() {
@@ -80,16 +57,52 @@ public class Organization extends BaseEntity {
         this.pid = pid;
     }
 
-    public Organization getOrganization() {
-        return organization;
+    public Organization getParentOrg() {
+        return parentOrg;
     }
 
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
+    public void setParentOrg(Organization parentOrg) {
+        this.parentOrg = parentOrg;
+    }
+
+    public Set<Organization> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<Organization> children) {
+        this.children = children;
     }
 
     @Override
-    protected void copyOtherProperties(BaseVo baseVo) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Organization that = (Organization) o;
+        return Objects.equals(orgName, that.orgName) &&
+                Objects.equals(orgBak, that.orgBak) &&
+                Objects.equals(pid, that.pid) &&
+                Objects.equals(parentOrg, that.parentOrg);
+    }
 
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(orgName, orgBak, pid, parentOrg);
+    }
+
+    @Override
+    protected void copyOtherProperties(OrganizationVo organizationVo) {
+        if (this.parentOrg != null){
+            organizationVo.setpName(this.parentOrg.getOrgName());
+        }
+    }
+
+    @Override
+    protected boolean otherPropertiesHook() {
+        return true;
     }
 }

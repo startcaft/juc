@@ -45,7 +45,7 @@
             parameterType="java.lang.Long">
         SELECT r1.*,r2.name AS pname
         FROM sys_dic_item r1
-        LEFT OUTER  JOIN sys_resource r2
+        LEFT OUTER  JOIN sys_dic_item r2
         ON r1.pid = r2.id
         WHERE r1.id = #{id,jdbcType=BIGINT}
     </select>

@@ -56,7 +56,7 @@
 
         <!-- 指定数据库表 -->
         <!-- 如果表没有主键，则只会生成insert语句，因为select/update语句都需要根据主键来 -->
-        <table tableName="sys_role_resource" domainObjectName="RoleResource"
+        <table tableName="sys_organization" domainObjectName="Organization"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
