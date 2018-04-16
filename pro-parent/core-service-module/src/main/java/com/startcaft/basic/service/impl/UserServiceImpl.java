@@ -1,8 +1,14 @@
 package com.startcaft.basic.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.startcaft.basic.core.beans.UserBean;
+import com.startcaft.basic.core.beans.UserModifyBean;
 import com.startcaft.basic.core.entity.User;
 import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.exceptions.*;
+import com.startcaft.basic.core.vo.EasyuiGrid;
+import com.startcaft.basic.core.vo.UserPageRequest;
 import com.startcaft.basic.core.vo.UserVo;
 import com.startcaft.basic.dao.master.IUserDao;
 import com.startcaft.basic.service.IUserService;
@@ -13,7 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Optional;
+import java.util.*;
 
 
 /**
@@ -103,6 +109,82 @@ public class UserServiceImpl implements IUserService {
         Integer result = userDao.updateByPrimaryKeySelective(user);
         if (result != 1){
             throw new SqlExecuteException();
+        }
+    }
+
+    @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
+    @Override
+    public void saveUser(UserBean bean) throws BasicProException {
+        {
+            // 确保登录名唯一
+            User user = userDao.selectByLoginName(bean.getLoginName());
+            if (user != null){
+                throw new BasicProException("账号：[" + bean.getLoginName() + "]，已经存在");
+            }
+
+            String md5Pwd = new Md5Hash(bean.getPassword(),bean.getLoginName()).toString();
+            bean.setPassword(md5Pwd);
+
+            user = bean.copyPropertiesTemplate(user);
+            Integer result = userDao.insert(user);
+            if (result != 1){
+                throw new SqlExecuteException();
+            }
+        }
+    }
+
+    @Override
+    public void modifyUser(UserModifyBean bean) throws BasicProException {
+        {
+            if (bean.isCheckName()){
+                // 确保登录名唯一
+                User user = userDao.selectByLoginName(bean.getLoginName());
+                if (user != null){
+                    throw new BasicProException("账号：[" + bean.getLoginName() + "]，已经存在");
+                }
+            }
+
+            User entity = new User();
+            bean.copyPropertiesTemplate(entity);
+            Integer result = userDao.updateByPrimaryKeySelective(entity);
+            if (result != 1){
+                throw new SqlExecuteException();
+            }
+        }
+    }
+
+    @Override
+    public EasyuiGrid<UserVo> getUserPage(UserPageRequest pageRequest) throws BasicProException {
+        {
+            Map<String,Object> params = new HashMap<>();
+            if (pageRequest.getOrgId() != 0){
+                params.put("org",pageRequest.getOrgId());
+            }
+            if (StringUtils.isEmpty(pageRequest.getLoginName())){
+                params.put("login_name",pageRequest.getLoginName());
+            }
+            if (StringUtils.isEmpty(pageRequest.getRealName())){
+                params.put("realName",pageRequest.getRealName());
+            }
+
+            Page<Object> page = PageHelper.startPage(pageRequest.getPage(),pageRequest.getRows());
+            Set<User> userSet = userDao.selectUserPage(params);
+
+            Set<UserVo> voSet = new TreeSet<>(new Comparator<UserVo>() {
+                @Override
+                public int compare(UserVo o1, UserVo o2) {
+                    return o1.getLoginName().compareTo(o2.getLoginName());
+                }
+            });
+
+            if (userSet != null && userSet.size() > 0){
+                userSet.forEach((entity) -> {
+                    voSet.add(entity.copyPropertiesTemplate(new UserVo()));
+                });
+            }
+
+            EasyuiGrid<UserVo> grid = new EasyuiGrid<>(page.getTotal(),voSet);
+            return grid;
         }
     }
 }

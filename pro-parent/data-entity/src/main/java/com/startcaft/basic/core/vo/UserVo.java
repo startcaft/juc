@@ -1,12 +1,16 @@
 package com.startcaft.basic.core.vo;
 
+import com.startcaft.basic.core.entity.User;
+
 import java.util.Date;
 import java.util.Set;
 
 /**
- * Created by startcaft on 2018/3/5.
+ *
+ * @author startcaft
+ * @date 2018/3/5
  */
-public class UserVo extends BaseVo {
+public class UserVo extends BaseVo<User> {
 
     private String password;
     private Date createDatetime;
@@ -125,10 +129,5 @@ public class UserVo extends BaseVo {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    @Override
-    protected void copyOtherProperties(Object o) {
-
     }
 }

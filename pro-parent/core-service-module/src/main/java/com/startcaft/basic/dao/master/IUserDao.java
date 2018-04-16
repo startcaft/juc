@@ -1,8 +1,7 @@
 package com.startcaft.basic.dao.master;
 
 import com.startcaft.basic.core.entity.User;
-import javafx.scene.effect.SepiaTone;
-import org.apache.ibatis.annotations.Param;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -49,7 +48,7 @@ public interface IUserDao {
     Set<User> selectUserPage(Map<String, Object> map);
 
     /**
-     * 获取指定用户ID的所有权限列表
+     * 获取指定用户ID的所有角色列表
      * @param userId User主键ID
      * @return
      */

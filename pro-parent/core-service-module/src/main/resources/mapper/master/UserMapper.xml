@@ -1,28 +1,24 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.startcaft.basic.dao.master.IUserDao">
 
-    <sql id="Base_Column_List">
-        id, create_datetime, login_name, real_name, password, gender, states, organization_id
-    </sql>
-
-    <!--基本映射-->
+    <!-- 基本映射 -->
     <resultMap id="BaseResultMap" type="com.startcaft.basic.core.entity.User">
-        <id column="id" property="id" jdbcType="BIGINT"/>
-        <result column="create_datetime" property="createDatetime" jdbcType="TIMESTAMP"/>
-        <result column="login_name" property="loginName" jdbcType="VARCHAR"/>
-        <result column="real_name" property="realName" jdbcType="VARCHAR"/>
-        <result column="password" property="password" jdbcType="VARCHAR"/>
-        <result column="gender" property="gender" jdbcType="INTEGER"/>
-        <result column="states" property="states" jdbcType="INTEGER"/>
-        <result column="organization_id" property="organizationId" jdbcType="BIGINT"/>
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="login_name" jdbcType="VARCHAR" property="loginName"/>
+        <result column="real_name" jdbcType="VARCHAR" property="realName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="gender" jdbcType="INTEGER" property="gender"/>
+        <result column="states" jdbcType="INTEGER" property="states"/>
+        <result column="organization_id" jdbcType="BIGINT" property="organizationId"/>
+        <result column="create_datetime" jdbcType="TIMESTAMP" property="createDatetime"/>
     </resultMap>
 
     <!--用户关联组织的映射-->
     <resultMap type="com.startcaft.basic.core.entity.User" id="UserResultMapWithOrganization" extends="BaseResultMap">
         <result column="organization_id" property="organization.id"/>
-        <result column="org_name" property="organization.name"/>
+        <result column="org_name" property="organization.orgName"/>
     </resultMap>
 
     <!--用户关联权限集合的映射-->
@@ -33,11 +29,15 @@
         </collection>
     </resultMap>
 
+    <sql id="Base_Column_List">
+        id, login_name, real_name, password, gender, states, organization_id, create_datetime
+    </sql>
+
     <!--根据用户名查询-->
     <select id="selectByLoginName" resultMap="BaseResultMap" parameterType="java.lang.String">
         SELECT
         <include refid="Base_Column_List"/>
-        FROM sys_user WHERE login_name = #{_parameter}
+        FROM sys_user WHERE login_name = #{parameter}
     </select>
 
     <!-- 根据主键ID查询 -->
@@ -57,6 +57,9 @@
             <if test="realName != null and realName != ''">
                 and a.real_name like "%"#{realName}"%"
             </if>
+            <if test="loginName != null and loginName != ''">
+                and a.login_name like "%"#{loginName}"%"
+            </if>
             <if test="orgId != null">
                 and a.organization_id = #{orgId}
             </if>
@@ -71,28 +74,24 @@
         where u.id = #{userId}
     </select>
 
-
-    <!-- 注意，这里返回了主键ID到User的id属性 -->
-    <insert id="insert" parameterType="com.startcaft.basic.core.entity.User" useGeneratedKeys="true" keyProperty="id">
-        insert into sys_user (create_datetime,
-        login_name, real_name, password,
-        gender, states,organization_id)
-        values (#{createDatetime,jdbcType=TIMESTAMP},
-        #{loginName,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-        #{gender,jdbcType=INTEGER}, #{states,jdbcType=INTEGER}, #{organizationId,jdbcType=BIGINT})
+    <insert id="insert" parameterType="com.startcaft.basic.core.entity.User">
+        insert into sys_user (login_name, real_name,
+          password, gender, states,
+          organization_id, create_datetime)
+        values (#{loginName,jdbcType=VARCHAR}, #{realName,jdbcType=VARCHAR},
+          #{password,jdbcType=VARCHAR}, #{gender,jdbcType=INTEGER}, #{states,jdbcType=INTEGER},
+          #{organizationId,jdbcType=BIGINT}, #{createDatetime,jdbcType=TIMESTAMP})
     </insert>
+
 
     <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.User">
         update sys_user
         <set>
-            <if test="createDatetime != null">
-                create_datetime = #{createDatetime,jdbcType=TIMESTAMP},
-            </if>
             <if test="loginName != null">
                 login_name = #{loginName,jdbcType=VARCHAR},
             </if>
             <if test="realName != null">
-                name = #{real_name,jdbcType=VARCHAR},
+                real_name = #{realName,jdbcType=VARCHAR},
             </if>
             <if test="password != null">
                 password = #{password,jdbcType=VARCHAR},
@@ -106,25 +105,11 @@
             <if test="organizationId != null">
                 organization_id = #{organizationId,jdbcType=BIGINT},
             </if>
+            <if test="createDatetime != null">
+                create_datetime = #{createDatetime,jdbcType=TIMESTAMP},
+            </if>
         </set>
         where id = #{id,jdbcType=BIGINT}
     </update>
-
-
-
-
-
-
-
-    <!--<select id="selectUsersByRole" parameterType="java.lang.Long" resultMap="BaseResultMap">-->
-        <!--select u.*,r.id as rId,r.name as rName,o.name as orgname,o.code as orgcode from-->
-        <!--sys_user u left outer join sys_user_role ur on u.id = ur.user_id-->
-        <!--left outer join sys_role r on r.id = ur.role_id-->
-        <!--join sys_organization o on u.organization_id = o.id-->
-        <!--where r.id = #{roleId}-->
-    <!--</select>-->
-
-
-
 
 </mapper>

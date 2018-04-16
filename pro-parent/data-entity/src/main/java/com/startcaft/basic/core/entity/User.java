@@ -6,39 +6,37 @@ import com.startcaft.basic.core.vo.UserVo;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /**
- * 用户信息实体类
- * @author startcaft
- * @date 2018/3/5
+ * @author Administrator
  */
 public class User extends BaseEntity<UserVo> {
 
-    private Date createDatetime;
     private String loginName;
+
     private String realName;
+
     private String password;
+
     private Gender gender;
+
     private States states;
+
     private Long organizationId;
+
+    private Date createDatetime;
 
     /**
      * 所属组织
      */
     private Organization organization;
+
     /**
-     * 包含的所有权限
+     * 包含的角色
      */
-    private Set<Role> roles = new HashSet<Role>();
-
-    public Date getCreateDatetime() {
-        return createDatetime;
-    }
-
-    public void setCreateDatetime(Date createDatetime) {
-        this.createDatetime = createDatetime;
-    }
+    private Set<Role> roles = new HashSet<>();
 
     public String getLoginName() {
         return loginName;
@@ -53,7 +51,7 @@ public class User extends BaseEntity<UserVo> {
     }
 
     public void setRealName(String realName) {
-        this.realName = realName;
+        this.realName = realName == null ? null : realName.trim();
     }
 
     public String getPassword() {
@@ -80,14 +78,6 @@ public class User extends BaseEntity<UserVo> {
         this.states = states;
     }
 
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
     public Organization getOrganization() {
         return organization;
     }
@@ -104,8 +94,75 @@ public class User extends BaseEntity<UserVo> {
         this.roles = roles;
     }
 
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
+    }
+
+    public Date getCreateDatetime() {
+        return createDatetime;
+    }
+
+    public void setCreateDatetime(Date createDatetime) {
+        this.createDatetime = createDatetime;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
+        User user = (User) o;
+        return Objects.equals(loginName, user.loginName) &&
+                Objects.equals(realName, user.realName) &&
+                Objects.equals(password, user.password) &&
+                gender == user.gender &&
+                states == user.states &&
+                Objects.equals(organizationId, user.organizationId) &&
+                Objects.equals(createDatetime, user.createDatetime) &&
+                Objects.equals(organization, user.organization) &&
+                Objects.equals(roles, user.roles);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(loginName, realName, password, gender, states, organizationId, createDatetime, organization, roles);
+    }
+
     @Override
     protected void copyOtherProperties(UserVo userVo) {
+        if (this.states != null){
+            userVo.setStatesCode(this.states.getCode());
+            userVo.setStatesMsg(this.states.getMsg());
+        }
+        if (this.gender != null){
+            userVo.setGender(this.gender.getCode());
+            userVo.setGenderDesc(this.gender.getDesc());
+        }
+        if (this.organization != null){
+            userVo.setOrganizationName(this.organization.getOrgName());
+        }
+        if (this.roles != null && this.roles.size() > 0){
+            Set<String> roleNames = new HashSet<>();
+            Set<Long> roleIds = new HashSet<>();
+            this.roles.forEach((role) -> {
+                roleNames.add(role.getAlias());
+                roleIds.add(role.getId());
+            });
 
+            userVo.setRoleIds(roleIds);
+            userVo.setRoleNames(roleNames);
+        }
+    }
+
+    @Override
+    protected boolean otherPropertiesHook() {
+        return true;
     }
 }

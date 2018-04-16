@@ -1,6 +1,10 @@
 package com.startcaft.basic.service;
 
+import com.startcaft.basic.core.beans.UserBean;
+import com.startcaft.basic.core.beans.UserModifyBean;
 import com.startcaft.basic.core.exceptions.BasicProException;
+import com.startcaft.basic.core.vo.EasyuiGrid;
+import com.startcaft.basic.core.vo.UserPageRequest;
 import com.startcaft.basic.core.vo.UserVo;
 
 import java.util.Optional;
@@ -15,8 +19,7 @@ public interface IUserService {
 //    /**获取一个用户分页列表**/
 //    Set<UserVo> searchUserPage(UserQuery query) throws Exception;
 
-//    /**保存一个用户**/
-//    void saveUser(UserVo user) throws Exception;
+
 
 //    /**删除一个用户，假删除，将状态改为停用**/
 //    void lockUser(Long id) throws Exception;
@@ -59,5 +62,25 @@ public interface IUserService {
      */
     void editUserPwd(String loginName, String oldPwd, String pwd) throws BasicProException;
 
+    /**
+     * 新增用户
+     * @param bean
+     * @throws BasicProException
+     */
+    void saveUser(UserBean bean) throws BasicProException;
 
+    /**
+     * 修改用户
+     * @param bean
+     * @throws BasicProException
+     */
+    void modifyUser(UserModifyBean bean) throws BasicProException;
+
+    /**
+     * 分页查询用户列表
+     * @param pageRequest
+     * @return
+     * @throws BasicProException
+     */
+    EasyuiGrid<UserVo> getUserPage(UserPageRequest pageRequest) throws BasicProException;
 }
