@@ -21,48 +21,32 @@
                             <form class="form-horizontal" id="validation-form" method="post">
                                 <div class="form-group">
                                     <!-- 隐藏的 id 和 pid -->
-                                    <input name="id" id="dicId" th:value="${dicId}" type="hidden" value="" />
+                                    <input name="id" id="orgId" th:value="${orgId}" type="hidden" value="" />
                                     <input type="hidden" id="pid" name="pid" value="" />
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="pname">上级字典</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="pname">上级组织</label>
                                     <div class="col-xs-12 col-sm-9">
-                                        <div class="input-icon input-icon-right" id="parentDic">
+                                        <div class="input-icon input-icon-right" id="parentOrg">
                                             <input type="text" readonly="readonly" id="pname" name="pname" value="" class="col-xs-12 col-sm-6" />
                                             <button id="menuBtn" type="button" class="btn btn-sm btn-default" onclick="showMenu(); return false;" style="float: left;">选择</button>
                                         </div>
                                         <div id="menuContent" class="menuContent" style="overflow-y:auto; overflow-x:auto;display:none;position:absolute; z-index: 99999;background-color: #FFFFFF;border: 1px solid #858585;height: 250px;width: 270px;">
-                                            <ul id="dicTree" class="easyui-tree"></ul>
+                                            <ul id="orgTree" class="easyui-tree"></ul>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">数据字典名称</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="orgName">组织部门名称</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input type="text" name="name" id="name" value="" placeholder="数据字典显示名称" class="col-xs-12 col-sm-6" />
+                                            <input type="text" name="orgName" id="orgName" value="" placeholder="组织部门名称" class="col-xs-12 col-sm-6" />
                                         </div>
                                     </div>
                                 </div>
                                 <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="code">数据字典编码</label>
+                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="orgBak">组织部门描述</label>
                                     <div class="col-xs-12 col-sm-9">
                                         <div class="clearfix">
-                                            <input type="text" name="code" id="code" value="" placeholder="数据字典系统编码" class="col-xs-12 col-sm-6" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="seq">排序号</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input type="text" name="seq" id="seq" value="" placeholder="99" class="col-xs-12 col-sm-6" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="description">数据字典描述</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <textarea id="description" placeholder="数据字典描述" class="col-xs-12 col-sm-6" style="resize:none;"></textarea>
+                                            <textarea id="orgBak" name="orgBak" placeholder="数据字典描述" class="col-xs-12 col-sm-6" style="resize:none;"></textarea>
                                         </div>
                                     </div>
                                 </div>
@@ -104,24 +88,24 @@
         easyloader.locales = 'zh_CN';
         easyloader.theme = 'bootstrap';
         easyloader.load('tree',function () {
-            $('#dicTree').tree({
+            $('#orgTree').tree({
                 onClick: function(node){
                     // 给父节点隐藏控件赋值
                     var pName = $("#pname");
                     $("#pid").val(node.id);
-                    pName.attr("value", node.name);
+                    pName.attr("value", node.orgName);
                 },
                 loadFilter:dataLoad
             });
 
             var promise = $.ajax({
-                url:base + '/dics/tree/0',
+                url:base + '/orgs/tree',
                 dataType:'json',
                 type:'get',
                 headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
             });
             promise.done(function (data) {
-                $('#dicTree').tree('loadData',data);
+                $('#orgTree').tree('loadData',data);
             }).fail(function (error) {
                 layer.msg(error.responseJSON.msg);
             });
@@ -133,7 +117,7 @@
         // 递归过滤标准树形树形，添加一个 text 属性，值就是name属性的值
         function dataLoad(data,parent) {
             data.forEach(function (obj,index) {
-                obj.text = obj.name;
+                obj.text = obj.orgName;
 
                 childLoad(obj);
             })
@@ -143,7 +127,7 @@
         function childLoad(obj) {
             if(obj.children !== null && obj.children.length > 0){
                 obj.children.forEach(function (obj, index) {
-                    obj.text = obj.name;
+                    obj.text = obj.orgName;
                     childLoad(obj);
                 })
             }
@@ -153,7 +137,7 @@
         function showMenu() {
             var cityObj = $("#pname");
             var cityOffset = $("#pname").offset();
-            var sel=document.getElementById("parentDic");
+            var sel=document.getElementById("parentOrg");
             $("#menuContent").css({left:sel.offsetLeft + "px", top:sel.offsetTop + cityObj.outerHeight() + "px"}).slideDown("fast");
             $("body").bind("mousedown", onBodyDown);
         }
@@ -172,10 +156,10 @@
 
         // 数据绑定，之后在 id 有值的情况才执行
         function databind(){
-            var id = $('#dicId').val();
+            var id = $('#orgId').val();
             if (id != null && id != ''){
                 var promise = $.ajax({
-                    url:base + '/dics/' + id,
+                    url:base + '/orgs/' + id,
                     dataType:'json',
                     type:'get',
                     headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
@@ -183,11 +167,9 @@
                 promise.done(function (result) {
                     var obj = result.data;
                     $('#pid').val(obj.pid);
-                    $('#description').val(obj.description);
-                    $('#name').val(obj.name);
-                    $('#code').val(obj.code);
-                    $('#seq').val(obj.seq);
-                    $('#pname').val(obj.pname);
+                    $('#orgName').val(obj.orgName);
+                    $('#orgBak').val(obj.orgBak);
+                    $('#pname').val(obj.pName);
 
                     // 绑定老的数据
                     oldName = obj.name;
@@ -249,31 +231,26 @@
                     $btn.addClass("disabled");
 
                     // var postData = $("#validation-form").serialize();
-                    var id = $('#dicId').val();
+                    var id = $('#orgId').val();
                     var postData;
                     var submitUrl;
                     if (id != null && id != ''){
                         postData = {
-                            description:$('#description').val(),
                             pid:$('#pid').val(),
-                            name:$('#name').val(),
-                            code:$('#code').val(),
-                            seq:$('#seq').val(),
+                            orgName:$('#orgName').val(),
+                            orgBak:$('#orgBak').val(),
                             id:$('#dicId').val(),
                             checkName: ($('#name').val() === oldName) ? false : true,
                         }
-                        submitUrl = base + '/dics/modify';
+                        submitUrl = base + '/orgs/modify';
                     }
                     else {
                         postData = {
-                            description:$('#description').val(),
                             pid:$('#pid').val(),
-                            name:$('#name').val(),
-                            code:$('#code').val(),
-                            seq:$('#seq').val(),
-                            id:$('#dicId').val(),
+                            orgName:$('#orgName').val(),
+                            orgBak:$('#orgBak').val()
                         }
-                        submitUrl = base + '/dics/save';
+                        submitUrl = base + '/orgs/save';
                     }
 
                     var promise = $.ajax({

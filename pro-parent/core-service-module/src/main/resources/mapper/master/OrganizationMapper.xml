@@ -10,10 +10,10 @@
         <result column="pid" jdbcType="BIGINT" property="pid"/>
     </resultMap>
 
-    <resultMap type="com.startcaft.basic.core.entity.Organizationm"
+    <resultMap type="com.startcaft.basic.core.entity.Organization"
                id="ParentResultMap" extends="BaseResultMap">
         <result column="pid" property="parentOrg.id" jdbcType="BIGINT" />
-        <result column="pname" property="parentOrg.name" jdbcType="VARCHAR" />
+        <result column="pname" property="parentOrg.orgName" jdbcType="VARCHAR" />
     </resultMap>
 
     <!-- 递归查询时用到的结果集 -->
@@ -26,7 +26,7 @@
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ParentResultMap">
-        SELECT r1.*,r2.name AS pname
+        SELECT r1.*,r2.org_name AS pname
         FROM sys_organization r1
         LEFT OUTER  JOIN sys_organization r2
         ON r1.pid = r2.id
@@ -57,13 +57,13 @@
         <include refid="Base_Column_List"/>
         from sys_organization
         WHERE pid = #{_parameter}
-        order by seq desc
+        order by id desc
     </select>
 
     <insert id="insert" parameterType="com.startcaft.basic.core.entity.Organization">
-        insert into sys_organization (id, org_name, org_bak,
+        insert into sys_organization (org_name, org_bak,
           pid)
-        values (#{id,jdbcType=BIGINT}, #{orgName,jdbcType=VARCHAR}, #{orgBak,jdbcType=VARCHAR},
+        values (#{orgName,jdbcType=VARCHAR}, #{orgBak,jdbcType=VARCHAR},
           #{pid,jdbcType=BIGINT})
     </insert>
 

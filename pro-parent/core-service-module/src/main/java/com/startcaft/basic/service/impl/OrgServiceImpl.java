@@ -45,6 +45,11 @@ public class OrgServiceImpl implements IOrgService {
     @Override
     public void saveOrg(OrgBean bean) throws BasicProException {
         {
+            // 确保只有一个根节点
+            if (bean.getPid() == null || bean.getPid().intValue() == 0){
+                throw new BasicProException("组织部门只能有一个根节点");
+            }
+
             Map<String,Object> params = new HashMap<>(1);
             params.put("name",bean.getOrgName());
             //确保组织部门名称不重复
