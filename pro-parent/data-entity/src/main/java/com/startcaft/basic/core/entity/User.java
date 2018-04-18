@@ -142,7 +142,7 @@ public class User extends BaseEntity<UserVo> {
             userVo.setStatesMsg(this.states.getMsg());
         }
         if (this.gender != null){
-            userVo.setGender(this.gender.getCode());
+            userVo.setGenderCode(this.gender.getCode());
             userVo.setGenderDesc(this.gender.getDesc());
         }
         if (this.organization != null){

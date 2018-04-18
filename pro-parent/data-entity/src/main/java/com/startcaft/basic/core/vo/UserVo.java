@@ -16,7 +16,7 @@ public class UserVo extends BaseVo<User> {
     private Date createDatetime;
     private String loginName;
     private String realName;
-    private Integer gender;
+    private Integer genderCode;
     private String genderDesc;
     private Integer statesCode;
     private String statesMsg;
@@ -59,12 +59,12 @@ public class UserVo extends BaseVo<User> {
         this.realName = realName;
     }
 
-    public Integer getGender() {
-        return gender;
+    public Integer getGenderCode() {
+        return genderCode;
     }
 
-    public void setGender(Integer gender) {
-        this.gender = gender;
+    public void setGenderCode(Integer genderCode) {
+        this.genderCode = genderCode;
     }
 
     public String getGenderDesc() {

@@ -16,17 +16,17 @@ package com.startcaft.basic.core.vo;
  */
 public class UserPageRequest extends AbstractEasyuiPageRequest {
 
-    private long orgId;
+    private Long orgId;
 
     private String loginName;
 
     private String realName;
 
-    public long getOrgId() {
+    public Long getOrgId() {
         return orgId;
     }
 
-    public void setOrgId(long orgId) {
+    public void setOrgId(Long orgId) {
         this.orgId = orgId;
     }
 

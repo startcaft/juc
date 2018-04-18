@@ -12,6 +12,7 @@ import com.startcaft.basic.core.enums.States;
 import com.startcaft.basic.core.vo.BaseVo;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 /**
@@ -32,14 +33,14 @@ public class UserBean extends BaseVo<User> {
     private String loginName;
     private String realName;
 
-    @NotBlank(message = "性别不能为空")
-    private Integer gender;
+    @NotNull(message = "性别不能为空")
+    private Integer genderCode;
     /**
      * 默认状态：正常
      */
     private Integer statesCode = States.NORMAL.getCode();
 
-    @NotBlank(message = "必须选择一个组织部门")
+    @NotNull(message = "必须选择一个组织部门")
     private Long organizationId;
 
     public String getPassword() {
@@ -74,12 +75,12 @@ public class UserBean extends BaseVo<User> {
         this.realName = realName;
     }
 
-    public Integer getGender() {
-        return gender;
+    public Integer getGenderCode() {
+        return genderCode;
     }
 
-    public void setGender(Integer gender) {
-        this.gender = gender;
+    public void setGenderCode(Integer genderCode) {
+        this.genderCode = genderCode;
     }
 
     public Integer getStatesCode() {
@@ -101,7 +102,7 @@ public class UserBean extends BaseVo<User> {
     @Override
     protected void copyOtherProperties(User user) {
         user.setStates(States.getStates(this.statesCode));
-        user.setGender(Gender.getGender(this.gender));
+        user.setGender(Gender.getGender(this.genderCode));
     }
 
     @Override

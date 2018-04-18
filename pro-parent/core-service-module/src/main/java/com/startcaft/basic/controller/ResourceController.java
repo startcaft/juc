@@ -135,7 +135,7 @@ public class ResourceController extends BaseController {
             resourceService.AddResource(bean);
             result.setReqSuccess(true);
             result.setMsg(SUCCESS_MSG);
-            result.setData("save resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
+            result.setData("save resource：[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
 
             return result;
         }
@@ -155,7 +155,7 @@ public class ResourceController extends BaseController {
             resourceService.modifyResource(bean);
             result.setReqSuccess(true);
             result.setMsg(SUCCESS_MSG);
-            result.setData("modify resource[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
+            result.setData("modify resource：[" + bean.getName() + "]---[" + bean.getUrl() + "] success");
 
             return result;
         }

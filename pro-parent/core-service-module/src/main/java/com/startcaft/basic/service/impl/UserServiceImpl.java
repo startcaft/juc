@@ -125,8 +125,7 @@ public class UserServiceImpl implements IUserService {
             String md5Pwd = new Md5Hash(bean.getPassword(),bean.getLoginName()).toString();
             bean.setPassword(md5Pwd);
 
-            user = bean.copyPropertiesTemplate(user);
-            Integer result = userDao.insert(user);
+            Integer result = userDao.insert(bean.copyPropertiesTemplate(new User()));
             if (result != 1){
                 throw new SqlExecuteException();
             }
@@ -138,9 +137,9 @@ public class UserServiceImpl implements IUserService {
         {
             if (bean.isCheckName()){
                 // 确保登录名唯一
-                User user = userDao.selectByLoginName(bean.getLoginName());
+                User user = userDao.selectByLoginName(userDao.selectByPrimaryKey(bean.getId()).getLoginName());
                 if (user != null){
-                    throw new BasicProException("账号：[" + bean.getLoginName() + "]，已经存在");
+                    throw new BasicProException("账号：[" + user.getLoginName() + "]，已经存在");
                 }
             }
 
@@ -157,13 +156,13 @@ public class UserServiceImpl implements IUserService {
     public EasyuiGrid<UserVo> getUserPage(UserPageRequest pageRequest) throws BasicProException {
         {
             Map<String,Object> params = new HashMap<>();
-            if (pageRequest.getOrgId() != 0){
-                params.put("org",pageRequest.getOrgId());
+            if (pageRequest.getOrgId() != null){
+                params.put("orgId",pageRequest.getOrgId());
             }
-            if (StringUtils.isEmpty(pageRequest.getLoginName())){
-                params.put("login_name",pageRequest.getLoginName());
+            if (!StringUtils.isEmpty(pageRequest.getLoginName())){
+                params.put("loginName",pageRequest.getLoginName());
             }
-            if (StringUtils.isEmpty(pageRequest.getRealName())){
+            if (!StringUtils.isEmpty(pageRequest.getRealName())){
                 params.put("realName",pageRequest.getRealName());
             }
 
@@ -179,12 +178,26 @@ public class UserServiceImpl implements IUserService {
 
             if (userSet != null && userSet.size() > 0){
                 userSet.forEach((entity) -> {
+                    // 将密码置空
+                    entity.setPassword(null);
                     voSet.add(entity.copyPropertiesTemplate(new UserVo()));
                 });
             }
 
             EasyuiGrid<UserVo> grid = new EasyuiGrid<>(page.getTotal(),voSet);
             return grid;
+        }
+    }
+
+    @Override
+    public UserVo searchSingleUser(Long id) throws BasicProException {
+        {
+            User user = userDao.selectByPrimaryKey(id);
+            if (user == null){
+                throw new UserNotFoundException("找不到指定id的用户");
+            }
+
+            return user.copyPropertiesTemplate(new UserVo());
         }
     }
 }

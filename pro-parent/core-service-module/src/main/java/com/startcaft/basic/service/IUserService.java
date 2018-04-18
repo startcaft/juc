@@ -27,11 +27,6 @@ public interface IUserService {
 //    /**启用一个用户**/
 //    void enableUser(Long id) throws Exception;
 
-//    /**更新一个用户**/
-//    void editUser(UserVo user) throws Exception;
-
-//    /**根据id获取用户信息**/
-//    Optional<UserVo>  searchSingleUser(Long id) throws Exception;
 
     /**
      * 用户登录
@@ -83,4 +78,12 @@ public interface IUserService {
      * @throws BasicProException
      */
     EasyuiGrid<UserVo> getUserPage(UserPageRequest pageRequest) throws BasicProException;
+
+    /**
+     * 根据id获取用户信息
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    UserVo searchSingleUser(Long id) throws BasicProException;
 }

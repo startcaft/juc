@@ -22,6 +22,21 @@ public class EasyuiGrid<T> {
 
     private Set<T> rows;
 
+    public long getTotal() {
+        return total;
+    }
+
+    public void setTotal(long total) {
+        this.total = total;
+    }
+
+    public Set<T> getRows() {
+        return rows;
+    }
+
+    public void setRows(Set<T> rows) {
+        this.rows = rows;
+    }
 
     public EasyuiGrid(long total, Set<T> rows) {
         this.total = total;

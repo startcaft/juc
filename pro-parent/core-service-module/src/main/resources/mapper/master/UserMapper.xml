@@ -41,24 +41,26 @@
     </select>
 
     <!-- 根据主键ID查询 -->
-    <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long">
-        select
-        <include refid="Base_Column_List"/>
-        from sys_user
-        where id = #{id,jdbcType=BIGINT}
+    <select id="selectByPrimaryKey" resultMap="UserResultMapWithOrganization" parameterType="java.lang.Long">
+        SELECT a.*,o.org_name AS org_name FROM sys_user AS a
+        JOIN sys_organization AS o
+        ON o.id = a.organization_id
+        where a.id = #{id,jdbcType=BIGINT}
     </select>
 
     <!-- 分页查询 -->
     <select id="selectUserPage" parameterType="map" resultMap="UserResultMapWithOrganization">
-        SELECT a.*,o.name AS org_name FROM sys_user AS a
+        SELECT a.*,o.org_name AS org_name FROM sys_user AS a
         JOIN sys_organization AS o
         ON o.id = a.organization_id
         <where>
             <if test="realName != null and realName != ''">
-                and a.real_name like "%"#{realName}"%"
+                <bind name="_realName" value="'%'+realName+'%'"/>
+                and a.real_name like "#{_realName}
             </if>
             <if test="loginName != null and loginName != ''">
-                and a.login_name like "%"#{loginName}"%"
+                <bind name="_loginName" value="'%'+loginName+'%'"/>
+                and a.login_name like #{_loginName}
             </if>
             <if test="orgId != null">
                 and a.organization_id = #{orgId}

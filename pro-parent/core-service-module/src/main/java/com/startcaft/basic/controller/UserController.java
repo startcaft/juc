@@ -2,7 +2,11 @@ package com.startcaft.basic.controller;
 
 import com.startcaft.basic.core.beans.LoginBean;
 import com.startcaft.basic.core.beans.PwdBean;
+import com.startcaft.basic.core.beans.UserBean;
+import com.startcaft.basic.core.beans.UserModifyBean;
+import com.startcaft.basic.core.vo.EasyuiGrid;
 import com.startcaft.basic.core.vo.ResponseBean;
+import com.startcaft.basic.core.vo.UserPageRequest;
 import com.startcaft.basic.core.vo.UserVo;
 import com.startcaft.basic.service.IUserService;
 import com.startcaft.basic.shiro.JwtUtil;
@@ -13,10 +17,9 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.Valid;
 
 /**
  * 系统用户相关服务
@@ -57,6 +60,84 @@ public class UserController extends BaseController {
             responseBean.setMsg(SUCCESS_MSG);
             responseBean.setData("update pwd success");
             return responseBean;
+        }
+    }
+
+    @ApiOperation(value = "新增系统用户",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bean",required = true,dataType = "UserBean",paramType = "body")
+    })
+    @PostMapping(value = "/save",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean<String> addUser(@Valid @RequestBody UserBean bean){
+        {
+            ResponseBean<String> result = new ResponseBean<>();
+
+            userService.saveUser(bean);
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("save user：[" + bean.getLoginName() + "]，success");
+
+            return result;
+        }
+    }
+
+    @ApiOperation(value = "修改系统用户",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "bean",required = true,dataType = "UserModifyBean",paramType = "body")
+    })
+    @PostMapping(value = "/modify",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE},
+            consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean<String> modifyUser(@RequestBody UserModifyBean bean){
+        {
+            ResponseBean<String> result = new ResponseBean<>();
+
+            userService.modifyUser(bean);
+            result.setReqSuccess(true);
+            result.setMsg(SUCCESS_MSG);
+            result.setData("modify resource：[" + bean.getLoginName() + "]，success");
+
+            return result;
+        }
+    }
+
+    @ApiOperation(value = "获取一个用户详细信息",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id",required = true,dataType = "long",paramType = "path")
+    })
+    @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean<UserVo> getSingle(@PathVariable(value = "id",required = true) long id){
+        {
+            return new ResponseBean<UserVo>(true,SUCCESS_MSG,userService.searchSingleUser(id));
+        }
+    }
+
+    @ApiOperation(value = "用户分页查询",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "page",required = true,dataType = "int",paramType = "query"),
+            @ApiImplicitParam(name = "rows",required = true,dataType = "int",paramType = "query"),
+            @ApiImplicitParam(name = "orgId",required = false,dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "loginName",required = false,dataType = "string",paramType = "query"),
+            @ApiImplicitParam(name = "realName",required = false,dataType = "string",paramType = "query")
+    })
+    @GetMapping(value = "/page",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public EasyuiGrid<UserVo> getUserPage(@RequestParam(value = "page",required = true) int pageIndex,
+                                          @RequestParam(value = "rows",required = true) int pageSize,
+                                          @RequestParam(value = "orgId",required = false) Long orgId,
+                                          @RequestParam(value = "loginName",required = false) String loginName,
+                                          @RequestParam(value = "realName",required = false) String realName){
+        {
+            UserPageRequest request = new UserPageRequest();
+            request.setPage(pageIndex);
+            request.setRows(pageSize);
+            request.setOrgId(orgId);
+            request.setLoginName(loginName);
+            request.setRealName(realName);
+            return userService.getUserPage(request);
         }
     }
 }

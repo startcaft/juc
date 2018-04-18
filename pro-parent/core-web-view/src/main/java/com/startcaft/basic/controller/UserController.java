@@ -38,7 +38,7 @@ public class UserController {
 
     @GetMapping("/edit/{id}")
     public String roleModify(@PathVariable(value = "id",required = true) Long id, Model model){
-        model.addAttribute("roleId",id);
+        model.addAttribute("userId",id);
         return "admin/user_add";
     }
 
