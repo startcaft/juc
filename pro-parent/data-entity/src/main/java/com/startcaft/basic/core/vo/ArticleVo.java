@@ -6,6 +6,7 @@
  */
 package com.startcaft.basic.core.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.startcaft.basic.core.entity.Article;
 
 import java.util.Date;
@@ -26,6 +27,7 @@ public class ArticleVo extends BaseVo<Article> {
 
     private Long dicItemId;
 
+    @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
     private String articleDesc;

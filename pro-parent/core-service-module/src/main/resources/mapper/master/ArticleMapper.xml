@@ -23,7 +23,7 @@
     </sql>
 
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="WithDicItemResult">
-        select * from sys_article a inner join sys_dic_item d
+        select a.*,d.name as dic_item_name from sys_article a inner join sys_dic_item d
         on a.dic_item_id = d.id
         where a.id = #{id,jdbcType=BIGINT}
     </select>
@@ -41,7 +41,7 @@
 
     <!-- 分页查询 -->
     <select id="selectUserPage" parameterType="map" resultMap="WithDicItemResult">
-        select * from sys_article a inner join sys_dic_item d
+        select a.*,d.name as dic_item_name from sys_article a inner join sys_dic_item d
         on a.dic_item_id = d.id
         <where>
             <if test="title != null and title != ''">
@@ -56,10 +56,10 @@
     </delete>
 
     <insert id="insert" parameterType="com.startcaft.basic.core.entity.Article">
-        insert into sys_article (id, article_title, article_content,
+        insert into sys_article (article_title, article_content,
           dic_item_id, create_time, article_desc
           )
-        values (#{id,jdbcType=BIGINT}, #{articleTitle,jdbcType=VARCHAR}, #{articleContent,jdbcType=VARCHAR},
+        values (#{articleTitle,jdbcType=VARCHAR}, #{articleContent,jdbcType=VARCHAR},
           #{dicItemId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{articleDesc,jdbcType=VARCHAR}
           )
     </insert>

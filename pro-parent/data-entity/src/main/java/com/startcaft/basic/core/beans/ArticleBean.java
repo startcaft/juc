@@ -34,7 +34,7 @@ public class ArticleBean extends BaseVo<Article> {
     @NotNull(message = "必须选择一个文章类型")
     private Long dicItemId;
 
-    private Date createTime;
+    private Date createTime = new Date();
 
     @NotBlank(message = "文章描述不能为空")
     private String articleDesc;

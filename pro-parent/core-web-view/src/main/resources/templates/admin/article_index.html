@@ -116,7 +116,7 @@
             function loadData(title){
                 var page = $("#grid-table").datagrid("getPager");
                 var pageOptions = $(page).pagination('options');
-                var baseUrl = base + '/users/page?page=' + pageOptions.pageNumber + '&rows=' + pageOptions.pageSize;
+                var baseUrl = base + '/articles/page?page=' + pageOptions.pageNumber + '&rows=' + pageOptions.pageSize;
                 if (title){
                     baseUrl += '&title=' + title;
                 }
@@ -141,14 +141,15 @@
             }
             // 添加按钮事件处理函数
             function addArticle(){
-                layer.open({
-                    type: 2,
-                    fix: false,
-                    title: '添加角色',
-                    maxmin: true,
-                    content: '/admin/article/add',
-                    area: ['770px', '520px']
-                });
+                // layer.open({
+                //     type: 2,
+                //     fix: false,
+                //     title: '添加文章',
+                //     maxmin: true,
+                //     content: '/admin/article/add',
+                //     area: ['800px', '600px']
+                // });
+                window.location.href = '/admin/article/add';
             }
             // 修改按钮事件处理函数
             function modifyRole() {

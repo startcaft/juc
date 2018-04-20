@@ -1,92 +1,52 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="/common/common_head_css::commonHeader">
+<head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+    <link rel="stylesheet" th:href="@{/editor.md/css/editormd.css}" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/form.css}" />
+    <style>
+        .center{
+            margin: 0 auto 10px;
+            text-align: center;
+        }
+        .h{
+            height: 30px;
+        }
+    </style>
 </head>
-<body class="no-skin">
+<body>
+    <div id="layout">
+        <div class="center">
+            <label for="dicName">文章类别</label>
+            <input name="id" id="articleId" th:value="${articleId}" type="hidden" value="" />
+            <input type="hidden" id="dicId" name="dicId" value="" />
+            <input class="h" type="text" readonly="readonly" id="dicName" name="dicName" value="" placeholder="必须选择一个文章类别" />
+            <button id="menuBtn" type="button" class="btn btn-sm btn-default" onclick="showMenu(); return false;" style="display:inline-block">选择</button>
+            &nbsp;&nbsp;
+            <button id="submit-btn" type="submit" class="btn btn-sm btn-primary" style="display:inline-block">
+                提交
+            </button>
+            &nbsp;&nbsp;
 
-    <div class="main-container" id="main-container">
-        <script type="text/javascript">
-            try{ace.settings.check('main-container' , 'fixed')}catch(e){}
-        </script>
-
-        <div class="main-container-inner">
-            <div class="main-content" style="margin-left: 0px;">
-                <div class="page-content">
-                    <div class="row">
-                        <div class="col-xs-12">
-                            <!-- PAGE CONTENT BEGINS -->
-                            <form class="form-horizontal" id="validation-form" method="post">
-                                <div class="form-group">
-                                    <!-- 隐藏的 id 和 pid -->
-                                    <input name="id" id="dicId" th:value="${dicId}" type="hidden" value="" />
-                                    <input type="hidden" id="pid" name="pid" value="" />
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="pname">上级字典</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="input-icon input-icon-right" id="parentDic">
-                                            <input type="text" readonly="readonly" id="pname" name="pname" value="" class="col-xs-12 col-sm-6" />
-                                            <button id="menuBtn" type="button" class="btn btn-sm btn-default" onclick="showMenu(); return false;" style="float: left;">选择</button>
-                                        </div>
-                                        <div id="menuContent" class="menuContent" style="overflow-y:auto; overflow-x:auto;display:none;position:absolute; z-index: 99999;background-color: #FFFFFF;border: 1px solid #858585;height: 250px;width: 270px;">
-                                            <ul id="dicTree" class="easyui-tree"></ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="name">数据字典名称</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input type="text" name="name" id="name" value="" placeholder="数据字典显示名称" class="col-xs-12 col-sm-6" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="code">数据字典编码</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input type="text" name="code" id="code" value="" placeholder="数据字典系统编码" class="col-xs-12 col-sm-6" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="seq">排序号</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <input type="text" name="seq" id="seq" value="" placeholder="99" class="col-xs-12 col-sm-6" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label class="control-label col-xs-12 col-sm-3 no-padding-right" for="description">数据字典描述</label>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <div class="clearfix">
-                                            <textarea id="description" placeholder="数据字典描述" class="col-xs-12 col-sm-6" style="resize:none;"></textarea>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="clearfix form-actions" align="center">
-                                    <div class="col-md-offset-3 col-md-9">
-                                        <button id="submit-btn" class="btn btn-info" type="submit" data-last="Finish">
-                                            <i class="ace-icon fa fa-check bigger-110"></i>
-                                            提交
-                                        </button>
-                                        &nbsp; &nbsp; &nbsp;
-                                        <button class="btn" type="reset">
-                                            <i class="ace-icon fa fa-undo bigger-110"></i>
-                                            重置
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div><!-- /.col -->
-                    </div><!-- /.row -->
-                </div><!-- /.page-content -->
-            </div><!-- /.main-content -->
-        </div><!-- /.main-container-inner -->
-    </div><!-- /.main-container -->
+            <div id="menuContent" class="menuContent" style="overflow-y:auto; overflow-x:auto;display:none;position:absolute; z-index: 99999;background-color: #FFFFFF;border: 1px solid #858585;height: 250px;width: 270px;">
+                <ul id="dicTree" class="easyui-tree"></ul>
+            </div>
+        </div>
+        <div class="center">
+            <label>文章标题</label>
+            <input class="h" type="text" style="width: 80%;" placeholder="文章的唯一标题" id="articleTitle" name="articleTitle" value="" />
+        </div>
+        <div class="center">
+            <label>文章描述</label>
+            <input class="h" type="text" style="width: 80%;" placeholder="对文章的一个简要概述" id="articleDesc" name="articleDesc" value="" />
+        </div>
+        <div id="test-editormd">
+            <textarea style="display:none;">### 使用Markdown编辑文章</textarea>
+        </div>
+    </div>
 
     <!--导入通用js-->
     <div th:include="/common/common_head_js::onLoadJS"></div>
@@ -94,28 +54,38 @@
     <!--引入自定义本地存储对象myStorage，它依赖于cookieStorage.js-->
     <script th:src="@{/script/cookieStorage.js}"></script>
     <script th:src="@{/script/myStorage.js}"></script>
-
-    <script type="text/javascript">
-
-        var $validation = true;
-        var oldName;
+    <script th:src="@{/editor.md/editormd.js}"></script>
+    <script type="text/javascript" th:inline="javascript">
+        /*<![CDATA[*/
+            ctxPath = /*[[@{/editor.md/lib/}]]*/ '';
+        /*]]>*/
+        var editor;
         var base = 'http://localhost:8080';
         easyloader.base = "/easyui/";
         easyloader.locales = 'zh_CN';
         easyloader.theme = 'bootstrap';
         easyloader.load('tree',function () {
+            editor = editormd("test-editormd", {
+                width   : "90%",
+                height  : 640,
+                syncScrolling : "single",
+                path    : ctxPath,
+                saveHTMLToTextarea:true
+            });
+
             $('#dicTree').tree({
                 onClick: function(node){
                     // 给父节点隐藏控件赋值
-                    var pName = $("#pname");
-                    $("#pid").val(node.id);
+                    var pName = $("#dicName");
+                    $("#dicId").val(node.id);
                     pName.attr("value", node.name);
+
+                    hideMenu();
                 },
                 loadFilter:dataLoad
             });
-
             var promise = $.ajax({
-                url:base + '/dics/tree/0',
+                url:base + '/dics/tree/9',
                 dataType:'json',
                 type:'get',
                 headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
@@ -127,7 +97,6 @@
             });
 
             initformSubmitEvent();
-            databind();
         });
 
         // 递归过滤标准树形树形，添加一个 text 属性，值就是name属性的值
@@ -153,7 +122,7 @@
         function showMenu() {
             var cityObj = $("#pname");
             var cityOffset = $("#pname").offset();
-            var sel=document.getElementById("parentDic");
+            var sel=document.getElementById("dicName");
             $("#menuContent").css({left:sel.offsetLeft + "px", top:sel.offsetTop + cityObj.outerHeight() + "px"}).slideDown("fast");
             $("body").bind("mousedown", onBodyDown);
         }
@@ -170,143 +139,61 @@
             $("body").unbind("mousedown", onBodyDown);
         }
 
-        // 数据绑定，之后在 id 有值的情况才执行
-        function databind(){
-            var id = $('#dicId').val();
-            if (id != null && id != ''){
+        function initformSubmitEvent(){
+            var $btn = $("#submit-btn");
+            if($btn.hasClass("disabled")) return;
+
+            $btn.click(function(){
+                $btn.addClass("disabled");
+                var id = $('#articleId').val();
+                var postData;
+                var submitUrl;
+                if (id != null && id != ''){
+                    postData = {
+                        articleTitle:$('#articleTitle').val(),
+                        articleDesc:$('#articleDesc').val(),
+                        dicItemId:$('#dicId').val(),
+                        id:$('#articleId').val(),
+                        articleContent:editor.getHTML(),
+                        checkName: ($('#name').val() === oldName) ? false : true,
+                    }
+                    submitUrl = base + '/articles/modify';
+                }
+                else {
+                    postData = {
+                        articleTitle:$('#articleTitle').val(),
+                        articleDesc:$('#articleDesc').val(),
+                        dicItemId:$('#dicId').val(),
+                        articleContent:editor.getHTML()
+                    }
+                    submitUrl = base + '/articles/save';
+                }
+
                 var promise = $.ajax({
-                    url:base + '/dics/' + id,
+                    url: submitUrl,
+                    type:'post',
                     dataType:'json',
-                    type:'get',
+                    data:JSON.stringify(postData),
                     headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
                 });
                 promise.done(function (result) {
-                    var obj = result.data;
-                    $('#pid').val(obj.pid);
-                    $('#description').val(obj.description);
-                    $('#name').val(obj.name);
-                    $('#code').val(obj.code);
-                    $('#seq').val(obj.seq);
-                    $('#pname').val(obj.pname);
-
-                    // 绑定老的数据
-                    oldName = obj.name;
-                }).fail(function (error) {
-                    console.log(error);
-                });
-            }
-        }
-
-
-        function initformSubmitEvent(){
-            $('#validation-form').validate({
-                errorElement: 'div',
-                errorClass: 'help-block',
-                focusInvalid: false,
-                rules: {
-                    name:{
-                        required: true
-                    },
-                    seq:{
-                        required: true,
-                        digits:true
-                    }
-                },
-                messages: {
-                    name:{
-                        required: "请输入数据字典名称"
-                    },
-                    seq:{
-                        required: "请输入排序号",
-                        digits:"排序号只能输入整数"
-                    }
-                },
-                highlight: function (e) {
-                    $(e).closest('.form-group').removeClass('has-info').addClass('has-error');
-                },
-                success: function (e) {
-                    $(e).closest('.form-group').removeClass('has-error');//.addClass('has-info');
-                    $(e).remove();
-                },
-                errorPlacement: function (error, element) {
-                    if(element.is(':checkbox') || element.is(':radio')) {
-                        var controls = element.closest('div[class*="col-"]');
-                        if(controls.find(':checkbox,:radio').length > 1) controls.append(error);
-                        else error.insertAfter(element.nextAll('.lbl:eq(0)').eq(0));
-                    }
-                    else if(element.is('.select2')) {
-                        error.insertAfter(element.siblings('[class*="select2-container"]:eq(0)'));
-                    }
-                    else if(element.is('.chosen-select')) {
-                        error.insertAfter(element.siblings('[class*="chosen-container"]:eq(0)'));
-                    }
-                    else error.insertAfter(element.parent());
-                },
-                submitHandler: function (form) {
-                    var $form = $("#validation-form");
-                    var $btn = $("#submit-btn");
-                    if($btn.hasClass("disabled")) return;
-                    $btn.addClass("disabled");
-
-                    // var postData = $("#validation-form").serialize();
-                    var id = $('#dicId').val();
-                    var postData;
-                    var submitUrl;
-                    if (id != null && id != ''){
-                        postData = {
-                            description:$('#description').val(),
-                            pid:$('#pid').val(),
-                            name:$('#name').val(),
-                            code:$('#code').val(),
-                            seq:$('#seq').val(),
-                            id:$('#dicId').val(),
-                            checkName: ($('#name').val() === oldName) ? false : true,
-                        }
-                        submitUrl = base + '/dics/modify';
+                    if(result.reqSuccess){
+                        layer.msg('操作成功', {
+                            icon: 1,
+                            time: 2000 //2秒关闭（如果不配置，默认是3秒）
+                        },function(){
+                            window.location.href = '/admin/article/list';
+                        });
                     }
                     else {
-                        postData = {
-                            description:$('#description').val(),
-                            pid:$('#pid').val(),
-                            name:$('#name').val(),
-                            code:$('#code').val(),
-                            seq:$('#seq').val(),
-                            id:$('#dicId').val(),
-                        }
-                        submitUrl = base + '/dics/save';
+                        layer.msg(result.msg);
                     }
-
-                    var promise = $.ajax({
-                        url: submitUrl,
-                        type:'post',
-                        dataType:'json',
-                        data:JSON.stringify(postData),
-                        headers:{"Authorization":JSON.parse( myStorage.getItem('currentUser')).token,"Content-Type":"application/json;charset=UTF-8"}
-                    });
-                    promise.done(function (result) {
-                        if(result.reqSuccess){
-                            layer.msg('操作成功', {
-                                icon: 1,
-                                time: 2000 //2秒关闭（如果不配置，默认是3秒）
-                            },function(){
-                                parent.reloadGrid();
-                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
-                                parent.layer.close(index); //再执行关闭
-                            });
-                        }
-                        else {
-                            layer.msg(result.msg);
-                        }
-                    }).fail(function (error) {
-                        layer.msg(error.responseJSON.msg);
-                    })
-                    $btn.removeClass('disabled');
-                    return false;
-                },
-                invalidHandler: function (form) {
-                }
+                }).fail(function (error) {
+                    layer.msg(error.responseJSON.msg);
+                })
+                $btn.removeClass('disabled');
             });
         }
     </script>
-</body>
+    </body>
 </html>

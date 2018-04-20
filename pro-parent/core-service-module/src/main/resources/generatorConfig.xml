@@ -56,10 +56,12 @@
 
         <!-- 指定数据库表 -->
         <!-- 如果表没有主键，则只会生成insert语句，因为select/update语句都需要根据主键来 -->
-        <table tableName="sys_user" domainObjectName="User"
+        <table tableName="sys_article" domainObjectName="Article"
                enableCountByExample="false" enableUpdateByExample="false"
                enableDeleteByExample="false" enableSelectByExample="false"
                selectByExampleQueryId="false">
+            <columnOverride column="article_content" javaType="java.lang.String" jdbcType="VARCHAR" />
+            <columnOverride column="article_desc" javaType="java.lang.String" jdbcType="VARCHAR" />
         </table>
 
     </context>
