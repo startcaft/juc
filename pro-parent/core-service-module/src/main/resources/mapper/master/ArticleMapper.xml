@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.startcaft.basic.dao.master.IArticleDao">
+
+    <resultMap id="BaseResultMap" type="com.startcaft.basic.core.entity.Article">
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="article_title" jdbcType="VARCHAR" property="articleTitle"/>
+        <result column="article_content" jdbcType="VARCHAR" property="articleContent"/>
+        <result column="dic_item_id" jdbcType="BIGINT" property="dicItemId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="article_desc" jdbcType="VARCHAR" property="articleDesc"/>
+    </resultMap>
+
+    <!-- 包含字典信息的结果集 -->
+    <resultMap id="WithDicItemResult" type="com.startcaft.basic.core.entity.Article" extends="BaseResultMap">
+        <result column="dic_item_id" property="dicItem.id" jdbcType="BIGINT" />
+        <result column="dic_item_name" property="dicItem.name" jdbcType="VARCHAR" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+      id, article_title, article_content, dic_item_id, create_time, article_desc
+    </sql>
+
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="WithDicItemResult">
+        select * from sys_article a inner join sys_dic_item d
+        on a.dic_item_id = d.id
+        where a.id = #{id,jdbcType=BIGINT}
+    </select>
+
+    <select id="selectListDynamic" parameterType="map" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from sys_article
+        <where>
+            <if test="title != null and title != ''">
+                and article_title = #{title}
+            </if>
+        </where>
+    </select>
+
+    <!-- 分页查询 -->
+    <select id="selectUserPage" parameterType="map" resultMap="WithDicItemResult">
+        select * from sys_article a inner join sys_dic_item d
+        on a.dic_item_id = d.id
+        <where>
+            <if test="title != null and title != ''">
+                and article_title = #{title}
+            </if>
+        </where>
+    </select>
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from sys_article
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
+
+    <insert id="insert" parameterType="com.startcaft.basic.core.entity.Article">
+        insert into sys_article (id, article_title, article_content,
+          dic_item_id, create_time, article_desc
+          )
+        values (#{id,jdbcType=BIGINT}, #{articleTitle,jdbcType=VARCHAR}, #{articleContent,jdbcType=VARCHAR},
+          #{dicItemId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{articleDesc,jdbcType=VARCHAR}
+          )
+    </insert>
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.startcaft.basic.core.entity.Article">
+        update sys_article
+        <set>
+            <if test="articleTitle != null">
+                article_title = #{articleTitle,jdbcType=VARCHAR},
+            </if>
+            <if test="articleContent != null">
+                article_content = #{articleContent,jdbcType=VARCHAR},
+            </if>
+            <if test="dicItemId != null">
+                dic_item_id = #{dicItemId,jdbcType=BIGINT},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="articleDesc != null">
+                article_desc = #{articleDesc,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
+</mapper>
