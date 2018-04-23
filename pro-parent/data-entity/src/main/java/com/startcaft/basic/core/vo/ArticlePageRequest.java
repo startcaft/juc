@@ -21,11 +21,24 @@ public class ArticlePageRequest extends AbstractEasyuiPageRequest {
      */
     private String title;
 
+    /**
+     * 根据分类查询
+     */
+    private Long dicItemId;
+
     public String getTitle() {
         return title;
     }
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public Long getDicItemId() {
+        return dicItemId;
+    }
+
+    public void setDicItemId(Long dicItemId) {
+        this.dicItemId = dicItemId;
     }
 }

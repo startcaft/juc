@@ -7,7 +7,10 @@
 package com.startcaft.basic.controller;
 
 import com.startcaft.basic.core.beans.ArticleBean;
-import com.startcaft.basic.core.vo.*;
+import com.startcaft.basic.core.vo.ArticlePageRequest;
+import com.startcaft.basic.core.vo.ArticleVo;
+import com.startcaft.basic.core.vo.EasyuiGrid;
+import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.service.IArticleService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -19,6 +22,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Set;
 
 /**
  * 〈一句话功能简述〉<br> 
@@ -35,6 +39,17 @@ public class ArticleController extends BaseController {
 
     @Autowired
     private IArticleService articleService;
+
+    @ApiOperation(value = "获取指定文章的详细信息",notes = "无需登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "id",required = true,dataType = "long",paramType = "path")
+    })
+    @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean<ArticleVo> getSingle(@PathVariable(value = "id",required = true) long id){
+        {
+            return new ResponseBean<ArticleVo>(true,SUCCESS_MSG,articleService.getDetail(id));
+        }
+    }
 
     @ApiOperation(value = "添加文章",notes = "需要用户登陆")
     @ApiImplicitParams({
@@ -56,23 +71,33 @@ public class ArticleController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "文章分页查询",notes = "需要用户登陆")
+    @ApiOperation(value = "文章分页查询",notes = "无需用户登陆")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page",required = true,dataType = "int",paramType = "query"),
             @ApiImplicitParam(name = "rows",required = true,dataType = "int",paramType = "query"),
-            @ApiImplicitParam(name = "orgId",required = false,dataType = "Long",paramType = "query"),
+            @ApiImplicitParam(name = "title",required = false,dataType = "String",paramType = "query"),
+            @ApiImplicitParam(name = "dicItemId",required = false,dataType = "Long",paramType = "query")
     })
     @GetMapping(value = "/page",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    @RequiresAuthentication
     public EasyuiGrid<ArticleVo> getUserPage(@RequestParam(value = "page",required = true) int pageIndex,
                                              @RequestParam(value = "rows",required = true) int pageSize,
-                                             @RequestParam(value = "title",required = false) String title){
+                                             @RequestParam(value = "title",required = false) String title,
+                                             @RequestParam(value = "dicItemId",required = false) Long dicItemId){
         {
             ArticlePageRequest request = new ArticlePageRequest();
             request.setPage(pageIndex);
             request.setRows(pageSize);
             request.setTitle(title);
+            request.setDicItemId(dicItemId);
             return articleService.pageSearch(request);
+        }
+    }
+
+    @ApiOperation(value = "获取游戏分类下的最新的8条文章",notes = "无需用户登陆")
+    @GetMapping(value = "/game/top8",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseBean<Set<ArticleVo>> getGameTop8(){
+        {
+            return new ResponseBean<Set<ArticleVo>>(true,SUCCESS_MSG,articleService.getGameTop8());
         }
     }
 }

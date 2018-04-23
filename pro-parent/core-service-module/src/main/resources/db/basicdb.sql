@@ -11,7 +11,7 @@
  Target Server Version : 50559
  File Encoding         : 65001
 
- Date: 19/04/2018 16:02:16
+ Date: 23/04/2018 10:14:47
 */
 
 SET NAMES utf8mb4;
@@ -22,14 +22,19 @@ SET FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 DROP TABLE IF EXISTS `sys_article`;
 CREATE TABLE `sys_article`  (
-  `id` bigint(20) NOT NULL,
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `article_title` varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '文章的标题',
   `article_content` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '文章的html内容',
   `dic_item_id` bigint(20) NOT NULL COMMENT '字典外键',
   `create_time` datetime NOT NULL COMMENT '时间',
   `article_desc` text CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL COMMENT '文章的描述，一般用作微信的图文消息的description属性',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 2 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+
+-- ----------------------------
+-- Records of sys_article
+-- ----------------------------
+INSERT INTO `sys_article` VALUES (1, '1323213', '<h3 id=\"h3--markdown-\"><a name=\"使用Markdown编辑文章\" class=\"reference-link\"></a><span class=\"header-link octicon octicon-link\"></span>使用Markdown编辑文章</h3>', 12, '2018-04-20 14:51:43', '12321321321321321321');
 
 -- ----------------------------
 -- Table structure for sys_dic_item
@@ -44,7 +49,7 @@ CREATE TABLE `sys_dic_item`  (
   `pid` bigint(4) NOT NULL DEFAULT 0 COMMENT '父节点id',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name`) USING BTREE COMMENT 'name字段唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 15 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 24 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of sys_dic_item
@@ -63,6 +68,15 @@ INSERT INTO `sys_dic_item` VALUES (11, '王者荣耀', 'wz002', '', 2, 9);
 INSERT INTO `sys_dic_item` VALUES (12, '攻略', 'wz00101', '', 1, 10);
 INSERT INTO `sys_dic_item` VALUES (13, '战术打法', 'wz00102', '', 2, 10);
 INSERT INTO `sys_dic_item` VALUES (14, '枪械扫盲', 'wz00103', '', 3, 10);
+INSERT INTO `sys_dic_item` VALUES (15, '東雅图后台管理', 'wz002', '', 3, 9);
+INSERT INTO `sys_dic_item` VALUES (16, '公司简介', 'wz0020101', '', 1, 18);
+INSERT INTO `sys_dic_item` VALUES (17, '公司介绍', 'wz0020102', '', 2, 18);
+INSERT INTO `sys_dic_item` VALUES (18, '关于我们', 'wz00201', '', 1, 15);
+INSERT INTO `sys_dic_item` VALUES (19, '湖图介绍', 'wz002002', '', 2, 15);
+INSERT INTO `sys_dic_item` VALUES (20, '企业资质', 'wz00203', '', 3, 15);
+INSERT INTO `sys_dic_item` VALUES (21, '招商加盟', 'wz00204', '', 4, 15);
+INSERT INTO `sys_dic_item` VALUES (22, '法律声明', 'wz00205', '', 5, 15);
+INSERT INTO `sys_dic_item` VALUES (23, '诚聘英才', 'wz00206', '', 6, 15);
 
 -- ----------------------------
 -- Table structure for sys_organization
@@ -103,7 +117,7 @@ CREATE TABLE `sys_resource`  (
   `pid` bigint(4) NULL DEFAULT 0 COMMENT 'pid，默认0',
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE INDEX `name`(`name`) USING BTREE COMMENT '资源名称唯一索引'
-) ENGINE = InnoDB AUTO_INCREMENT = 26 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 29 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of sys_resource
@@ -133,6 +147,9 @@ INSERT INTO `sys_resource` VALUES (22, '添加组织部门信息', NULL, '', '20
 INSERT INTO `sys_resource` VALUES (23, '修改组织部门信息', NULL, '', '2018-04-16 11:20:31', 2, 100, '/admin/org/edit', 2, 21);
 INSERT INTO `sys_resource` VALUES (24, '添加用户', NULL, '', '2018-04-17 15:21:42', 2, 100, '/admin/user/add', 1, 3);
 INSERT INTO `sys_resource` VALUES (25, '修改用户', NULL, '', '2018-04-17 15:22:00', 2, 100, '/admin/user/edit', 2, 3);
+INSERT INTO `sys_resource` VALUES (26, '文章管理', NULL, '', '2018-04-19 16:28:18', 1, 100, '', 6, 1);
+INSERT INTO `sys_resource` VALUES (27, '文章列表', NULL, '', '2018-04-19 16:28:05', 1, 100, '/admin/article/list', 1, 26);
+INSERT INTO `sys_resource` VALUES (28, '添加文章', NULL, '', '2018-04-19 17:22:18', 2, 100, '/admin/article/add', 1, 27);
 
 -- ----------------------------
 -- Table structure for sys_role
@@ -175,7 +192,7 @@ CREATE TABLE `sys_role_resource`  (
   INDEX `resoruce_id`(`resoruce_id`) USING BTREE,
   CONSTRAINT `sys_role_resource_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `sys_role` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT,
   CONSTRAINT `sys_role_resource_ibfk_2` FOREIGN KEY (`resoruce_id`) REFERENCES `sys_resource` (`id`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE = InnoDB AUTO_INCREMENT = 108 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
+) ENGINE = InnoDB AUTO_INCREMENT = 149 CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Compact;
 
 -- ----------------------------
 -- Records of sys_role_resource
@@ -191,25 +208,27 @@ INSERT INTO `sys_role_resource` VALUES (42, 2, 13);
 INSERT INTO `sys_role_resource` VALUES (43, 2, 16);
 INSERT INTO `sys_role_resource` VALUES (44, 2, 14);
 INSERT INTO `sys_role_resource` VALUES (45, 2, 15);
-INSERT INTO `sys_role_resource` VALUES (89, 1, 3);
-INSERT INTO `sys_role_resource` VALUES (90, 1, 24);
-INSERT INTO `sys_role_resource` VALUES (91, 1, 25);
-INSERT INTO `sys_role_resource` VALUES (92, 1, 21);
-INSERT INTO `sys_role_resource` VALUES (93, 1, 22);
-INSERT INTO `sys_role_resource` VALUES (94, 1, 23);
-INSERT INTO `sys_role_resource` VALUES (95, 1, 17);
-INSERT INTO `sys_role_resource` VALUES (96, 1, 18);
-INSERT INTO `sys_role_resource` VALUES (97, 1, 19);
-INSERT INTO `sys_role_resource` VALUES (98, 1, 6);
-INSERT INTO `sys_role_resource` VALUES (99, 1, 7);
-INSERT INTO `sys_role_resource` VALUES (100, 1, 8);
-INSERT INTO `sys_role_resource` VALUES (101, 1, 9);
-INSERT INTO `sys_role_resource` VALUES (102, 1, 10);
-INSERT INTO `sys_role_resource` VALUES (103, 1, 11);
-INSERT INTO `sys_role_resource` VALUES (104, 1, 13);
-INSERT INTO `sys_role_resource` VALUES (105, 1, 16);
-INSERT INTO `sys_role_resource` VALUES (106, 1, 14);
-INSERT INTO `sys_role_resource` VALUES (107, 1, 15);
+INSERT INTO `sys_role_resource` VALUES (128, 1, 3);
+INSERT INTO `sys_role_resource` VALUES (129, 1, 24);
+INSERT INTO `sys_role_resource` VALUES (130, 1, 25);
+INSERT INTO `sys_role_resource` VALUES (131, 1, 21);
+INSERT INTO `sys_role_resource` VALUES (132, 1, 22);
+INSERT INTO `sys_role_resource` VALUES (133, 1, 23);
+INSERT INTO `sys_role_resource` VALUES (134, 1, 17);
+INSERT INTO `sys_role_resource` VALUES (135, 1, 18);
+INSERT INTO `sys_role_resource` VALUES (136, 1, 19);
+INSERT INTO `sys_role_resource` VALUES (137, 1, 6);
+INSERT INTO `sys_role_resource` VALUES (138, 1, 7);
+INSERT INTO `sys_role_resource` VALUES (139, 1, 8);
+INSERT INTO `sys_role_resource` VALUES (140, 1, 9);
+INSERT INTO `sys_role_resource` VALUES (141, 1, 10);
+INSERT INTO `sys_role_resource` VALUES (142, 1, 11);
+INSERT INTO `sys_role_resource` VALUES (143, 1, 27);
+INSERT INTO `sys_role_resource` VALUES (144, 1, 28);
+INSERT INTO `sys_role_resource` VALUES (145, 1, 13);
+INSERT INTO `sys_role_resource` VALUES (146, 1, 16);
+INSERT INTO `sys_role_resource` VALUES (147, 1, 14);
+INSERT INTO `sys_role_resource` VALUES (148, 1, 15);
 
 -- ----------------------------
 -- Table structure for sys_role_user

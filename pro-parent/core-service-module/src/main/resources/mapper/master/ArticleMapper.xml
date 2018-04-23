@@ -28,6 +28,14 @@
         where a.id = #{id,jdbcType=BIGINT}
     </select>
 
+    <select id="selectTopByDic" parameterType="java.lang.Long" resultMap="WithDicItemResult">
+        select a.*,d.name as dic_item_name from sys_article a inner join sys_dic_item d
+        on a.dic_item_id = d.id
+            where a.dic_item_id = #{_parameter}
+        ORDER BY a.create_time desc
+            limit 0,8
+    </select>
+
     <select id="selectListDynamic" parameterType="map" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
@@ -46,6 +54,9 @@
         <where>
             <if test="title != null and title != ''">
                 and article_title = #{title}
+            </if>
+            <if test="dicItemId != null">
+                and dic_item_id = #{dicItemId}
             </if>
         </where>
     </select>

@@ -16,8 +16,18 @@ public interface IArticleDao {
      */
     int insert(Article record);
 
+    /**
+     * 查询详细
+     * @param id
+     * @return
+     */
     Article selectByPrimaryKey(Long id);
 
+    /**
+     * 更新
+     * @param record
+     * @return
+     */
     int updateByPrimaryKeySelective(Article record);
 
     /**
@@ -33,4 +43,11 @@ public interface IArticleDao {
      * @return
      */
     Set<Article> selectUserPage(Map<String,Object> params);
+
+    /**
+     * 查询指定分类下的最新8条文章
+     * @param dicItemId
+     * @return
+     */
+    Set<Article> selectTopByDic(long dicItemId);
 }

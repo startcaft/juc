@@ -10,22 +10,25 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.startcaft.basic.core.beans.ArticleBean;
 import com.startcaft.basic.core.entity.Article;
-import com.startcaft.basic.core.entity.User;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.exceptions.SqlExecuteException;
 import com.startcaft.basic.core.exceptions.UniqueException;
 import com.startcaft.basic.core.vo.ArticlePageRequest;
 import com.startcaft.basic.core.vo.ArticleVo;
 import com.startcaft.basic.core.vo.EasyuiGrid;
-import com.startcaft.basic.core.vo.UserVo;
 import com.startcaft.basic.dao.master.IArticleDao;
 import com.startcaft.basic.service.IArticleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.SetOperations;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 
 /**
  * 〈一句话功能简述〉<br> 
@@ -40,6 +43,19 @@ public class ArticleServiceImpl implements IArticleService {
 
     @Autowired
     private IArticleDao articleDao;
+
+    @Autowired
+    private RedisTemplate<String,ArticleVo> redisTemplate;
+
+    /**
+     * 文章缓存的key前缀
+     */
+    private static final String ARTICLE_KEY_PREFIX = "article:";
+
+    /**
+     * 文章缓存的过期时间，24小时
+     */
+    private static final long ARTICLE_TIME_OUT = 24;
 
     @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
     @Override
@@ -63,14 +79,22 @@ public class ArticleServiceImpl implements IArticleService {
     @Override
     public EasyuiGrid<ArticleVo> pageSearch(ArticlePageRequest request) throws BasicProException {
         {
+            StringBuilder keyBuilder = new StringBuilder(ARTICLE_KEY_PREFIX);
+            keyBuilder.append("page:").append("p:" + request.getPage()).append(":r:" + request.getRows());
+
             Map<String,Object> params = new HashMap<>();
             if (!StringUtils.isEmpty(request.getTitle())){
                 params.put("title",request.getTitle());
+                keyBuilder.append(":t:" + request.getTitle());
+            }
+            if (request.getDicItemId() != null && request.getDicItemId().intValue() > 0){
+                params.put("dicItemId",request.getDicItemId());
+                keyBuilder.append(":d:" + request.getTitle());
             }
 
+            // 必须放在分页 dao 调用的前面
             Page<Object> page = PageHelper.startPage(request.getPage(),request.getRows());
             Set<Article> articleSet = articleDao.selectUserPage(params);
-
             Set<ArticleVo> voSet = new TreeSet<>(new Comparator<ArticleVo>() {
                 @Override
                 public int compare(ArticleVo o1, ArticleVo o2) {
@@ -85,7 +109,69 @@ public class ArticleServiceImpl implements IArticleService {
             }
 
             EasyuiGrid<ArticleVo> grid = new EasyuiGrid<>(page.getTotal(),voSet);
+
             return grid;
+        }
+    }
+
+    @Override
+    public ArticleVo getDetail(long id) throws BasicProException {
+        {
+            ValueOperations<String,ArticleVo> operations = redisTemplate.opsForValue();
+            // 查找缓存
+            ArticleVo cacheVo = operations.get(ARTICLE_KEY_PREFIX + id);
+            Optional<ArticleVo> optionalArticleVo = Optional.ofNullable(cacheVo);
+
+            Supplier<ArticleVo> supplier = () -> {
+                Article entity = articleDao.selectByPrimaryKey(id);
+                if (entity == null){
+                    throw new BasicProException("查询不到指定的Article数据");
+                };
+                ArticleVo vo = new ArticleVo();
+                return entity.copyPropertiesTemplate(vo);
+            };
+
+            // 缓存中没有则从数据库中查询，注意查询数据库也许会查询不到，那就直接抛出异常
+            cacheVo = optionalArticleVo.orElseGet(supplier);
+
+            // 保存查询结果到 redis 中，
+            operations.set(ARTICLE_KEY_PREFIX + id,cacheVo,ARTICLE_TIME_OUT, TimeUnit.HOURS);
+
+            return cacheVo;
+        }
+    }
+
+    @Override
+    public Set<ArticleVo> getGameTop8() throws BasicProException {
+        {
+            SetOperations<String,ArticleVo> operations = redisTemplate.opsForSet();
+            // 先查询缓存
+            Set<ArticleVo> cacheVoSet = operations.members(ARTICLE_KEY_PREFIX + "game:top8");
+            if (cacheVoSet == null || cacheVoSet.size() <= 0){
+                // 查询数据库
+                Set<Article> set = articleDao.selectTopByDic(12);
+                Set<ArticleVo> tempSet = new TreeSet<>(new Comparator<ArticleVo>() {
+                    @Override
+                    public int compare(ArticleVo o1, ArticleVo o2) {
+                        return o1.getCreateTime().compareTo(o2.getCreateTime());
+                    };
+                });
+                set.forEach((entity) -> {
+                    ArticleVo vo = new ArticleVo();
+                    entity.copyPropertiesTemplate(vo);
+
+                    tempSet.add(vo);
+                });
+
+                cacheVoSet = tempSet;
+            }
+
+            // 保存结果集到缓存
+            ArticleVo[] articleArray = cacheVoSet.toArray(new ArticleVo[cacheVoSet.size()]);
+            operations.add(ARTICLE_KEY_PREFIX + "game:top8",articleArray);
+            redisTemplate.expire(ARTICLE_KEY_PREFIX + "game:top8",ARTICLE_TIME_OUT,TimeUnit.HOURS);
+
+            return cacheVoSet;
         }
     }
 }

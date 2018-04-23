@@ -12,6 +12,8 @@ import com.startcaft.basic.core.vo.ArticlePageRequest;
 import com.startcaft.basic.core.vo.ArticleVo;
 import com.startcaft.basic.core.vo.EasyuiGrid;
 
+import java.util.Set;
+
 /**
  * 〈一句话功能简述〉<br> 
  * 〈文章管理〉
@@ -36,4 +38,19 @@ public interface IArticleService {
      * @throws BasicProException
      */
     EasyuiGrid<ArticleVo> pageSearch(ArticlePageRequest request) throws BasicProException;
+
+    /**
+     * 获取文章详细，先从 redis 中获取，如果没有才到数据库中去查询，查询到了之后保存到redis中
+     * @param id
+     * @return
+     * @throws BasicProException
+     */
+    ArticleVo getDetail(long id) throws BasicProException;
+
+    /**
+     * 获取刺激战场分类下的8条最新的文章
+     * @return
+     * @throws BasicProException
+     */
+    Set<ArticleVo> getGameTop8() throws BasicProException;
 }
