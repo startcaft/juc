@@ -2,6 +2,7 @@ package com.startcaft.basic.dao.master;
 
 import com.startcaft.basic.core.entity.Article;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -42,7 +43,7 @@ public interface IArticleDao {
      * @param params
      * @return
      */
-    Set<Article> selectUserPage(Map<String,Object> params);
+    List<Article> selectUserPage(Map<String,Object> params);
 
     /**
      * 查询指定分类下的最新8条文章

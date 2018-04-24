@@ -2,8 +2,8 @@ package com.startcaft.basic.dao.master;
 
 import com.startcaft.basic.core.entity.User;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  *
@@ -45,7 +45,7 @@ public interface IUserDao {
      * @param map 参数Map
      * @return
      */
-    Set<User> selectUserPage(Map<String, Object> map);
+    List<User> selectUserPage(Map<String, Object> map);
 
     /**
      * 获取指定用户ID的所有角色列表

@@ -167,24 +167,18 @@ public class UserServiceImpl implements IUserService {
             }
 
             Page<Object> page = PageHelper.startPage(pageRequest.getPage(),pageRequest.getRows());
-            Set<User> userSet = userDao.selectUserPage(params);
+            List<User> userSet = userDao.selectUserPage(params);
 
-            Set<UserVo> voSet = new TreeSet<>(new Comparator<UserVo>() {
-                @Override
-                public int compare(UserVo o1, UserVo o2) {
-                    return o1.getLoginName().compareTo(o2.getLoginName());
-                }
-            });
-
+            List<UserVo> voList = new ArrayList<>(userSet.size());
             if (userSet != null && userSet.size() > 0){
                 userSet.forEach((entity) -> {
                     // 将密码置空
                     entity.setPassword(null);
-                    voSet.add(entity.copyPropertiesTemplate(new UserVo()));
+                    voList.add(entity.copyPropertiesTemplate(new UserVo()));
                 });
             }
 
-            EasyuiGrid<UserVo> grid = new EasyuiGrid<>(page.getTotal(),voSet);
+            EasyuiGrid<UserVo> grid = new EasyuiGrid<>(page.getTotal(),voList);
             return grid;
         }
     }

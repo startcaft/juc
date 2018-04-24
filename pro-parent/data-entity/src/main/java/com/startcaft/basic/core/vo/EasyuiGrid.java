@@ -6,21 +6,23 @@
  */
 package com.startcaft.basic.core.vo;
 
-import java.util.Set;
+import java.util.List;
 
 /**
  * 〈一句话功能简述〉<br> 
  * 〈Easyui分页表格数据结构〉
  *
+ * Set 在反序列化时候，特别是TreeSet，在调用 add 方法时候会无法进行比较两个对象（找不到比较器），所以这里改成List
+ *
  * @author StartCaft
  * @create 2018/4/16
  * @since 1.0.0
  */
-public class EasyuiGrid<T> {
+public class EasyuiGrid<T> implements java.io.Serializable {
 
     private long total;
 
-    private Set<T> rows;
+    private List<T> rows;
 
     public long getTotal() {
         return total;
@@ -30,16 +32,19 @@ public class EasyuiGrid<T> {
         this.total = total;
     }
 
-    public Set<T> getRows() {
+    public List<T> getRows() {
         return rows;
     }
 
-    public void setRows(Set<T> rows) {
+    public void setRows(List<T> rows) {
         this.rows = rows;
     }
 
-    public EasyuiGrid(long total, Set<T> rows) {
+    public EasyuiGrid(long total, List<T> rows) {
         this.total = total;
         this.rows = rows;
+    }
+
+    public EasyuiGrid() {
     }
 }

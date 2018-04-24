@@ -39,13 +39,16 @@ import java.util.function.Supplier;
  * @since 1.0.0
  */
 @Service
-public class ArticleServiceImpl implements IArticleService {
+public class ArticleServiceImpl implements IArticleService,java.io.Serializable {
 
     @Autowired
     private IArticleDao articleDao;
 
     @Autowired
     private RedisTemplate<String,ArticleVo> redisTemplate;
+
+    @Autowired
+    private RedisTemplate<String,EasyuiGrid<ArticleVo>> pageRedisTemplate;
 
     /**
      * 文章缓存的key前缀
@@ -79,6 +82,8 @@ public class ArticleServiceImpl implements IArticleService {
     @Override
     public EasyuiGrid<ArticleVo> pageSearch(ArticlePageRequest request) throws BasicProException {
         {
+            ValueOperations<String,EasyuiGrid<ArticleVo>> operations = pageRedisTemplate.opsForValue();
+
             StringBuilder keyBuilder = new StringBuilder(ARTICLE_KEY_PREFIX);
             keyBuilder.append("page:").append("p:" + request.getPage()).append(":r:" + request.getRows());
 
@@ -92,25 +97,29 @@ public class ArticleServiceImpl implements IArticleService {
                 keyBuilder.append(":d:" + request.getTitle());
             }
 
-            // 必须放在分页 dao 调用的前面
-            Page<Object> page = PageHelper.startPage(request.getPage(),request.getRows());
-            Set<Article> articleSet = articleDao.selectUserPage(params);
-            Set<ArticleVo> voSet = new TreeSet<>(new Comparator<ArticleVo>() {
-                @Override
-                public int compare(ArticleVo o1, ArticleVo o2) {
-                    return o1.getId().compareTo(o2.getId());
+            EasyuiGrid<ArticleVo> cacheGrid = operations.get(keyBuilder.toString());
+            Optional<EasyuiGrid<ArticleVo>> optionalGrid = Optional.ofNullable(cacheGrid);
+
+            cacheGrid = optionalGrid.orElseGet(() -> {
+                // 必须放在分页 dao 调用的前面
+                Page<Object> page = PageHelper.startPage(request.getPage(),request.getRows());
+                List<Article> articles = articleDao.selectUserPage(params);
+                List<ArticleVo> voList = new ArrayList<>(articles.size());
+
+                if (articles != null && articles.size() > 0){
+                    articles.forEach((entity) -> {
+                        voList.add(entity.copyPropertiesTemplate(new ArticleVo()));
+                    });
                 }
+
+                EasyuiGrid<ArticleVo> grid = new EasyuiGrid<>(page.getTotal(),voList);
+
+                return grid;
             });
 
-            if (articleSet != null && articleSet.size() > 0){
-                articleSet.forEach((entity) -> {
-                    voSet.add(entity.copyPropertiesTemplate(new ArticleVo()));
-                });
-            }
+            operations.set(keyBuilder.toString(),cacheGrid,1, TimeUnit.HOURS);
 
-            EasyuiGrid<ArticleVo> grid = new EasyuiGrid<>(page.getTotal(),voSet);
-
-            return grid;
+            return cacheGrid;
         }
     }
 
