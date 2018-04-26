@@ -84,6 +84,7 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
         {
             ValueOperations<String,EasyuiGrid<ArticleVo>> operations = pageRedisTemplate.opsForValue();
 
+            // 确定动态查询的 key
             StringBuilder keyBuilder = new StringBuilder(ARTICLE_KEY_PREFIX);
             keyBuilder.append("page:").append("p:" + request.getPage()).append(":r:" + request.getRows());
 
@@ -94,12 +95,14 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
             }
             if (request.getDicItemId() != null && request.getDicItemId().intValue() > 0){
                 params.put("dicItemId",request.getDicItemId());
-                keyBuilder.append(":d:" + request.getTitle());
+                keyBuilder.append(":d:" + request.getDicItemId());
             }
 
+            // 查询缓存
             EasyuiGrid<ArticleVo> cacheGrid = operations.get(keyBuilder.toString());
             Optional<EasyuiGrid<ArticleVo>> optionalGrid = Optional.ofNullable(cacheGrid);
 
+            // 缓存没有，查询数据库
             cacheGrid = optionalGrid.orElseGet(() -> {
                 // 必须放在分页 dao 调用的前面
                 Page<Object> page = PageHelper.startPage(request.getPage(),request.getRows());
@@ -117,7 +120,12 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
                 return grid;
             });
 
-            operations.set(keyBuilder.toString(),cacheGrid,1, TimeUnit.HOURS);
+            // 如果该key不存在缓存中，而且查询结果不为空，才能保存到缓存
+            if (cacheGrid.getRows() != null && cacheGrid.getRows().size() > 0){
+                if (!redisTemplate.hasKey(keyBuilder.toString())){
+                    operations.set(keyBuilder.toString(),cacheGrid,2, TimeUnit.HOURS);
+                }
+            }
 
             return cacheGrid;
         }

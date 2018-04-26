@@ -71,7 +71,7 @@ public class ArticleController extends BaseController {
         }
     }
 
-    @ApiOperation(value = "文章分页查询",notes = "无需用户登陆")
+    @ApiOperation(value = "文章分页查询",notes = "dicItemId<=0表示查询全部")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "page",required = true,dataType = "int",paramType = "query"),
             @ApiImplicitParam(name = "rows",required = true,dataType = "int",paramType = "query"),
