@@ -8,6 +8,7 @@ package com.startcaft.basic.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.startcaft.basic.core.beans.ArticleBean;
 import com.startcaft.basic.core.entity.Article;
 import com.startcaft.basic.core.exceptions.BasicProException;
@@ -18,6 +19,8 @@ import com.startcaft.basic.core.vo.ArticleVo;
 import com.startcaft.basic.core.vo.EasyuiGrid;
 import com.startcaft.basic.dao.master.IArticleDao;
 import com.startcaft.basic.service.IArticleService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
@@ -60,6 +63,8 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
      */
     private static final long ARTICLE_TIME_OUT = 24;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ArticleServiceImpl.class);
+
     @Transactional(value="masterTransactionManager",rollbackFor = Exception.class)
     @Override
     public void saveArticle(ArticleBean bean) throws BasicProException {
@@ -76,6 +81,11 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
             if (result != 1){
                 throw new SqlExecuteException("execute insert result is error");
             }
+
+            // 删除掉 article:page 系列的key
+            Set<String> pageKeys = redisTemplate.keys("article:page:" + "*");
+            redisTemplate.delete(pageKeys);
+            LOGGER.info("删除所有 article:page 分页缓存");
         }
     }
 
@@ -107,6 +117,9 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
                 // 必须放在分页 dao 调用的前面
                 Page<Object> page = PageHelper.startPage(request.getPage(),request.getRows());
                 List<Article> articles = articleDao.selectUserPage(params);
+                PageInfo<Article> pageInfo = new PageInfo<Article>(articles);
+                LOGGER.info(pageInfo.toString());
+
                 List<ArticleVo> voList = new ArrayList<>(articles.size());
 
                 if (articles != null && articles.size() > 0){
@@ -116,6 +129,8 @@ public class ArticleServiceImpl implements IArticleService,java.io.Serializable 
                 }
 
                 EasyuiGrid<ArticleVo> grid = new EasyuiGrid<>(page.getTotal(),voList);
+                // 有下一页就有更多的数据可以加载
+                grid.setHasMore(pageInfo.isHasNextPage());
 
                 return grid;
             });

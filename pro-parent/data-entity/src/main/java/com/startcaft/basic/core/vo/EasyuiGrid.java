@@ -24,6 +24,11 @@ public class EasyuiGrid<T> implements java.io.Serializable {
 
     private List<T> rows;
 
+    /**
+     * 扩展属性，前端用于判断是否还有更多可以加载的数据
+     */
+    private boolean hasMore;
+
     public long getTotal() {
         return total;
     }
@@ -40,9 +45,23 @@ public class EasyuiGrid<T> implements java.io.Serializable {
         this.rows = rows;
     }
 
+    public boolean isHasMore() {
+        return hasMore;
+    }
+
+    public void setHasMore(boolean hasMore) {
+        this.hasMore = hasMore;
+    }
+
     public EasyuiGrid(long total, List<T> rows) {
         this.total = total;
         this.rows = rows;
+    }
+
+    public EasyuiGrid(long total, List<T> rows, boolean hasMore) {
+        this.total = total;
+        this.rows = rows;
+        this.hasMore = hasMore;
     }
 
     public EasyuiGrid() {
