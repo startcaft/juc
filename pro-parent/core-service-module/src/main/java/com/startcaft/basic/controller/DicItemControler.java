@@ -66,8 +66,7 @@ public class DicItemControler extends BaseController {
             });
 
             if (id != 0){
-                DicItem dicItem = dicItemService.getTreeByPid(id);
-                itemSet.add(dicItem);
+                itemSet = dicItemService.getTreeByPid(id);
             }
             else {
                 itemSet = dicItemService.getTree();

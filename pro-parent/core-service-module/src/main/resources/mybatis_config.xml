@@ -10,8 +10,8 @@
         <setting name="cacheEnabled" value="true"/>
         <!--指定代理工厂,cglib-->
         <setting name="proxyFactory" value="CGLIB"/>
-        <!-- 打开延迟加载的开关 -->
-        <setting name="lazyLoadingEnabled" value="true" />
+        <!-- 打开延迟加载的开关,开启延迟加载，嵌套查询的实体对象会是代理对象，所以这里设置为false -->
+        <setting name="lazyLoadingEnabled" value="false" />
         <!-- 将积极加载改为消息加载即按需加载 -->
         <setting name="aggressiveLazyLoading" value="false"/>
         <!--Oracle中对null值的处理

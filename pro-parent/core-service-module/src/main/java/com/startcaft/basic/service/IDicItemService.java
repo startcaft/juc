@@ -37,7 +37,7 @@ public interface IDicItemService {
      * @return
      * @throws BasicProException
      */
-    DicItem getTreeByPid(long id) throws BasicProException;
+    Set<DicItem> getTreeByPid(long id) throws BasicProException;
 
     /**
      * 获取数据字典完整的树

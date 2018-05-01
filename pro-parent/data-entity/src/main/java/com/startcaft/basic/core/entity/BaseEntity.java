@@ -7,7 +7,7 @@ import com.startcaft.basic.core.vo.BaseVo;
  * @author startcaft
  * 实体基类，包含一个Long类型的id属性，表示一个主键字段，并包含一个拷贝属性的模版方法
  */
-public abstract class BaseEntity<T extends BaseVo> extends AbstractBean<T> {
+public abstract class BaseEntity<T extends BaseVo> extends AbstractBean<T> implements java.io.Serializable {
 
     protected Long id;
 
