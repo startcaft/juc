@@ -11,20 +11,17 @@ import com.startcaft.basic.core.beans.DicItemModifyBean;
 import com.startcaft.basic.core.entity.DicItem;
 import com.startcaft.basic.core.exceptions.BasicProException;
 import com.startcaft.basic.core.exceptions.SqlExecuteException;
-import com.startcaft.basic.core.vo.ArticleVo;
 import com.startcaft.basic.core.vo.DicItemVo;
 import com.startcaft.basic.dao.master.IDicItemDao;
 import com.startcaft.basic.service.IDicItemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.aop.framework.AdvisedSupport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -46,14 +43,14 @@ public class DicItemServiceImpl implements IDicItemService {
     private RedisTemplate<String,DicItem> redisTemplate;
 
     /**
-     * 文章缓存的key前缀
+     * 字典缓存的key前缀
      */
-    private static final String ARTICLE_KEY_PREFIX = "dic:";
+    private static final String DIC_KEY_PREFIX = "dic:";
 
     /**
      * 文章缓存的过期时间，24小时
      */
-    private static final long ARTICLE_TIME_OUT = 24;
+    private static final long DIC_TIME_OUT = 24;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DicItemServiceImpl.class);
 
@@ -83,43 +80,25 @@ public class DicItemServiceImpl implements IDicItemService {
     @Override
     public Set<DicItem> getTreeByPid(long id) throws BasicProException {
         {
-            String key = ARTICLE_KEY_PREFIX + "tree:" + id;
+            String key = DIC_KEY_PREFIX + "tree:" + id;
+
             SetOperations<String,DicItem> operations = redisTemplate.opsForSet();
             // 先查询缓存
             Set<DicItem> cacheVoSet = operations.members(key);
+
             // 判断缓存中是否有数据，如果有责返回，没有则查询数据库
             if (cacheVoSet == null || cacheVoSet.size() <= 0){
-                DicItem dicItem = dicItemDao.selectTreeById(id);
-                Set<DicItem> dicItemSet = new HashSet<>(1);
-                dicItemSet.add(dicItem);
-
-                cacheVoSet = dicItemSet;
-            }
-
-            // 查询出来的数据不是空才，并且缓存中没有改key采可以缓存
-            if (cacheVoSet != null && cacheVoSet.size() > 0){
-                if (!redisTemplate.hasKey(key)){
-                    DicItem[] dicItemArray = cacheVoSet.toArray(new DicItem[cacheVoSet.size()]);
-                    operations.add(key,dicItemArray);
-                    redisTemplate.expire(key,ARTICLE_TIME_OUT,TimeUnit.HOURS);
+                if (id != 0){
+                    DicItem dicItem = dicItemDao.selectTreeById(id);
+                    Set<DicItem> dicItemSet = new HashSet<>(1);
+                    dicItemSet.add(dicItem);
+                    cacheVoSet = dicItemSet;
                 }
-            }
+                else {
+                    Set<DicItem> dicItemSet = dicItemDao.selectTree();
+                    cacheVoSet = dicItemSet;
+                }
 
-            return cacheVoSet;
-        }
-    }
-
-    @Override
-    public Set<DicItem> getTree() throws BasicProException {
-        {
-            String key = ARTICLE_KEY_PREFIX + "tree:0";
-            SetOperations<String,DicItem> operations = redisTemplate.opsForSet();
-            // 先查询缓存
-            Set<DicItem> cacheVoSet = operations.members(key);
-            // 判断缓存中是否有数据，如果有责返回，没有则查询数据库
-            if (cacheVoSet == null || cacheVoSet.size() <= 0){
-                Set<DicItem> dicItemSet = dicItemDao.selectTree();
-                cacheVoSet = dicItemSet;
             }
 
             // 查询出来的数据不是空才，并且缓存中没有改key采可以缓存
@@ -127,7 +106,7 @@ public class DicItemServiceImpl implements IDicItemService {
                 if (!redisTemplate.hasKey(key)){
                     DicItem[] dicItemArray = cacheVoSet.toArray(new DicItem[cacheVoSet.size()]);
                     operations.add(key,dicItemArray);
-                    redisTemplate.expire(key,ARTICLE_TIME_OUT,TimeUnit.HOURS);
+                    redisTemplate.expire(key,DIC_TIME_OUT,TimeUnit.HOURS);
                 }
             }
 
@@ -159,6 +138,11 @@ public class DicItemServiceImpl implements IDicItemService {
             if (result != 1){
                 throw new SqlExecuteException("execute insert result is error");
             }
+
+            // 删除掉 dic:tree: 系列的key
+            Set<String> pageKeys = redisTemplate.keys(DIC_KEY_PREFIX + "tree:" + "*");
+            redisTemplate.delete(pageKeys);
+            LOGGER.info("删除所有 dic:tree 字典缓存");
         }
     }
 
@@ -184,6 +168,11 @@ public class DicItemServiceImpl implements IDicItemService {
             if (result != 1){
                 throw new SqlExecuteException("execute insert result is error");
             }
+
+            // 删除掉 dic:tree: 系列的key
+            Set<String> pageKeys = redisTemplate.keys(DIC_KEY_PREFIX + "tree:" + "*");
+            redisTemplate.delete(pageKeys);
+            LOGGER.info("删除所有 dic:tree 字典缓存");
         }
     }
 

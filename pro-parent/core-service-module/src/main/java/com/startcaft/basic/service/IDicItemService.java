@@ -32,19 +32,12 @@ public interface IDicItemService {
     Set<DicItemVo> getTopDicItems() throws BasicProException;
 
     /**
-     * 获取指定节点的树状结构，一般是顶层节点
+     * 获取字典数，id=0，则获取完成的字典树
      * @param id 数据字典id
      * @return
      * @throws BasicProException
      */
     Set<DicItem> getTreeByPid(long id) throws BasicProException;
-
-    /**
-     * 获取数据字典完整的树
-     * @return
-     * @throws BasicProException
-     */
-    Set<DicItem> getTree() throws BasicProException;
 
     /**
      * 保存数据字典
