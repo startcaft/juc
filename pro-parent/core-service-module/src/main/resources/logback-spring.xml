@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration debug="false">
 
-    <property name="LOG_HOME" value="E:\\DevLog\\pro_basic\\"/>
+    <property name="LOG_HOME" value="\\app_logs\\core\\"/>
 
     <!-- 日志输出的通道 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>core-service-module</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <name>resource-service-module</name>
     <url>http://maven.apache.org</url>
@@ -19,6 +19,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <!-- 打war包时使用，主调 scope 即可 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-tomcat</artifactId>
+            <scope>provided</scope>
         </dependency>
         <!-- Spring Boot Test 依赖 -->
         <dependency>
@@ -89,12 +95,6 @@
 
     <build>
         <plugins>
-            <!-- springboot 支持 jar 部署 -->
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>1.5.4.RELEASE</version>
-            </plugin>
             <!-- mybatis-generator -->
             <plugin>
                 <groupId>org.mybatis.generator</groupId>
@@ -127,6 +127,7 @@
                 </dependencies>
             </plugin>
 
+            <!-- 解决 idea 自动重置LanguageLevel和JavaCompiler版本的问题 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -136,6 +137,26 @@
                     <target>1.8</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warName>core</warName>
+                </configuration>
+            </plugin>
+
+
+            <!--如果想在没有web.xml文件的情况下构建WAR，请设置为false。-->
+            <plugin>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                </configuration>
+            </plugin>
+
         </plugins>
 
         <finalName>${artifactId}</finalName>
