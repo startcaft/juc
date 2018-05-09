@@ -20,11 +20,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <!-- 打war包时使用，主调 scope 即可 -->
+        <!-- 打war包时使用，注释掉 scope 即可 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-tomcat</artifactId>
-            <scope>provided</scope>
+            <!--<scope>provided</scope>-->
         </dependency>
         <!-- Spring Boot Test 依赖 -->
         <dependency>

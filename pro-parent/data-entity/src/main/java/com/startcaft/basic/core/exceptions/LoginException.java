@@ -5,7 +5,7 @@ package com.startcaft.basic.core.exceptions;
  * @author startcaft
  * @date 2018/3/5
  */
-public class LoginException extends RuntimeException {
+public class LoginException extends BasicProException {
     public LoginException() {
     }
 

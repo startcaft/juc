@@ -28,8 +28,12 @@ public class ExceptionController extends BaseController {
         return new ResponseBean(false, e.getMessage(), ERROR_MSG + "_401");
     }
 
-    // 捕捉BasicProException
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    /**
+     * 捕获业务异常，业务异常就正常返回
+     * @param e
+     * @return
+     */
+    @ResponseStatus(HttpStatus.OK)
     @ExceptionHandler(BasicProException.class)
     public ResponseBean handle401(BasicProException e) {
         return new ResponseBean(false, e.getMessage(), ERROR_MSG);

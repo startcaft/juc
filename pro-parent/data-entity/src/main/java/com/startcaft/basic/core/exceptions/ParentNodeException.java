@@ -14,7 +14,7 @@ package com.startcaft.basic.core.exceptions;
  * @create 2018/3/9
  * @since 1.0.0
  */
-public class ParentNodeException extends RuntimeException {
+public class ParentNodeException extends BasicProException {
     public ParentNodeException() {
     }
 

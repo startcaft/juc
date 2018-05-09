@@ -14,7 +14,7 @@ package com.startcaft.basic.core.exceptions;
  * @create 2018/3/13
  * @since 1.0.0
  */
-public class SqlExecuteException extends RuntimeException {
+public class SqlExecuteException extends BasicProException {
 
     public SqlExecuteException() {
     }
