@@ -9,20 +9,19 @@ import com.startcaft.basic.core.exceptions.FieldNullException;
 import com.startcaft.basic.core.exceptions.ParentNodeException;
 import com.startcaft.basic.core.exceptions.SqlExecuteException;
 import com.startcaft.basic.core.sorts.ResourceVoComparator;
+import com.startcaft.basic.core.vo.ResourceChild;
 import com.startcaft.basic.core.vo.ResourceVo;
 import com.startcaft.basic.dao.master.IResourceDao;
 import com.startcaft.basic.service.IResourceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -196,6 +195,33 @@ public class ResourceServiceImpl implements IResourceService {
             if (result != 1){
                 throw new SqlExecuteException("数据库语句执行错误，原本修改一条数据，返回的执行结果却不是1");
             }
+        }
+    }
+
+    @Override
+    public List<ResourceChild> getUserMenus(String loginName) throws BasicProException {
+        {
+            List<ResourceChild> list = new ArrayList<>();
+
+            // 获取一级菜单
+            Set<ResourceVo> firstSet = this.getFirstLevelMenus();
+            firstSet.forEach((rVo) -> {
+                ResourceChild temp = new ResourceChild();
+                BeanUtils.copyProperties(rVo,temp);
+
+                // 查询二级菜单，填充 temp 的 children 属性
+                Set<ResourceVo> secondSet = this.getSecondLevelMenusByRoot(temp.getId(),loginName);
+                secondSet.forEach((sVo) -> {
+                    ResourceChild temp1 = new ResourceChild();
+                    BeanUtils.copyProperties(sVo,temp1);
+
+                    temp.getChildren().add(temp1);
+                });
+
+                list.add(temp);
+            });
+
+            return list;
         }
     }
 }

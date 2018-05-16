@@ -5,8 +5,10 @@ import com.startcaft.basic.core.beans.ResourceBean;
 import com.startcaft.basic.core.beans.ResourceModifyBean;
 import com.startcaft.basic.core.entity.Resource;
 import com.startcaft.basic.core.exceptions.BasicProException;
+import com.startcaft.basic.core.vo.ResourceChild;
 import com.startcaft.basic.core.vo.ResourceVo;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -83,4 +85,12 @@ public interface IResourceService {
      * @throws BasicProException
      */
     void modifyResource(ResourceModifyBean bean) throws BasicProException;
+
+    /**
+     * 获取用户菜单（一级菜单 + 权限二级菜单）
+     * @param loginName
+     * @return
+     * @throws BasicProException
+     */
+    List<ResourceChild> getUserMenus(String loginName) throws BasicProException;
 }

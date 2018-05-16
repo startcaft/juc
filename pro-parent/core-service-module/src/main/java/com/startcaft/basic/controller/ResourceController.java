@@ -160,4 +160,16 @@ public class ResourceController extends BaseController {
             return result;
         }
     }
+
+    @ApiOperation(value = "获取用户导航菜单",notes = "需要用户登陆")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "username",required = true,dataType = "string",paramType = "path"),
+    })
+    @GetMapping(value ="/menus/{username}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    @RequiresAuthentication
+    public ResponseBean getUserMenus(@PathVariable(value="username",required = true) String loginName){
+        {
+            return new ResponseBean(true,SUCCESS_MSG,resourceService.getUserMenus(loginName));
+        }
+    }
 }

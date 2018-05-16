@@ -1,15 +1,27 @@
+/**
+ * Copyright (C), 2015-2018, 武汉东雅图有限公司
+ * Author:   StartCaft
+ * Date:     2018/5/16 14:09
+ * Description: 资源列表
+ */
 package com.startcaft.basic.core.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.startcaft.basic.core.entity.Resource;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
- * @author startcaft
- * Created by startcaft on 2018/3/1.
+ * 〈一句话功能简述〉<br> 
+ * 〈资源列表〉
+ *
+ * @author StartCaft
+ * @create 2018/5/16
+ * @since 1.0.0
  */
-public class ResourceVo extends BaseVo<Resource> {
+public class ResourceChild extends BaseVo<Resource> {
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone="GMT+8")
     private Date createDatetime;
@@ -28,6 +40,12 @@ public class ResourceVo extends BaseVo<Resource> {
      * 父节点名称
      */
     private String pname;
+
+    /**
+     * 子节点
+     */
+    private List<ResourceChild> children = new ArrayList<>();
+
 
 
     public Date getCreateDatetime() {
@@ -126,4 +144,11 @@ public class ResourceVo extends BaseVo<Resource> {
         this.pname = pname;
     }
 
+    public List<ResourceChild> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<ResourceChild> children) {
+        this.children = children;
+    }
 }
