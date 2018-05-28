@@ -11,11 +11,14 @@ public class Md5Test {
         String username = "admin";
         String password = "123456";
 
-        String md5Str = new Md5Hash(password).toString();
-        System.out.println(md5Str);
+        String pwdMd5 = new Md5Hash(password).toString();
+        System.out.println("密码MD5加密：" + pwdMd5);
 
-        String pwd = new Md5Hash(md5Str,username).toString();
-        System.out.println(pwd);
+        String pwdMd5Salt = new Md5Hash(password,username).toString();
+        System.out.println("密码MD5加密加盐(username)：" + pwdMd5Salt);
+
+        String pwd = new Md5Hash(pwdMd5Salt,username).toString();
+        System.out.println("密码MD5加密加盐(username)再加盐(username)：" + pwd);
 
     }
 }

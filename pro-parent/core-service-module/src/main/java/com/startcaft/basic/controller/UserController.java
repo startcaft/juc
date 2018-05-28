@@ -1,9 +1,6 @@
 package com.startcaft.basic.controller;
 
-import com.startcaft.basic.core.beans.LoginBean;
-import com.startcaft.basic.core.beans.PwdBean;
-import com.startcaft.basic.core.beans.UserBean;
-import com.startcaft.basic.core.beans.UserModifyBean;
+import com.startcaft.basic.core.beans.*;
 import com.startcaft.basic.core.vo.EasyuiGrid;
 import com.startcaft.basic.core.vo.ResponseBean;
 import com.startcaft.basic.core.vo.UserPageRequest;
@@ -20,6 +17,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 系统用户相关服务
@@ -138,6 +137,33 @@ public class UserController extends BaseController {
             request.setLoginName(loginName);
             request.setRealName(realName);
             return userService.getUserPage(request);
+        }
+    }
+
+    @ApiOperation(value = "验证用户登陆信息",notes = "随便调用")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "token",required = true,dataType = "string",paramType = "query")
+    })
+    @GetMapping(value = "/check",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public ResponseData checkUserToken(@RequestParam(value = "token",required = true) String token){
+        {
+            // 解密获取 username，用于和数据库进行比对
+            String username = JwtUtil.getUsername(token);
+            Optional<UserVo> user = userService.searchUserByLoginName(username);
+
+            AtomicBoolean result = new AtomicBoolean(false);
+            user.ifPresent((userVo) -> {
+                if(JwtUtil.verify(token,userVo.getLoginName(),userVo.getPassword())){
+                    result.set(true);
+                }
+            });
+
+            if (result.get()){
+                return ResponseData.ok().putDataValue("token","用户认证成功");
+            }
+            else {
+                return ResponseData.customerError().putDataValue("token","认证失败或者token失效，请重新登陆");
+            }
         }
     }
 }
