@@ -147,22 +147,27 @@ public class UserController extends BaseController {
     @GetMapping(value = "/check",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public ResponseData checkUserToken(@RequestParam(value = "token",required = true) String token){
         {
+            AtomicBoolean result = new AtomicBoolean(false);
+
             // 解密获取 username，用于和数据库进行比对
             String username = JwtUtil.getUsername(token);
-            Optional<UserVo> user = userService.searchUserByLoginName(username);
-
-            AtomicBoolean result = new AtomicBoolean(false);
-            user.ifPresent((userVo) -> {
-                if(JwtUtil.verify(token,userVo.getLoginName(),userVo.getPassword())){
-                    result.set(true);
-                }
-            });
+            if(username == null){
+                return ResponseData.customerError().putDataValue("msg","无法解析的用户token");
+            }
+            else{
+                Optional<UserVo> user = userService.searchUserByLoginName(username);
+                user.ifPresent((userVo) -> {
+                    if(JwtUtil.verify(token,userVo.getLoginName(),userVo.getPassword())){
+                        result.set(true);
+                    }
+                });
+            }
 
             if (result.get()){
-                return ResponseData.ok().putDataValue("token","用户认证成功");
+                return ResponseData.ok().putDataValue("msg","用户认证成功");
             }
             else {
-                return ResponseData.customerError().putDataValue("token","认证失败或者token失效，请重新登陆");
+                return ResponseData.customerError().putDataValue("msg","认证失败或者token失效，请重新登陆");
             }
         }
     }
