@@ -33,6 +33,11 @@ public class DicItem extends BaseEntity<DicItemVo> {
         }
     });
 
+    /**
+     * 所有父节点id，以逗号分隔，包括0
+     */
+    private String parents;
+
     public String getCode() {
         return code;
     }
@@ -118,5 +123,13 @@ public class DicItem extends BaseEntity<DicItemVo> {
     @Override
     protected boolean otherPropertiesHook() {
         return true;
+    }
+
+    public String getParents() {
+        return parents;
+    }
+
+    public void setParents(String parents) {
+        this.parents = parents;
     }
 }

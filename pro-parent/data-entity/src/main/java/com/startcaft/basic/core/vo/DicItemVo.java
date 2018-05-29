@@ -16,6 +16,11 @@ public class DicItemVo extends BaseVo<DicItem> {
     private Long pid;
 
     /**
+     * 所有父节点id，以逗号分隔，包括0
+     */
+    private String parents;
+
+    /**
      * 父节点名称
      */
     private String pname;
@@ -68,4 +73,11 @@ public class DicItemVo extends BaseVo<DicItem> {
         this.pname = pname;
     }
 
+    public String getParents() {
+        return parents;
+    }
+
+    public void setParents(String parents) {
+        this.parents = parents;
+    }
 }

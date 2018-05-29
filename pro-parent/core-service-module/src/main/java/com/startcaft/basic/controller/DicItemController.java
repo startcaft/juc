@@ -8,6 +8,7 @@ package com.startcaft.basic.controller;
 
 import com.startcaft.basic.core.beans.DicItemBean;
 import com.startcaft.basic.core.beans.DicItemModifyBean;
+import com.startcaft.basic.core.beans.ResponseData;
 import com.startcaft.basic.core.entity.DicItem;
 import com.startcaft.basic.core.vo.DicItemVo;
 import com.startcaft.basic.core.vo.ResponseBean;
@@ -117,9 +118,11 @@ public class DicItemController extends BaseController {
     })
     @RequiresAuthentication
     @GetMapping(value = "/{id}",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public ResponseBean<DicItemVo> getSingle(@PathVariable(value = "id",required = true) long id){
+    public ResponseData getSingle(@PathVariable(value = "id",required = true) long id){
         {
-            return new ResponseBean<>(true,SUCCESS_MSG,dicItemService.getDicItemDetail(id));
+
+            DicItemVo itemVo = dicItemService.getDicItemDetail(id);
+            return ResponseData.ok().putDataValue("dic",itemVo);
         }
     }
 }

@@ -9,6 +9,7 @@
         <result column="name" property="name" jdbcType="VARCHAR" />
         <result column="seq" property="seq" jdbcType="INTEGER" />
         <result column="pid" property="pid" jdbcType="BIGINT" />
+        <result column="parents" property="parents" jdbcType="VARCHAR" />
     </resultMap>
 
     <resultMap type="com.startcaft.basic.core.entity.DicItem"
@@ -43,7 +44,7 @@
 
     <select id="selectByPrimaryKey" resultMap="ParentResultMap"
             parameterType="java.lang.Long">
-        SELECT r1.*,r2.name AS pname
+        SELECT r1.*,r2.name AS pname,getDicParents(#{id,jdbcType=BIGINT}) as parents
         FROM sys_dic_item r1
         LEFT OUTER  JOIN sys_dic_item r2
         ON r1.pid = r2.id
