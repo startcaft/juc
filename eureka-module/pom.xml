@@ -6,7 +6,10 @@
 	<groupId>com.springcloud.eureka</groupId>
 	<artifactId>eureka-parent</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<modules>
+		<module>eureka-provider-member</module>
+	</modules>
+	<packaging>pom</packaging>
 
 	<name>eureka-parent</name>
 	<description>Demo project for Spring Boot</description>
