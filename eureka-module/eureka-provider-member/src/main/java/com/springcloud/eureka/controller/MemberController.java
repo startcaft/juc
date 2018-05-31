@@ -6,6 +6,8 @@
  */
 package com.springcloud.eureka.controller;
 
+import com.springcloud.eureka.ServiceInfoUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,12 +26,16 @@ import java.util.List;
 @RestController
 public class MemberController {
 
+    @Autowired
+    private ServiceInfoUtil info;
+
     @GetMapping(value = "/members",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public List<String> getMembers(){
         ArrayList<String> lists = new ArrayList<>(3);
         lists.add("张三");
         lists.add("李四");
         lists.add("王五");
+        lists.add(String.valueOf(info.getPort()));
         return lists;
     }
 }
