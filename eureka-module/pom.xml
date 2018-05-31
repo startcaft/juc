@@ -10,7 +10,8 @@
 		<module>eureka-provider-member</module>
         <module>eureka-service-order</module>
 		<module>eureka-provider-order</module>
-	</modules>
+        <module>zuul-service</module>
+    </modules>
 	<packaging>pom</packaging>
 
 	<name>eureka-parent</name>
