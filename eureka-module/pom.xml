@@ -8,9 +8,9 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
 		<module>eureka-provider-member</module>
-        <module>eureka-service-order</module>
 		<module>eureka-provider-order</module>
         <module>zuul-service</module>
+        <module>eureka-provider-order-feign</module>
     </modules>
 	<packaging>pom</packaging>
 
