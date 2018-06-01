@@ -6,6 +6,7 @@
  */
 package member.service.api;
 
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -26,6 +27,6 @@ public interface MemberService {
     User getFeign(@RequestParam(value = "name",required = true) String name,
                   @RequestParam(value = "age",required = true) Integer age);
 
-    @RequestMapping(value = "/member2", method = RequestMethod.POST)
+    @PostMapping(value = "/member2",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     String getFeign(@RequestBody User user);
 }
