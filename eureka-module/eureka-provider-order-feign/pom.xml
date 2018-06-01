@@ -44,7 +44,7 @@
         </dependency>
         <dependency>
             <groupId>com.springcloud.eureka</groupId>
-            <artifactId>service-entity</artifactId>
+            <artifactId>member-service-api</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
     </dependencies>

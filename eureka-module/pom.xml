@@ -10,8 +10,8 @@
 		<module>eureka-provider-member</module>
         <module>zuul-service</module>
         <module>eureka-provider-order-feign</module>
-		<module>service-entity</module>
-	</modules>
+        <module>member-service-api</module>
+    </modules>
 	<packaging>pom</packaging>
 
 	<name>eureka-parent</name>

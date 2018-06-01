@@ -6,16 +6,14 @@
  */
 package com.springcloud.eureka.controller;
 
-import com.springcloud.entity.User;
-import com.springcloud.eureka.MemberFeign;
+import com.springcloud.eureka.RefactorMemberFeign;
+import member.service.api.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * 〈一句话功能简述〉<br> 
@@ -31,12 +29,7 @@ public class OrderFeignController {
     protected Logger logger = LoggerFactory.getLogger(OrderFeignController.class);
 
     @Autowired
-    private MemberFeign memberFeign;
-
-    @GetMapping(value = "/orders",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    public List<String> getOrdersEx(){
-        return memberFeign.getOrderMembers();
-    }
+    private RefactorMemberFeign memberFeign;
 
     @GetMapping(value = "/ordersEx",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public String getFeignEx(){
