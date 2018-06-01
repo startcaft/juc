@@ -8,10 +8,10 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<modules>
 		<module>eureka-provider-member</module>
-		<module>eureka-provider-order</module>
         <module>zuul-service</module>
         <module>eureka-provider-order-feign</module>
-    </modules>
+		<module>service-entity</module>
+	</modules>
 	<packaging>pom</packaging>
 
 	<name>eureka-parent</name>

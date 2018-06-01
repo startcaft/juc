@@ -6,6 +6,7 @@
  */
 package com.springcloud.eureka.controller;
 
+import com.springcloud.entity.User;
 import com.springcloud.eureka.MemberFeign;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,5 +36,14 @@ public class OrderFeignController {
     @GetMapping(value = "/orders",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
     public List<String> getOrdersEx(){
         return memberFeign.getOrderMembers();
+    }
+
+    @GetMapping(value = "/ordersEx",produces = {MediaType.APPLICATION_JSON_UTF8_VALUE})
+    public String getFeignEx(){
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(memberFeign.getFeign("DIDI")).append("\n");
+        stringBuilder.append(memberFeign.getFeign("DIDI",30)).append("\n");
+        stringBuilder.append(memberFeign.getFeign(new User("DIDI",30))).append("\n");
+        return stringBuilder.toString();
     }
 }

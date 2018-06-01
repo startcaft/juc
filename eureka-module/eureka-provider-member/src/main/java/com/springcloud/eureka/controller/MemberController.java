@@ -6,11 +6,11 @@
  */
 package com.springcloud.eureka.controller;
 
+import com.springcloud.entity.User;
 import com.springcloud.eureka.ServiceInfoUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,5 +37,21 @@ public class MemberController {
         lists.add("王五");
         lists.add(String.valueOf(info.getPort()));
         return lists;
+    }
+
+
+    @GetMapping("/feign")
+    public String feign(@RequestParam String name){
+        return "Hello," + name;
+    }
+
+    @GetMapping("/feign1")
+    public User feign(@RequestHeader String name, @RequestHeader Integer age){
+        return new User(name,age);
+    }
+
+    @PostMapping("/feign2")
+    public String feign(@RequestBody User user){
+        return "Hello," + user.getName() + ", " + user.getAge();
     }
 }
