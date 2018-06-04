@@ -6,9 +6,13 @@
  */
 package com.springcloud.eureka.controller;
 
+import com.springcloud.eureka.ServiceInfoUtil;
 import member.service.api.MemberService;
-import member.service.api.User;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 〈一句话功能简述〉<br> 
@@ -21,19 +25,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RefactorMemberController implements MemberService {
 
-    @Override
-    public String getFeign(String name) {
-        return "Hello," + name;
-    }
+    @Autowired
+    private ServiceInfoUtil infoUtil;
 
     @Override
-    public User getFeign(String name, Integer age) {
-        return new User(name,age);
+    public List<String> getMemebers() {
+        List<String> memeberList = new ArrayList<>();
+        memeberList.add("张三");
+        memeberList.add("李四");
+        memeberList.add("王五");
+        memeberList.add(String.valueOf(infoUtil.getPort()));
+        return memeberList;
     }
-
-    @Override
-    public String getFeign(User user) {
-        return "Hello," + user.getName() + ", " + user.getAge();
-    }
-
 }

@@ -6,8 +6,11 @@
  */
 package member.service.api;
 
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 /**
  * 〈一句话功能简述〉<br> 
@@ -20,13 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/refactor")
 public interface MemberService {
 
-    @GetMapping("/member")
-    String getFeign(@RequestParam(value = "name",required = true) String name);
+    @GetMapping("/members")
+    List<String> getMemebers();
 
-    @GetMapping("/member1")
-    User getFeign(@RequestParam(value = "name",required = true) String name,
-                  @RequestParam(value = "age",required = true) Integer age);
-
-    @PostMapping(value = "/member2",consumes = {MediaType.APPLICATION_JSON_UTF8_VALUE})
-    String getFeign(@RequestBody User user);
 }
